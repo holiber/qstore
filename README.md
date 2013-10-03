@@ -26,7 +26,7 @@ It's same as ActiveData query:
 fruits.find({type: ['apple', 'pear']});
 ```
  ---
-see more in [exaples](https://github.com/holiber/activedata/tree/master/example) folder
+See more [exaples](http://holiber.github.io/activedata/examples/)
 
 ##API
 - [Initialisation](#initialisation)
