@@ -623,12 +623,6 @@
 			return copyData;
 		},
 
-		getKeys: function (obj) {
-			var result = [];
-			for (var key in obj) result.push(key);
-			return result;
-		},
-
 		/**
 		 * @return {Number}
 		 */

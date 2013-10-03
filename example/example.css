@@ -1,5 +1,5 @@
 body,html {margin:0;padding: 0;color: #555;}
-body {font-family: verdana}
+body {font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif}
 h1 {padding: 10px;margin: 0;border-bottom: 1px solid #ccc;background-color: #eee;}
 .left-bar {float:left;padding: 10px}
 select[name="queries"] {width: 190px}
