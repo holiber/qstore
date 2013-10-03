@@ -1,74 +1,65 @@
 ;(function (context) {
 
-	/* Simple JavaScript Inheritance
-	 * By John Resig http://ejohn.org/
-	 * MIT Licensed.
-	 */
-	// Inspired by base2 and Prototype
-	var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
-	// The base Class implementation (does nothing)
-	var Class = function(){};
+	var Class = function () {}
+	Class.extend = function(props, staticProps) {
 
-	// Create a new Class that inherits from this class
-	Class.extend = function(prop) {
-		var _super = this.prototype;
-
-		// Instantiate a base class (but only create the instance,
-		// don't run the init constructor)
-		initializing = true;
-		var prototype = new this();
-		initializing = false;
-
-		// Copy the properties over onto the new prototype
-		for (var name in prop) {
-			if (name == '_static') continue;
-			// Check if we're overwriting an existing function
-			prototype[name] = typeof prop[name] == "function" &&
-					typeof _super[name] == "function" && fnTest.test(prop[name]) ?
-					(function(name, fn){
-						return function() {
-							var tmp = this._super;
-
-							// Add a new ._super() method that is the same method
-							// but on the super-class
-							this._super = _super[name];
-
-							// The method only need to be bound temporarily, so we
-							// remove it when we're done executing
-							var ret = fn.apply(this, arguments);
-							this._super = tmp;
-
-							return ret;
-						};
-					})(name, prop[name]) :
-					prop[name];
+		var mixins = [];
+		if ({}.toString.apply(arguments[0]) == "[object Array]") {
+			mixins = arguments[0];
+			props = arguments[1];
+			staticProps = arguments[2];
 		}
+		function Constructor() {
+			this.init && this.init.apply(this, arguments);
+		}
+		Constructor.prototype = Class.inherit(this.prototype);
+		Constructor.prototype.constructor = Constructor;
+		Constructor.extend = Class.extend;
+		copyWrappedProps(staticProps, Constructor, this);
 
-		prop['_static'] = $.extend({}, this._static, prop['_static']);
-		if (prop['_static']) {
-			for (var name in prop['_static']) {
-				Class[name] =  prop['_static'][name];
+		for (var i = 0; i < mixins.length; i++) {
+			copyWrappedProps(mixins[i], Constructor.prototype, this.prototype);
+		}
+		copyWrappedProps(props, Constructor.prototype, this.prototype);
+		return Constructor;
+	};
+
+	var fnTest = /xyz/.test(function() {xyz}) ? /\b_super\b/ : /./;
+
+	function copyWrappedProps(props, targetPropsObj, parentPropsObj) {
+		if (!props) return;
+
+		for (var name in props) {
+			if (typeof props[name] == "function"
+				&& typeof parentPropsObj[name] == "function"
+				&& fnTest.test(props[name])) {
+				// скопировать, завернув в обёртку
+				targetPropsObj[name] = wrap(props[name], parentPropsObj[name]);
+			} else {
+				targetPropsObj[name] = props[name];
 			}
 		}
-		Class._static = prop['_static'];
 
-		// The dummy class constructor
-		function Class() {
-			// All construction is actually done in the init method
-			if ( !initializing && this.init )
-				this.init.apply(this, arguments);
+	}
+
+	function wrap(method, parentMethod) {
+		return function() {
+			var backup = this._super;
+
+			this._super = parentMethod;
+
+			try {
+				return method.apply(this, arguments);
+			} finally {
+				this._super = backup;
+			}
 		}
+	}
 
-		// Populate our constructed prototype object
-		Class.prototype = prototype;
-
-		// Enforce the constructor to be what we expect
-		Class.prototype.constructor = Class;
-
-		// And make this class extendable
-		Class.extend = arguments.callee;
-
-		return Class;
+	Class.inherit = Object.create || function(proto) {
+		function F() {}
+		F.prototype = proto;
+		return new F;
 	};
 	
 	var ActiveData = context.ActiveData = Class.extend({
@@ -174,14 +165,17 @@
 			}
 
 			if (arguments.length == 2) {
-				if ($.isArray(opt2)) {
-					var fieldsToAdd = opt2;
-					var data = this.rows;
-					var expr = opt1;
-				} else {
-					var data = opt1;
-					var expr = opt2;
-				}
+				var expr = opt1;
+				var fieldsToAdd = opt2;
+				var data = this.rows;
+//				if ($.isArray(opt2)) {
+//					var fieldsToAdd = opt2;
+//					var data = this.rows;
+//					var expr = opt1;
+//				} else {
+//					var data = opt1;
+//					var expr = opt2;
+//				}
 			}
 
 			var result = [];
@@ -258,7 +252,11 @@
 					case '$gte': return item >= expr;
 					case '$lte': return item <= expr;
 					case '$like': return item !== null ? ~String(item).toLowerCase().indexOf(expr) : false;
-					default: return false;
+					default:
+						var operator = flag.split('$')[1];
+						var fn = ActiveData.operators[operator];
+						if (!fn) return false;
+						return fn(item, expr);
 				}
 			}
 
@@ -647,6 +645,11 @@
 				}
 			}
 			this.fire('fieldsChange', {action: 'removeField', fields: [fieldName]});
+		}
+	}, {
+		operators: {},
+		addOperator: function (name, fn) {
+			ActiveData.operators[name] = fn;
 		}
 	});
 	
