@@ -33,7 +33,7 @@ fruits.find({type: ['apple', 'pear']});
 ```
 
  ---
-See more [exaples](http://holiber.github.io/activedata/examples/)
+See more [examples](http://holiber.github.io/activedata/examples/)
 
 ##API
 - [Initialisation](#initialisation)
@@ -69,7 +69,7 @@ See more [exaples](http://holiber.github.io/activedata/examples/)
 
 Using array of objects:
 
-```
+```js
 var fruits = new ActiveData([
 	{type: 'apple', color: 'red', weight: 0.25, price: 1.5},
 	{type: 'pear', color: 'green', weight: 0.4, price: 2},
@@ -77,9 +77,10 @@ var fruits = new ActiveData([
 	{type: 'apple', color: 'yellow', weight: 0.26, price: 1.2},
 ]);
 ```
+
 Using reduce format:
 
-```
+```js
 var fruits = new ActiveData({
 	columns: ['type', 'color', 'weight', 'price'],
 	rows: [
@@ -147,34 +148,63 @@ in development
 
 <a name="remove"></a>
 ####remove
+in development
+
 <a name="addFields"></a>
 ####addFields
+in development
+
 <a name="compute"></a>
 ####compute
+in development
+
 <a name="removeFields"></a>
 ####removeFields
+in development
+
 <a name="sort"></a>
 ####sort
+in development
 
 <a name="changes"></a>
 ###Work with changes
+in development
+
 <a name="getChanges"></a>
 ####getChanges
+in development
+
 <a name="commit"></a>
 ####commit
+in development
+
 <a name="revert"></a>
 ####revert
+in development
+
 
 <a name="utilites"></a>
 ###Utilites
+in development
+
 <a name="size"></a>
 ####size
+in development
+
 <a name="pack"></a>
 ####pack
+in development
+
 <a name="unpack"></a>
 ####unpack
+in development
+
 <a name="getCopy"></a>
 ####getCopy
+in development
+
 
 <a name="events"></a>
 ###Events
+in development
+
