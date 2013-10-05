@@ -43,6 +43,8 @@ See more [examples](http://holiber.github.io/activedata/examples/)
   - [findIn](#findIn)
   - [test](#test)
   - [getList](#getList)
+- [Operators](#operators)
+  - [Availble operators](#availOperators)
   - [addOperator](#addOperator)
 - [Data manipulation](#dataManipulation)
   - [add](#add)
@@ -98,43 +100,132 @@ var fruits = new ActiveData({
 <a name="find"></a>
 ####find
 
-returns all objects from collection which compliance query
-See [exaples of usage](http://holiber.github.io/activedata/examples/)
+Returns all objects from collection which compliance query  
+See [examples of usage](http://holiber.github.io/activedata/examples/)
  
 **.find(query, [fields], [options])**
 
-- **query {Object|Function|Bolean}** 
-- **[fields] {Array}**
-- **[options] {Object}**
+- **query {Object|Array|Function|Bolean}**  
+ See [examples](http://holiber.github.io/activedata/examples/)  
+ If query is **true** then will be returned all rows.  
+ If query is **Object** or **Array**:  
+ { } - contains conditions separeted with **and**  
+ [ ] - contains conditions separeted with **or**  
+ Operators describes as **$&lt;operator name&gt;**, see [Operators](#operators).  
+  Example:
+  
+  ```js
+//find all red or green fruits with price between 0.5 and 1.5  
+fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
+  ```
+  If query is **Function**:  
+  Example:
+  
+  ```js
+  //find all red fruits
+  fruits.find(function (row) {
+  	return row.color == 'red';
+  });
+  ```
+  
+- **[fields] {Array}**  
+ Array of fields names which will be added to result.  
+ Example:
+ 
+  ```js
+  	//same as SQL query:
+  	//select type, color, price from fruits where type = 'apple'
+ 	fruits.find({type: 'apple'}, ['type', 'color', 'price']);
+  ```
+ 
+- **[options] {Object}**  
+  - limit: rowsCount
+  - limit: [fromRow]
+  - limit: [fromRow, RowsCount]  
+  
+  Example:
+  
+  ```js
+  	//find first two apples
+  	fruits.find({type: 'apple'}, true, {limit: 2});
+  	
+  	//find two yellow fruits begins from third yellow fruit
+  	fruits.find ({color: 'yelow'}, true, {limit: [3,2]});
+  	
+  ```
+  **Warning! options will be availble in version 0.3.0**
+
+#####Queries concatination:
+```js
+	var filter1 = {type: 'apple'};
+	var filter2 = {color: 'red'};
+	
+	//search rows valid for filter1 or filter2
+	var commonFilter1 = [filter1, filter2]
+	
+	//search rows valid for filter1 and filter2
+	var commonFilter2 = {$and: [filter1, filter2]};
+	
+```
 
 in development
 
 
 <a name="findOne"></a>
-####findOne
+####.findOne
+**.findOne(query, [fields])**  
+finf first row compilance query
+it same as:
+
+```js
+	.find(query, fields, {limit: 1})[0]
+```
 in development
 
 <a name="findIn"></a>
-####findIn
+####ActiveData.findIn
 in development
 
 <a name="test"></a>
-####test
+####ActiveData.test
 in development
 
 <a name="addOperator"></a>
-####addOperator
+####ActiveData.addOperator
 in development
 
 <a name="getList"></a>
-####getList
+####.getList
 in development
+
+<a name="operators"></a>
+###Operators
+
+<a name="availOperators"></a>
+####Availble operators
+ name  | description
+ ----- | -----------
+ $eq   | equals
+ $ne   | not equals
+ $gt   | more then
+ $lt   | less then
+ $gte  | more or equals then
+ $lte  | les or equals then
+ $and  | change condition of [ ] operator from **or** to **and**
+ $like | "like" search
+ $test | *in development (v0.3)*  
+ 
+ you can also add your operators - see [addOperator](#addOperator) method
+
+<a name="addOperator"></a>
+####addOperator
+**ActiveData.addOperator (operatorName, function)**
+
 
 <a name="dataManipulation"></a>
 ###Data manipulation
 in development
-
-<a name="add"></a>
+	<a name="add"></a>
 ####add
 in development
 
@@ -208,3 +299,17 @@ in development
 ###Events
 in development
 
+
+##Roadmap to 0.2.0
+ - static **ActiveData.test** method
+ - static **ActiveData.findIn** methid
+ - support regular expressions in queries
+ - functions with context in query
+ 
+  
+##Roadmap to 0.3.0
+ - query options
+ - **limit** option
+ - **$test** operator
+ - exclude jquery
+ 
