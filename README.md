@@ -1,7 +1,7 @@
 ![activedata](activedata-big.png)
 
-Work with collections in javascript
 ##Overview
+Work with collections in javascript
 - Create your collections.
 - Search and update data using queries.
 - Use computed fields
