@@ -210,7 +210,7 @@ in development
  $gt   | more then
  $lt   | less then
  $gte  | more or equals then
- $lte  | les or equals then
+ $lte  | less or equals then
  $and  | change condition of [ ] operator from **or** to **and**
  $like | "like" search
  $test | *in development (v0.3)*  
