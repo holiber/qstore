@@ -1,4 +1,5 @@
-#ActiveData
+![activedata](activedata-big.png)
+
 Work with collections in javascript
 ##Overview
 - Create your collections.
