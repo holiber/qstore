@@ -124,11 +124,11 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   ```js
   //find all red fruits
   fruits.find(function (row) {
-  	return row.color == 'red';
+      return row.color == 'red';
   });
   ```
   
-- **[fields] {Array}**  
+- **[fields=true] {Array|Boolean}**  
  Array of fields names which will be added to result.  
  Example:
  
@@ -312,4 +312,7 @@ in development
  - **limit** option
  - **$test** operator
  - exclude jquery
- 
+
+##Roadmap to 0.4.0
+ - left join and right join
+ - collections merge
