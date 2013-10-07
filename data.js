@@ -1,5 +1,13 @@
+/**
+ * @license ActiveData 0.1.0 by Holiber
+ * work with collections
+ *
+ * Available via the MIT license.
+ * see: http://github.com/holiber/activedata
+ */
 ;(function (context) {
 
+	//inheritance realisation
 	var Class = function () {}
 	Class.extend = function(props, staticProps) {
 
@@ -181,7 +189,7 @@
 			var result = [];
 			for (var key = 0; key < data.length; key++) {
 				var row = data[key];
-				if (expr !== true && !this.test(row, expr)) continue;
+				if (expr !== true && !ActiveData.test(row, expr)) continue;
 				if (fieldsToAdd) {
 					var filteredRow = {};
 					for (var i = fieldsToAdd.length; i--;) {
@@ -644,6 +652,122 @@
 		operators: {},
 		addOperator: function (name, fn) {
 			ActiveData.operators[name] = fn;
+		},
+
+
+		/**
+		 * checks for compliance with an item of expression
+		 * @param item
+		 * @param {Function|JSON} expr
+		 * @param {String} [flag='$eq']
+		 * @return {Boolean}
+		 * @example
+		 *  var apple = {type: 'apple', color: 'red'};
+		 *  var isRed = data.test(apple, {color: 'red'});
+		 */
+		test: function (item, expr, flag) {
+
+			if (typeof(expr) != 'object' && typeof(expr) != 'function') {
+				flag = flag || '$eq';
+				switch (flag) {
+					case '$eq': return item == expr;
+					case '$ne': return item != expr;
+					case '$gt': return item > expr;
+					case '$lt': return item < expr;
+					case '$gte': return item >= expr;
+					case '$lte': return item <= expr;
+					case '$like': return item !== null ? ~String(item).toLowerCase().indexOf(expr) : false;
+					default:
+						var operator = flag.split('$')[1];
+						var fn = ActiveData.operators[operator];
+						if (!fn) return false;
+						return fn(item, expr);
+				}
+			}
+
+			if (flag == '$and') {
+				for (var key = 0; key < expr.length; key++) {
+					if (!this.test(item, expr[key])) return false;
+				}
+				return true;
+			}
+
+			if (typeof(expr) == 'function') {
+				return expr(item);
+			}
+
+			if (expr instanceof Array) {
+				for (var key = 0; key < expr.length; key++) {
+					if (this.test(item, expr[key])) return true;
+				}
+				return false;
+			}
+
+			if (typeof(expr) == 'object') {
+				for (var key in expr) {
+
+					if (key == '$and') {
+						if (!this.test(item, expr[key], key)) return false;
+						continue;
+					}
+
+					if (typeof(key) == 'string' && key.charAt(0) == '$') {
+						if (!this.test(item, expr[key], key)) return false;
+						continue;
+					}
+
+					if (!this.test(item[key], expr[key])) return false;
+				}
+				return true;
+			}
+
+			return false;
+		},
+
+
+		/**
+		 * find rows in array
+		 * findIn([data, selector [,fields=true] [,options]);
+		 */
+		findIn: function (data, expr, fields, options) {
+			if (!data) throw 'empty data';
+			if (!expr) return data;
+			fields = fields || true;
+			options = options
+//			if (arguments.length == 1) {
+//				var data = this.rows;
+//				var expr = opt1;
+//			}
+//
+//			if (arguments.length == 2) {
+//				var expr = opt1;
+//				var fieldsToAdd = opt2;
+//				var data = this.rows;
+////				if ($.isArray(opt2)) {
+////					var fieldsToAdd = opt2;
+////					var data = this.rows;
+////					var expr = opt1;
+////				} else {
+////					var data = opt1;
+////					var expr = opt2;
+////				}
+//			}
+
+			var result = [];
+			for (var key = 0; key < data.length; key++) {
+				var row = data[key];
+				if (expr !== true && !ActiveData.test(row, expr)) continue;
+				if (fieldsToAdd) {
+					var filteredRow = {};
+					for (var i = fieldsToAdd.length; i--;) {
+						filteredRow[fieldsToAdd[i]] = row[fieldsToAdd[i]];
+					}
+					result.push(filteredRow);
+					continue;
+				}
+				result.push(row);
+			}
+			return result;
 		}
 	});
 	
