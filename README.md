@@ -175,7 +175,7 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   	
   ```
 
-#####Queries concatination:
+#####Queries concatenation:
 ```js
 	var filter1 = {type: 'apple'};
 	var filter2 = {color: 'red'};
@@ -266,6 +266,7 @@ Examples:
 
 <a name="operators"></a>
 ###Operators
+Оperators are used to extend the query language.
 
 <a name="availOperators"></a>
 ####Available operators
@@ -282,11 +283,19 @@ Examples:
  $test | *in development (v0.3)*  
  
  you can also add your operators - see [addOperator](#addOperator) method
+ 
+---
 
 <a name="addOperator"></a>
-####addOperator
+####ActiveData.addOperator
 **ActiveData.addOperator (operatorName, function)**
 
+---
+
+<a name="removeOperator"></a>
+####ActiveData.removeOperator
+**ActiveData.removeOperator (operatorName)**
+---
 
 <a name="dataManipulation"></a>
 ###Data manipulation
