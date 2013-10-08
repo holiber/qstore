@@ -133,7 +133,7 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
       return row.color == 'red';
   });
   ```
-  If query is **Object** that contains functions  
+  If query is **Object** that contains functions:  
   
   Function with field-context:
   
@@ -173,7 +173,6 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   	fruits.find ({color: 'yelow'}, true, {limit: [3,2]});
   	
   ```
-  **Warning! options will be availble in version 0.3.0**
 
 #####Queries concatination:
 ```js
@@ -188,23 +187,31 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
 	
 ```
 
-in development
-
-
 <a name="findOne"></a>
-####.findOne
-**.findOne(query, [fields])**  
-finf first row compilance query
+####.findOne (query, [,fields=true] [,options])
+
+find first row valid for query
 it same as:
 
 ```js
 	.find(query, fields, {limit: 1})[0]
 ```
-in development
 
 <a name="findIn"></a>
-####ActiveData.findIn
-in development
+####ActiveData.findIn (rows, query, [,fields=true] [,options])
+same as [.find](#find) but work as static method with you array
+
+```js
+	var users = [
+		{name: 'user1', id: 1, email: 'user1@anymail.com'},
+		{name: 'user2', id: 2, email: 'user2@anymail.com'},
+		{name: 'user3', id: 3, email: 'user3@anymail.com'},
+		{name: 'user4', id: 4, email: 'user4@anymail.com'}
+	];
+	
+	//find user with id = 3
+	ActiveData.findIn(users, {id: 3});
+```
 
 <a name="test"></a>
 ####ActiveData.test
