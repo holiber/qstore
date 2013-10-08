@@ -99,12 +99,11 @@ var fruits = new ActiveData({
 <a name="dataSearch"></a>
 ###Data search
 <a name="find"></a>
-####find
+####.find (query, [fields], [options])
 
 Returns all objects from collection which compliance query  
 See [examples of usage](http://holiber.github.io/activedata/examples/)
  
-**.find(query, [fields], [options])**
 
 - **query {Object|Array|Function|Bolean}**  
  See [examples](http://holiber.github.io/activedata/examples/)  
@@ -134,7 +133,21 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
       return row.color == 'red';
   });
   ```
+  If query is **Object** that contains functions  
   
+  Function with field-context:
+  
+  ```js
+  //find all fruits with integer price or with 0.5$ price
+  fruits.find({price: [0.5, function (price) { return price % 1 == 0}]);
+  ```
+  
+  Function with row-context:
+  
+  ```js
+  //find all fruits with integer price or with 0.5$ price
+  fruits.find([price: 0.5, function (row) { return row.price % 1 == 0});
+  ```
 - **[fields=true] {Array|Boolean}**  
  Array of fields names which will be added to result.  
  Example:
