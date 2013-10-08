@@ -186,6 +186,7 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
 	var commonFilter2 = {$and: [filter1, filter2]};
 	
 ```
+---
 
 <a name="findOne"></a>
 ####.findOne (query, [,fields=true] [,options])
@@ -196,6 +197,7 @@ it same as:
 ```js
 	.find(query, fields, {limit: 1})[0]
 ```
+---
 
 <a name="findIn"></a>
 ####ActiveData.findIn (rows, query, [,fields=true] [,options])
@@ -209,14 +211,31 @@ same as [.find](#find) but work as static method with you array
 		{name: 'user4', id: 4, email: 'user4@anymail.com'}
 	];
 	
-	//find user with id = 3
+	// find user with id = 3
 	ActiveData.findIn(users, {id: 3});
 ```
+---
 
 <a name="test"></a>
-####ActiveData.test
-in development
+####ActiveData.test (object, query)
+checks that the object match the query
 
+```js
+	var fruit = {type: 'pineapple', color: 'yellow', weight: 1, price: 4};
+	
+	// The fruit is yellow?
+	ActiveData.test(fruit, {color: 'yellow'}); //true
+	
+	// The fruit is pineapple or pear?
+	ActiveData.test(fruit, {type: ['pear', 'pineapple']}); //true
+	
+	// The fruit has "apple" in type?
+	ActiveData.test(fruit, {type: {$like: 'apple'}}); //true
+	
+	// Fruit price less when 1$ per kg
+	ActiveData.test(fruit, function (fruit) { return fruit.price/fruit.weight < 1});//false
+```
+---
 <a name="addOperator"></a>
 ####ActiveData.addOperator
 in development
