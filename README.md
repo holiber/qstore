@@ -47,6 +47,7 @@ See more [examples](http://holiber.github.io/activedata/examples/)
 - [Operators](#operators)
   - [Availble operators](#availOperators)
   - [addOperator](#addOperator)
+  - [removeOperator](#removeOperator)
 - [Data manipulation](#dataManipulation)
   - [add](#add)
   - [update](#update)
@@ -236,19 +237,38 @@ checks that the object match the query
 	ActiveData.test(fruit, function (fruit) { return fruit.price/fruit.weight < 1});//false
 ```
 ---
-<a name="addOperator"></a>
-####ActiveData.addOperator
-in development
 
 <a name="getList"></a>
-####.getList
-in development
+####.getList ([query,] [fieldName='idx']);
+Returns list of values for **fieldName**.  
+Elements of the list are not repeated.
+
+Examples:
+
+```js
+	// list of all fruits colors
+	fruits.getList('color'); // ['red', 'green', 'yellow']
+	
+	// list of all pears colors
+	fruits.getList({type: 'pear'}, 'color');// ['green', 'red']
+	
+	// Which fruits can be red?
+	fruits.getList({color: 'red'}, 'type');// ['apple', 'pear', 'strawberries']
+	
+	// get fruits types with idx in [3, 5, 6]
+	fruits.getList({idx: [3, 5, 6]}); //['pear', 'apple', 'banana']
+	
+	//get list of idx
+	fruits.getList();
+	
+```
+---
 
 <a name="operators"></a>
 ###Operators
 
 <a name="availOperators"></a>
-####Availble operators
+####Available operators
  name  | description
  ----- | -----------
  $eq   | equals
