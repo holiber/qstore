@@ -119,6 +119,12 @@ See [examples of usage](http://holiber.github.io/activedata/examples/)
 //find all red or green fruits with price between 0.5 and 1.5  
 fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   ```
+
+  ```js
+  //using regular expressions
+  fruits.find({type: /apple/});//returns all apples and pineapples
+  ```
+
   If query is **Function**:  
   Example:
   
