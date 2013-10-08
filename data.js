@@ -70,7 +70,7 @@
 		return new F;
 	};
 
-
+	/*ActiveData*/
 	var ActiveData = context.ActiveData = Class.extend({
 
 		init: function (reduce) {
@@ -93,7 +93,6 @@
 		size: function () {
 			return (this.rows && this.rows.length) || 0;
 		},
-
 
 		/**
 		 * unpack reduce data
@@ -526,7 +525,6 @@
 			delete ActiveData.operators[name];
 		},
 
-
 		/**
 		 * checks for compliance with an item of expression
 		 * @param item
@@ -550,6 +548,7 @@
 					case '$lte': return item <= expr;
 					case '$like': return item !== null ? ~String(item).toLowerCase().indexOf(expr) : false;
 					default:
+						//search custom operator
 						var operator = flag.split('$')[1];
 						var fn = ActiveData.operators[operator];
 						if (!fn) throw 'operator ' + operator + ' not found';
@@ -564,10 +563,12 @@
 				return true;
 			}
 
+			// regular expressions
 			if (expr instanceof RegExp) {
 				return expr.test(String(item));
 			}
 
+			// "or" condtions
 			if (expr instanceof Array) {
 				for (var key = 0; key < expr.length; key++) {
 					if (this.test(item, expr[key])) return true;
@@ -575,6 +576,7 @@
 				return false;
 			}
 
+			// "and" conditions
 			if (typeof(expr) == 'object') {
 				for (var key in expr) {
 

@@ -24,9 +24,10 @@ $(function () {
 		redImages: [{color: 'red'}, ['image']],
 		heavyFruits: [{weight: {$gte: 1}}, ['image', 'weight', 'type']],
 		cheapOrYellow: [[{price: {$lt: 1}}, {color: 'yellow'}]],
-		expensiveIntfruits: {price: {$and: [{$gte: 1}, function (value) {return value % 1 == 0}] }}
-
+		expensiveIntfruits: {price: {$and: [{$gte: 1}, function (value) {return value % 1 == 0}]}},
+		regExp: {type: /apple/}
 	}
+
 	var render = function (rows) {
 		$('.table-place').html(tableTemplate(rows));
 	}

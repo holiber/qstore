@@ -24,6 +24,7 @@
 		<option value="heavyFruits">Heavy fruits</option>
 		<option value="cheapOrYellow">Cheap or yellow fruits</option>
 		<option value="expensiveIntfruits">Expensive fruits with integer price</option>
+		<option value="regExp">Using regular expressions</option>
 	</select>
 </div>
 
@@ -159,6 +160,15 @@
 		<label>SQL analog:</label>
 		<p>
 			select * from fruits where price >= 1 and (price % 1 = 0)
+		</p>
+	</div>
+</div>
+
+<div class="code" id="regExp">
+	<div class="block expr-block">
+		<label>Expression:</label>
+		<p>
+			fruits.find({type: /apple/});
 		</p>
 	</div>
 </div>
