@@ -313,6 +313,7 @@ in development
  - **limit** option
  - **$test** operator
  - exclude jquery
+ - compatibility with nodejs
 
 ##Roadmap to 0.4.0
  - left join and right join
