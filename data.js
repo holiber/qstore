@@ -1,5 +1,5 @@
 /**
- * @license ActiveData 0.2.0 by Holiber
+ * @license ActiveData 0.2.1 by Holiber
  * work with collections
  *
  * Available via the MIT license.
