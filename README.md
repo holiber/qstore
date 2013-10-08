@@ -386,9 +386,11 @@ in development
  - query options
  - **limit** option
  - **$test** operator
+
+##Roadmap to 0.4.0
  - exclude jquery
  - compatibility with nodejs
 
-##Roadmap to 0.4.0
+##Roadmap to 0.5.0
  - left join and right join
  - collections merge
