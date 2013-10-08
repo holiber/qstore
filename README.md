@@ -1,6 +1,7 @@
-#ActiveData
-Work with collections in javascript
+![activedata](activedata-big.png)
+
 ##Overview
+Work with collections in javascript
 - Create your collections.
 - Search and update data using queries.
 - Use computed fields
@@ -118,6 +119,12 @@ See [examples of usage](http://holiber.github.io/activedata/examples/)
 //find all red or green fruits with price between 0.5 and 1.5  
 fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   ```
+
+  ```js
+  //using regular expressions
+  fruits.find({type: /apple/});//returns all apples and pineapples
+  ```
+
   If query is **Function**:  
   Example:
   
@@ -312,6 +319,7 @@ in development
  - **limit** option
  - **$test** operator
  - exclude jquery
+ - compatibility with nodejs
 
 ##Roadmap to 0.4.0
  - left join and right join
