@@ -95,7 +95,7 @@ var fruits = new ActiveData({
 	]
 });
 ```
-
+ ---
 
 <a name="dataSearch"></a>
 ###Data search
@@ -287,15 +287,34 @@ Examples:
 ---
 
 <a name="addOperator"></a>
-####ActiveData.addOperator
-**ActiveData.addOperator (operatorName, function)**
+####ActiveData.addOperator (operatorName, function)
 
----
+Example:
+
+```js
+	/* we need find fruits with integer price */
+	
+	// add "isInt" operator
+	ActiveData.addOperator('isInt', function (left, right) {
+		var isInt = (left % 1 == 0);
+		return right ? isInt : !isInt
+	});
+	
+	// find them
+	fruits.find({price: {$isInt: true}});
+	
+	// find other
+	fruits.find({price: {$isInt: false}});
+	
+```
+
+
+ ---
 
 <a name="removeOperator"></a>
-####ActiveData.removeOperator
-**ActiveData.removeOperator (operatorName)**
----
+####ActiveData.removeOperator (operatorName)
+remove operator
+ ---
 
 <a name="dataManipulation"></a>
 ###Data manipulation
@@ -377,7 +396,7 @@ in development
 
 ##Roadmap to 0.2.0
  - static **ActiveData.test** method
- - static **ActiveData.findIn** methid
+ - static **ActiveData.findIn** method
  - support regular expressions in queries
  - functions with context in query
  
