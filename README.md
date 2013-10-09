@@ -323,8 +323,10 @@ remove operator
 <a name="add"></a>
 ####.add (rows [,soft=false])
 
- -**row {Object|Array}**
- -**soft** soft add. See [soft mode](#sodtMode)
+add new items to collection
+
+ - **row {Object|Array}**
+ - **soft** soft add. See [soft mode](#softMode).
  
  Examples:
  
@@ -340,8 +342,31 @@ remove operator
  ```
 
 <a name="update"></a>
-####update
-in development
+####.update ([searchQuery,] updateQuery [,soft=false])
+update items in collection
+
+ - **[searchQuery] {Object|Function}** if option is set then will be updated only finded items
+ - **updateQuery {Object|Function}** patch or function returned patch
+ - **[soft=false]** soft update. See [soft mode](#softMode).
+
+Examples:
+
+```js
+	//all fruits will be apples
+	fruits.update({type: 'apple'});
+	
+	//make all green fruits red
+	fruits.update({color: 'green'}, {color: 'red'});
+	
+	//The price of all pears will increase by 1 $
+	fruits.update(function (item) {
+		if (item.type == 'pear') {
+			return {price: item.price + 1}
+		}
+	});
+	
+	
+```
 
 <a name="patch"></a>
 ####patch
