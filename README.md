@@ -341,13 +341,16 @@ add new items to collection
  	]);
  ```
 
+ ---
+
+
 <a name="update"></a>
 ####.update ([searchQuery,] updateQuery [,soft=false])
 update items in collection
 
  - **[searchQuery] {Object|Function}** if option is set then will be updated only finded items
  - **updateQuery {Object|Function}** patch or function returned patch
- - **[soft=false]** soft update. See [soft mode](#softMode).
+ - **[soft=false]** soft update. See [soft mode](#softMode).  
 
 Examples:
 
@@ -364,9 +367,9 @@ Examples:
 			return {price: item.price + 1}
 		}
 	});
-	
-	
 ```
+
+ ---
 
 <a name="patch"></a>
 ####patch
