@@ -352,7 +352,6 @@
 		 * @param {Array|Object} rows
 		 */
 		add: function (rows, soft) {
-			//TODO: сompute only added fields
 			rows = $.isArray(rows) ? rows : [rows];
 			rowsToAdd = [];
 			for (var key = 0; key < rows.length; key++) {
@@ -593,6 +592,11 @@
 					if (!this.test(item[key], expr[key])) return false;
 				}
 				return true;
+			}
+
+			// function condition
+			if (typeof expr == 'function') {
+				return expr(item);
 			}
 
 			return false;
