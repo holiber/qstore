@@ -61,6 +61,7 @@ See more [examples](http://holiber.github.io/activedata/examples/)
   - [getChanges](#getChanges)
   - [commit](#commit)
   - [revert](#revert)
+  - [softMode](#softMode)
 - [Utilites](#utilites)
   - [size](#size)
   - [pack](#pack)
@@ -95,7 +96,7 @@ var fruits = new ActiveData({
 	]
 });
 ```
-
+ ---
 
 <a name="dataSearch"></a>
 ###Data search
@@ -287,26 +288,88 @@ Examples:
 ---
 
 <a name="addOperator"></a>
-####ActiveData.addOperator
-**ActiveData.addOperator (operatorName, function)**
+####ActiveData.addOperator (operatorName, function)
 
----
+Example:
+
+```js
+	/* we need find fruits with integer price */
+	
+	// add "isInt" operator
+	ActiveData.addOperator('isInt', function (left, right) {
+		var isInt = (left % 1 == 0);
+		return right ? isInt : !isInt
+	});
+	
+	// find them
+	fruits.find({price: {$isInt: true}});
+	
+	// find other
+	fruits.find({price: {$isInt: false}});
+	
+```
+
+
+ ---
 
 <a name="removeOperator"></a>
-####ActiveData.removeOperator
-**ActiveData.removeOperator (operatorName)**
----
+####ActiveData.removeOperator (operatorName)
+remove operator
+ ---
 
 <a name="dataManipulation"></a>
 ###Data manipulation
-in development
-	<a name="add"></a>
-####add
-in development
+
+<a name="add"></a>
+####.add (rows [,soft=false])
+
+add new items to collection
+
+ - **row {Object|Array}**
+ - **soft** soft add. See [soft mode](#softMode).
+ 
+ Examples:
+ 
+ ```js
+ 	//add one new fruit
+ 	fruits.add({type: 'carrot', color: 'red', weight: 0.3, price: 0.3});
+ 	
+ 	//add few new fruits
+ 	fruits.add([
+ 		{type: 'carrot', color: 'red', weight: 0.3, price: 0.3},
+ 		{type: 'orange', color: 'orange', weight: 0.4, price: 0.5}
+ 	]);
+ ```
+
+ ---
+
 
 <a name="update"></a>
-####update
-in development
+####.update ([searchQuery,] updateQuery [,soft=false])
+update items in collection
+
+ - **[searchQuery] {Object|Function}** if option is set then will be updated only finded items
+ - **updateQuery {Object|Function}** patch or function returned patch
+ - **[soft=false]** soft update. See [soft mode](#softMode).  
+
+Examples:
+
+```js
+	//all fruits will be apples
+	fruits.update({type: 'apple'});
+	
+	//make all green fruits red
+	fruits.update({color: 'green'}, {color: 'red'});
+	
+	//The price of all pears will increase by 1 $
+	fruits.update(function (item) {
+		if (item.type == 'pear') {
+			return {price: item.price + 1}
+		}
+	});
+```
+
+ ---
 
 <a name="patch"></a>
 ####patch
@@ -348,6 +411,10 @@ in development
 ####revert
 in development
 
+<a name="softMode"></a>
+####softMode
+in development
+
 
 <a name="utilites"></a>
 ###Utilites
@@ -377,18 +444,21 @@ in development
 
 ##Roadmap to 0.2.0
  - static **ActiveData.test** method
- - static **ActiveData.findIn** methid
+ - static **ActiveData.findIn** method
  - support regular expressions in queries
  - functions with context in query
- 
   
 ##Roadmap to 0.3.0
  - query options
  - **limit** option
- - **$test** operator
+ - **continue** option
+ - **each** method
+ - **$is** operator
+
+##Roadmap to 0.4.0
  - exclude jquery
  - compatibility with nodejs
 
-##Roadmap to 0.4.0
+##Roadmap to 0.5.0
  - left join and right join
  - collections merge
