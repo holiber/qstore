@@ -61,6 +61,7 @@ See more [examples](http://holiber.github.io/activedata/examples/)
   - [getChanges](#getChanges)
   - [commit](#commit)
   - [revert](#revert)
+  - [softMode](#softMode)
 - [Utilites](#utilites)
   - [size](#size)
   - [pack](#pack)
@@ -318,10 +319,25 @@ remove operator
 
 <a name="dataManipulation"></a>
 ###Data manipulation
-in development
-	<a name="add"></a>
-####add
-in development
+
+<a name="add"></a>
+####.add (rows [,soft=false])
+
+ -**row {Object|Array}**
+ -**soft** soft add. See [soft mode](#sodtMode)
+ 
+ Examples:
+ 
+ ```js
+ 	//add one new fruit
+ 	fruits.add({type: 'carrot', color: 'red', weight: 0.3, price: 0.3});
+ 	
+ 	//add few new fruits
+ 	fruits.add([
+ 		{type: 'carrot', color: 'red', weight: 0.3, price: 0.3},
+ 		{type: 'orange', color: 'orange', weight: 0.4, price: 0.5}
+ 	]);
+ ```
 
 <a name="update"></a>
 ####update
@@ -367,6 +383,10 @@ in development
 ####revert
 in development
 
+<a name="softMode"></a>
+####softMode
+in development
+
 
 <a name="utilites"></a>
 ###Utilites
@@ -399,12 +419,13 @@ in development
  - static **ActiveData.findIn** method
  - support regular expressions in queries
  - functions with context in query
- 
   
 ##Roadmap to 0.3.0
  - query options
  - **limit** option
- - **$test** operator
+ - **continue** option
+ - **each** method
+ - **$is** operator
 
 ##Roadmap to 0.4.0
  - exclude jquery
