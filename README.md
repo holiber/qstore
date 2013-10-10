@@ -529,14 +529,19 @@ in development
 ##Roadmap to 0.3.0
  - query options
  - **limit** option
- - **continue** option
- - **each** method
- - **$is** operator
+ - deep search
+ - **removeFields** method
+ - fields with default values
 
 ##Roadmap to 0.4.0
+ - **continue** option
+ - **each** method
+ - work with changes
+
+##Roadmap to 0.5.0
  - exclude jquery
  - compatibility with nodejs
 
-##Roadmap to 0.5.0
+##Roadmap to 0.6.0
  - left join and right join
  - collections merge
