@@ -356,12 +356,12 @@
 			rowsToAdd = [];
 			for (var key = 0; key < rows.length; key++) {
 				var row = rows[key];
-				for (var fieldName in row) {
-					if (!~$.inArray(fieldName, this.columns)) {
-						// just remove field( instead of throwing exception )
-						delete row[key];
-					}
+
+				//set defaults
+				for (var fieldName in this.defaults) {
+					if (row[fieldName] === undefined) row[fieldName] = this.defaults[fieldName];
 				}
+
 				row.idx = ++this.lastIdx;
 				var change = {action: 'add', values: row};
 				if (!soft) this.changes[row.idx] = change;
@@ -447,22 +447,38 @@
 
 		/**
 		 * add new field
-		 * @param {Array|Object} fields array of strings or objects like {name: 'fieldName', defaultValue: 0, compute: function(row) { return row.a + row.b}}
+		 * @param {Array|Object} fields array of strings or objects like {name: 'fieldName', default: 0, compute: function(row) { return row.a + row.b}}
 		 */
 		addFields: function (fields) {
 			if (!(fields instanceof Array)) fields = [fields];
 			var length = fields.length;
+			var newDefaults = [];
 			if (!length) return false;
 			for (var i = 0; i < length; i++) {
 				var field = $.extend({name: false, compute: false}, typeof(fields[i]) == 'string' ? {name: fields[i]} : fields[i]);
 				if (!field.name) continue;
+				var isNewColumn = false;
 				var columnExist = ~$.inArray(field.name, this.columns);
-				if (!columnExist) this.columns.push(field.name);
+				if (!columnExist) {
+					var isNewColumn = true;
+					this.columns.push(field.name);
+				}
 				if (field.compute) this.computed[field.name] = field.compute;
-				if (field.defaultValue != undefined) this.defaults[field.name] = field.defaultValue;
+				if (field.default != undefined) {
+					this.defaults[field.name] = field.default;
+					if (isNewColumn) newDefaults.push(field.name);
+				}
+			}
+			//set default values for new fields
+			if (newDefaults.length) for (var i = 0; i < this.rows.length; i++) {
+				var row = this.rows[i];
+				for (var j = 0; j < newDefaults.length; j++) {
+					var fieldName = newDefaults[j];
+					if (row[fieldName] === undefined) row[fieldName] = this.defaults[fieldName];
+				}
 			}
 			this.compute();
-			this.fire('fieldsChange', {action: 'add', fields: fields});
+			this.fire('change', {action: 'addFields', fields: fields});
 			return true;
 		},
 
@@ -478,7 +494,6 @@
 						continue;
 					}
 					if (this.rows[i][fieldName] === undefined) this.rows[i][fieldName] = '';
-					if (this.defaults[fieldName] != undefined && this.rows[i][fieldName] == '') this.rows[i][fieldName] = this.defaults[fieldName];
 				}
 			}
 		},
@@ -497,22 +512,25 @@
 			return copyData;
 		},
 
-		/**
-		 * @return {Number}
-		 */
-		changesCnt: function () {
-			return app.utils.length(this.changes);
-		},
+		removeFields: function (fields) {
+			if (!fields) return;
+			if (!(fields instanceof Array)) fields = [fields];
 
-		removeField: function (fieldName) {
-			var fieldPos = $.inArray(fieldName, this.columns);
-			if (~fieldPos) {
-				this.columns.splice(fieldPos, 1);
-				for (var key = 0; key < this.rows.length; key++) {
-					delete this.rows[key][fieldName];
+			for (var i = 0; i < fields.length; i++) {
+				var fieldName = fields[i];
+				var fieldPos = this.columns.indexOf(fieldName);
+				if (~fieldPos) this.columns.splice(fieldPos, 1);
+				delete this.computed[fieldName];
+				delete this.defaults[fieldName];
+			}
+
+			for (var i = 0; i < this.rows.length; i++) {
+				for (var j = 0; j < fields.length; j++) {
+					var fieldName = fields[j];
+					delete this.rows[i][fieldName];
 				}
 			}
-			this.fire('fieldsChange', {action: 'removeField', fields: [fieldName]});
+			this.fire('change', {action: 'removeFields', fields: fields});
 		}
 	}, {
 		operators: {},
