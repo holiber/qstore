@@ -34,6 +34,13 @@ fruits.find({type: ['apple', 'pear']});
 ```
 
  ---
+ 
+ What fruits can be red?
+ ```js
+	fruits.getList({color: 'red'}, 'type');// ['apple', 'pear', 'strawberries']
+ ```
+ ---
+ 
 See more [examples](http://holiber.github.io/activedata/examples/)
 
 ##API
@@ -176,6 +183,12 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   	
   ```
 
+#####Deep search:
+```js
+	// find all messages with topic 'New year' from user with name 'Bob' who works in 'IBM' company
+	messages.find({topic: 'New year', user: {name: 'Bob', company: {name: 'IBM'} }});
+```
+
 #####Queries concatenation:
 ```js
 	var filter1 = {type: 'apple'};
@@ -253,7 +266,7 @@ Examples:
 	// list of all pears colors
 	fruits.getList({type: 'pear'}, 'color');// ['green', 'red']
 	
-	// Which fruits can be red?
+	// What fruits can be red?
 	fruits.getList({color: 'red'}, 'type');// ['apple', 'pear', 'strawberries']
 	
 	// get fruits types with idx in [3, 5, 6]
@@ -326,9 +339,10 @@ remove operator
 add new items to collection
 
  - **row {Object|Array}**
- - **soft** soft add. See [soft mode](#softMode).
- 
- Examples:
+ - **soft** soft add. See [soft mode](#softMode).  
+
+
+Examples:
  
  ```js
  	//add one new fruit
@@ -372,23 +386,75 @@ Examples:
  ---
 
 <a name="patch"></a>
-####patch
-in development
+####.patch (values [,key='idx'] [,soft=false])
+Update current collection by using update-collection.
+
+ - **values** array of patches
+ - **[key='idx']** key field
+ - **[soft=false]** soft patch. See [soft mode](#softMode). 
+
+
+```js
+	var patch = [
+		{id: 21, connected: true},
+		{id: 22, connected: false},
+		{id: 33, name: 'unknown'}
+	];
+	
+	users.patch(patch, 'id');
+```
+ ---
 
 <a name="remove"></a>
-####remove
-in development
+####.remove (expr [,soft=false])
 
+Delete items from collection and returns count of deleted items.
+
+```js
+	// delete messages that do not have author
+	messages.remove({author: undefined});
+```
+
+ ---
+ 
 <a name="addFields"></a>
-####addFields
-in development
+####.addFields (fields)
+Add new fields in collection.
 
+ - fields {Array|Object} array of new fields settings
+
+Fields with default values:
+
+```js
+	messages.addFields([
+		{name: 'author', default: 'unknown'},
+		{name: 'rating', default: 0}
+	]);
+	
+	messages.add({text: 'hello world'});
+	messages.findOne({text: 'hello world'}); // {text: 'hello world', author: 'unknown', rating: 0}
+```
+
+Computed fields: 
+
+```js
+	fruits.addFields({name: 'pricePerKg', compute: function (fruit) {
+		return fruit.price / fruit.weight;
+	});
+```
+
+ ---
+ 
 <a name="compute"></a>
-####compute
-in development
+#### .compute ()
+Forced recalculates computed fields.  
+Computed fields automatically recalculeted whan collection was changed.
+Use this method if you need recalculate computed fields manualy.
 
+ ---
+ 
 <a name="removeFields"></a>
-####removeFields
+####.removeFields
 in development
 
 <a name="sort"></a>
