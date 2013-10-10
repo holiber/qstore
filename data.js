@@ -589,6 +589,7 @@
 						continue;
 					}
 
+					if (typeof item != 'object') return false;
 					if (!this.test(item[key], expr[key])) return false;
 				}
 				return true;
