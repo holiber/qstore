@@ -182,7 +182,8 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   	fruits.find ({color: 'yelow'}, true, {limit: [3,2]});
   	
   ```
-#####Deep search
+
+#####Deep search:
 ```js
 	// find all messages with topic 'New year' from user with name 'Bob' who works in 'IBM' company
 	messages.find({topic: 'New year', user: {name: 'Bob', company: {name: 'IBM'} }});
