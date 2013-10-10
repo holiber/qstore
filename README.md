@@ -339,9 +339,10 @@ remove operator
 add new items to collection
 
  - **row {Object|Array}**
- - **soft** soft add. See [soft mode](#softMode).
- 
- Examples:
+ - **soft** soft add. See [soft mode](#softMode).  
+
+
+Examples:
  
  ```js
  	//add one new fruit
@@ -385,13 +386,37 @@ Examples:
  ---
 
 <a name="patch"></a>
-####patch
-in development
+####.patch (values [,key='idx'] [,soft=false])
+Update current collection by using update-collection.
+
+ - **values** array of patches
+ - **[key='idx']** key field
+ - **[soft=false]** soft patch. See [soft mode](#softMode). 
+
+
+```js
+	var patch = [
+		{id: 21, connected: true},
+		{id: 22, connected: false},
+		{id: 33, name: 'unknown'}
+	];
+	
+	users.patch(patch, 'id');
+```
+ ---
 
 <a name="remove"></a>
-####remove
-in development
+####remove (expr [,soft=false])
 
+Delete items from collection and returns count of deleted items.
+
+```js
+	// delete messages that do not have author
+	messages.remove({author: undefined});
+```
+
+ ---
+ 
 <a name="addFields"></a>
 ####addFields
 in development
