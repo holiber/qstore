@@ -454,8 +454,19 @@ Use this method if you need recalculate computed fields manualy.
  ---
  
 <a name="removeFields"></a>
-####.removeFields
-in development
+####.removeFields (fields)
+remove fields from collection
+ - **fields {String|Array}** field name or array of field names to delete
+
+```js
+	// delete one field
+	fruits.removeFields('weight');
+	
+	// delete few fields
+	fruits.removeFields(['price', 'color']);
+```
+
+ ---
 
 <a name="sort"></a>
 ####sort
@@ -465,6 +476,7 @@ in development
 ###Work with changes
 in development
 
+<!--
 <a name="getChanges"></a>
 ####getChanges
 in development
@@ -480,7 +492,7 @@ in development
 <a name="softMode"></a>
 ####softMode
 in development
-
+-->
 
 <a name="utilites"></a>
 ###Utilites
