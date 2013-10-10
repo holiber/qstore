@@ -406,7 +406,7 @@ Update current collection by using update-collection.
  ---
 
 <a name="remove"></a>
-####remove (expr [,soft=false])
+####.remove (expr [,soft=false])
 
 Delete items from collection and returns count of deleted items.
 
@@ -418,15 +418,43 @@ Delete items from collection and returns count of deleted items.
  ---
  
 <a name="addFields"></a>
-####addFields
-in development
+####.addFields (fields)
+Add new fields in collection.
 
+ - fields {Array|Object} array of new fields settings
+
+Fields with default values:
+
+```js
+	messages.addFields([
+		{name: 'author', default: 'unknown'},
+		{name: 'rating', default: 0}
+	]);
+	
+	messages.add({text: 'hello world'});
+	messages.findOne({text: 'hello world'}); // {text: 'hello world', author: 'unknown', rating: 0}
+```
+
+Computed fields: 
+
+```js
+	fruits.addFields({name: 'pricePerKg', compute: function (fruit) {
+		return fruit.price / fruit.weight;
+	});
+```
+
+ ---
+ 
 <a name="compute"></a>
-####compute
-in development
+#### .compute ()
+Forced recalculates computed fields.  
+Computed fields automatically recalculeted whan collection was changed.
+Use this method if you need recalculate computed fields manualy.
 
+ ---
+ 
 <a name="removeFields"></a>
-####removeFields
+####.removeFields
 in development
 
 <a name="sort"></a>
