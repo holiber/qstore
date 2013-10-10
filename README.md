@@ -34,6 +34,13 @@ fruits.find({type: ['apple', 'pear']});
 ```
 
  ---
+ 
+ What fruits can be red?
+ ```js
+	fruits.getList({color: 'red'}, 'type');// ['apple', 'pear', 'strawberries']
+ ```
+ ---
+ 
 See more [examples](http://holiber.github.io/activedata/examples/)
 
 ##API
@@ -175,6 +182,11 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   	fruits.find ({color: 'yelow'}, true, {limit: [3,2]});
   	
   ```
+#####Deep search
+```js
+	// find all messages with topic 'New year' from user with name 'Bob' who works in 'IBM' company
+	messages.find({topic: 'New year', user: {name: 'Bob', company: {name: 'IBM'} }});
+```
 
 #####Queries concatenation:
 ```js
@@ -253,7 +265,7 @@ Examples:
 	// list of all pears colors
 	fruits.getList({type: 'pear'}, 'color');// ['green', 'red']
 	
-	// Which fruits can be red?
+	// What fruits can be red?
 	fruits.getList({color: 'red'}, 'type');// ['apple', 'pear', 'strawberries']
 	
 	// get fruits types with idx in [3, 5, 6]
