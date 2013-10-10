@@ -447,9 +447,10 @@
 
 		/**
 		 * add new field
-		 * @param {Array} fields array of strings or objects like {name: 'fieldName', defaultValue: 0, compute: function(row) { return row.a + row.b}}
+		 * @param {Array|Object} fields array of strings or objects like {name: 'fieldName', defaultValue: 0, compute: function(row) { return row.a + row.b}}
 		 */
 		addFields: function (fields) {
+			if (!(fields instanceof Array)) fields = [fields];
 			var length = fields.length;
 			if (!length) return false;
 			for (var i = 0; i < length; i++) {
