@@ -492,6 +492,7 @@ Examples:
 	});
 	
 ```
+ ---
 
 <a name="changes"></a>
 ###Work with changes
@@ -522,6 +523,8 @@ in development
 ####.size ()
 returns rows count
 
+ ---
+ 
 <a name="pack"></a>
 ####.pack ([query] [,fields])
 returs reduced collection
@@ -549,16 +552,35 @@ returs reduced collection
 Use this method if you whant to send collection or part of collection by network,
 because it will reduce the outgoing traffic.
 
+ ---
+ 
 <a name="getCopy"></a>
 ####.getCopy ()
 Returns a new independent collection, which will be copy of current collection.
 
-
+ ---
 
 <a name="events"></a>
 ###Events
-in development
 
+<a name="eventsList"></a>
+#### Events list
+ - change
+ - commit
+ - sort
+
+#### .addListener (fn)
+ - fn {Function} listener function
+
+Example: 
+```js
+var listener = function (name, data, collection) {
+	if (name != 'change') return;
+	if (data.action != 'update') return;
+	var changes = data.changes;
+	
+}
+```
 
 ##Roadmap to 0.2.0
  - static **ActiveData.test** method
