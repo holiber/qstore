@@ -569,18 +569,33 @@ Returns a new independent collection, which will be copy of current collection.
  - commit
  - sort
 
+ ---
+
 #### .addListener (fn)
  - fn {Function} listener function
 
 Example: 
 ```js
+// Add message to log if some apple has changed color
 var listener = function (name, data, collection) {
-	if (name != 'change') return;
-	if (data.action != 'update') return;
+	if (name != 'change' || data.action != 'update') return;
 	var changes = data.changes;
-	
-}
+	var applePainting = changes.find({source: {type: 'apple'}, patch: {color: {$ne: undefined} }});
+	for (var i = 0; i < applePainting.length; i++) {
+		var change = applePainting[i];
+		console.log('Some apple change color from ' + change.source.color + ' to ' + change.patch.color);
+	}
+};
+
+fruits.setListener(listener);
+
+fruits.update({color: 'blue'}); // it will write to log:
+// Some apple change color from red to blue
+// Some apple change color from yellow to blue
+// Some apple change color from green to blue
+
 ```
+ ---
 
 ##Roadmap to 0.2.0
  - static **ActiveData.test** method
