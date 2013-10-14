@@ -580,7 +580,7 @@ Example:
 var listener = function (name, data, collection) {
 	if (name != 'change' || data.action != 'update') return;
 	var changes = data.changes;
-	var applePainting = changes.find({source: {type: 'apple'}, patch: {color: {$ne: undefined} }});
+	var applePainting = changes.find({'source.type': 'apple', 'patch.color': {$ne: undefined} });
 	for (var i = 0; i < applePainting.length; i++) {
 		var change = applePainting[i];
 		console.log('Some apple change color from ' + change.source.color + ' to ' + change.patch.color);
