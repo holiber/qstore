@@ -583,5 +583,6 @@ in development
  - compatibility with nodejs
 
 ##Roadmap to 0.6.0
+ - **groupBy** method
  - left join and right join
  - collections merge
