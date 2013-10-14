@@ -75,7 +75,8 @@ See more [examples](http://holiber.github.io/activedata/examples/)
   - [unpack](#unpack)
   - [getCopy](#getCopy)
 - [Events](#events)
-
+  - [Events list](#eventsList)
+  - [setListener](#setListener)
 <a name="initialisation"></a>
 ###Initialisation
 
@@ -568,6 +569,8 @@ Returns a new independent collection, which will be copy of current collection.
  - change
  - commit
  - sort
+
+Use [addListener](#addListener) method to react on changes
 
  ---
 
