@@ -266,8 +266,8 @@ Same as [.find](#find) but returns ActiveData collection
 <a name="findOne"></a>
 ####.findOne (query, [,fields=true] [,options])
 
-find first row valid for query
-it same as:
+find first row valid for query.
+It same as:
 
 ```js
 	.find(query, fields, {limit: 1})[0]
