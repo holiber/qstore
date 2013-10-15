@@ -47,6 +47,7 @@ See more [examples](http://holiber.github.io/activedata/examples/)
 - [Initialisation](#initialisation)
 - [Data search](#dataSearch)
   - [find](#find)
+  - [search](#search)
   - [findOne](#findOne)
   - [findIn](#findIn)
   - [test](#test)
@@ -202,7 +203,18 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
 	var commonFilter2 = {$and: [filter1, filter2]};
 	
 ```
----
+ ---
+
+<a name="search"></a>
+####.search (query, [fields], [options])
+Same as [.find](#find) but returns ActiveData collection
+
+```js
+	// get collection of red fruits sorted by type
+	fruits.search({color: 'red'}).sort({fieldName: 'type', order: 'asc');
+```
+
+ ---
 
 <a name="findOne"></a>
 ####.findOne (query, [,fields=true] [,options])
