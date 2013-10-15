@@ -47,6 +47,7 @@ See more [examples](http://holiber.github.io/activedata/examples/)
 - [Initialisation](#initialisation)
 - [Data search](#dataSearch)
   - [find](#find)
+  - [search](#search)
   - [findOne](#findOne)
   - [findIn](#findIn)
   - [test](#test)
@@ -202,7 +203,18 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
 	var commonFilter2 = {$and: [filter1, filter2]};
 	
 ```
----
+ ---
+
+<a name="search"></a>
+####.search (query, [fields], [options])
+Same as [.find](#find) but returns ActiveData collection
+
+```js
+	// get collection of red fruits sorted by type
+	fruits.search({color: 'red'}).sort({fieldName: 'type', order: 'asc');
+```
+
+ ---
 
 <a name="findOne"></a>
 ####.findOne (query, [,fields=true] [,options])
@@ -497,12 +509,24 @@ Examples:
 
 <a name="changes"></a>
 ###Work with changes
-in development
 
-<!--
 <a name="getChanges"></a>
-####getChanges
-in development
+####getChanges ()
+returns collection of changes
+
+Examples:
+```js
+	fruits.remove({type: 'apple'});
+	var changes = fruits.getChanges();
+	changes.search({action: 'remove'}).getList('source.idx');// [1, 4, 9]
+```
+
+```js
+	var pearsChanges = changes.search({action: 'update'});
+	fruits.update({type: 'pear'}, {color: 'blue', price: 0.5});
+	
+```
+ ---
 
 <a name="commit"></a>
 ####commit
@@ -600,29 +624,4 @@ fruits.update({color: 'blue'}); // it will write to log:
 ```
  ---
 
-##Roadmap to 0.2.0
- - static **ActiveData.test** method
- - static **ActiveData.findIn** method
- - support regular expressions in queries
- - functions with context in query
-  
-##Roadmap to 0.3.0
- - query options
- - **limit** option
- - deep search
- - **removeFields** method
- - fields with default values
 
-##Roadmap to 0.4.0
- - **continue** option
- - **each** method
- - work with changes
-
-##Roadmap to 0.5.0
- - exclude jquery
- - compatibility with nodejs
-
-##Roadmap to 0.6.0
- - **groupBy** method
- - left join and right join
- - collections merge
