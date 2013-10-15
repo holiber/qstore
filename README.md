@@ -47,6 +47,9 @@ See more [examples](http://holiber.github.io/activedata/examples/)
 - [Initialisation](#initialisation)
 - [Data search](#dataSearch)
   - [find](#find)
+    - [deepSearch](#deepSearch)
+    - [aliases](#aliases)
+    - [comparison of fields](#comparisonOfFields)
   - [search](#search)
   - [findOne](#findOne)
   - [findIn](#findIn)
@@ -186,7 +189,7 @@ Also you can use fields [aliases](#aliases)
   	fruits.find ({color: 'yelow'}, true, {limit: [3,2]});
   	
   ```
-
+<a href="deepSearch">
 #####Deep search:
 ```js
 	// find all messages with subject 'New year' from user with name 'Bob' who works in 'IBM' company
@@ -197,7 +200,7 @@ Also you can use fields [aliases](#aliases)
 ```
 
 <a href="aliases">
-#####Aliases
+#####Aliases:
 
 You can use aliases fields using the syntax "fieldName:aliasName"
 
@@ -216,6 +219,23 @@ You can use aliases fields using the syntax "fieldName:aliasName"
 	// [ {text: 'Happy new year!', userName: 'Kate'}, {text: 'Anyone want to dance?', userName: 'James'}]
 ```
 
+<a href="comparisonOfFields">
+#####Comparison of fields.
+
+Use '$.fieldName' syntax to get the value of field
+```js
+	var diet = new ActiveData ({
+		columns: ['month', 'breakfast', 'dinner'],
+		rows: [
+			['april', {calories: 400, food: 'egg'}, {calories: 300, food: 'soup'}],
+			['may', {calories: 300, food: 'bacon'}, {calories: 500, food: 'soup'}],
+			['june', {calories: 350, food: 'porridge'}, {calories: 300, food: 'chicken'}]
+		]
+	});
+	
+	// find diet where dinner calories less when breackfast calories
+	diet.find({'dinner.calories': {$lt: '$.breakfast.calories'} });
+```
 
 #####Queries concatenation:
 ```js
@@ -314,6 +334,8 @@ Examples:
 	//get list of idx
 	fruits.getList();
 	
+	// list of deep fields
+	messages.getList('user.name'); // ['Bob', 'Kate', 'Stan', 'James']
 ```
 ---
 
