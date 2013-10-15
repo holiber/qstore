@@ -11,16 +11,21 @@
  - **removeFields** method
  - fields with default values
 
-##Roadmap to 0.4.0
+#Roadmap to 0.4.0
+ - **search** method
+ - fields aliases
+ - short subfields access as 'user.company.name'
+
+##Roadmap to 0.5.0
  - **continue** option
  - **each** method
  - work with changes
 
-##Roadmap to 0.5.0
+##Roadmap to 0.6.0
  - exclude jquery
  - compatibility with nodejs
 
-##Roadmap to 0.6.0
+##Roadmap to 0.7.0
  - **groupBy** method
  - left join and right join
  - collections merge
