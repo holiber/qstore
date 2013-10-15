@@ -1,3 +1,6 @@
+##Roadmap to 0.1.0
+ - the first prototype
+
 ##Roadmap to 0.2.0
  - static **ActiveData.test** method
  - static **ActiveData.findIn** method
