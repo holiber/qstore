@@ -497,12 +497,24 @@ Examples:
 
 <a name="changes"></a>
 ###Work with changes
-in development
 
-<!--
 <a name="getChanges"></a>
-####getChanges
-in development
+####getChanges ()
+returns collection of changes
+
+Examples:
+```js
+	fruits.remove({type: 'apple'});
+	var changes = fruits.getChanges();
+	changes.search({action: 'remove'}).getList('source.idx');// [1, 4, 9]
+```
+
+```js
+	var pearsChanges = changes.search({action: 'update'});
+	fruits.update({type: 'pear'}, {color: 'blue', price: 0.5});
+	
+```
+ ---
 
 <a name="commit"></a>
 ####commit
