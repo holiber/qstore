@@ -189,7 +189,8 @@ Also you can use fields [aliases](#aliases)
   	fruits.find ({color: 'yelow'}, true, {limit: [3,2]});
   	
   ```
-<a href="deepSearch"></a>
+
+<a name="deepSearch"></a>
 #####Deep search:
 ```js
 	// find all messages with subject 'New year' from user with name 'Bob' who works in 'IBM' company
@@ -199,7 +200,7 @@ Also you can use fields [aliases](#aliases)
 	messages.find({subject: 'new year', 'user.name': 'Bob', 'user.company.name': 'IBM'});
 ```
 
-<a href="aliases"></a>
+<a name="aliases"></a>
 #####Aliases:
 
 You can use aliases fields using the syntax "fieldName:aliasName"
@@ -219,7 +220,7 @@ You can use aliases fields using the syntax "fieldName:aliasName"
 	// [ {text: 'Happy new year!', userName: 'Kate'}, {text: 'Anyone want to dance?', userName: 'James'}]
 ```
 
-<a href="comparisonOfFields"></a>
+<a name="comparisonOfFields"></a>
 #####Comparison of fields.
 
 Use '$.fieldName' syntax to get the value of field
