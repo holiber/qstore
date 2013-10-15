@@ -75,7 +75,8 @@ See more [examples](http://holiber.github.io/activedata/examples/)
   - [unpack](#unpack)
   - [getCopy](#getCopy)
 - [Events](#events)
-
+  - [Events list](#eventsList)
+  - [setListener](#setListener)
 <a name="initialisation"></a>
 ###Initialisation
 
@@ -294,7 +295,6 @@ Examples:
  $lte  | less or equals then
  $and  | change condition of [ ] operator from **or** to **and**
  $like | "like" search
- $test | *in development (v0.3)*  
  
  you can also add your operators - see [addOperator](#addOperator) method
  
@@ -469,8 +469,31 @@ remove fields from collection
  ---
 
 <a name="sort"></a>
-####sort
-in development
+####sort (fields [,zeroIsLast=false])
+another variant:
+**sort (fn)**  where **fn** is sort function
+
+sort collection
+
+Examples:
+```js
+	fruits.sort();//sort by idx
+	
+	fruits.sort({fieldName: 'type', order: 'asc'});
+	
+	fruits.sort([
+		{fieldName: 'type', order: 'asc'},
+		{fieldName: 'price', order: 'desc'},
+	]);
+	
+	fruits.sort({fieldName: 'price', zeroIsLast: true});
+	
+	fruits.sort(function (fruit1, fruit2) {
+		return fruit1.price - fruit2.price;
+	});
+	
+```
+ ---
 
 <a name="changes"></a>
 ###Work with changes
@@ -496,29 +519,86 @@ in development
 
 <a name="utilites"></a>
 ###Utilites
-in development
 
 <a name="size"></a>
-####size
-in development
+####.size ()
+returns rows count
 
+ ---
+ 
 <a name="pack"></a>
-####pack
-in development
+####.pack ([query] [,fields])
+returs reduced collection
 
-<a name="unpack"></a>
-####unpack
-in development
+```js
+	var fruits = new ActiveData([
+		{type: 'apple', color: 'red', weight: 0.25, price: 1.5},
+		{type: 'pear', color: 'green', weight: 0.4, price: 2},
+		{type: 'pear', color: 'red', weight: 0.3, price: 1.8},
+		{type: 'apple', color: 'yellow', weight: 0.26, price: 1.2}
+	]);
+	
+	var apples =  fruits.pack({type: 'apple'}, ['idx', 'weight', 'price']);
+	
+	//now apples contains:
+	{
+		columns: ['idx', 'weight', 'price'],
+		rows: [
+			[1, 0.25, 1.5],
+			[4, 0.26, 1.2]
+		]
+	}
+	
+```
+Use this method if you whant to send collection or part of collection by network,
+because it will reduce the outgoing traffic.
 
+ ---
+ 
 <a name="getCopy"></a>
-####getCopy
-in development
+####.getCopy ()
+Returns a new independent collection, which will be copy of current collection.
 
+ ---
 
 <a name="events"></a>
 ###Events
-in development
 
+<a name="eventsList"></a>
+#### Events list
+ - change
+ - commit
+ - sort
+
+Use [addListener](#addListener) method to react on changes
+
+ ---
+
+#### .addListener (fn)
+ - fn {Function} listener function
+
+Example: 
+```js
+// Add message to log if some apple has changed color
+var listener = function (name, data, collection) {
+	if (name != 'change' || data.action != 'update') return;
+	var changes = data.changes;
+	var applePainting = changes.find({'source.type': 'apple', 'patch.color': {$ne: undefined} });
+	for (var i = 0; i < applePainting.length; i++) {
+		var change = applePainting[i];
+		console.log('Some apple change color from ' + change.source.color + ' to ' + change.patch.color);
+	}
+};
+
+fruits.setListener(listener);
+
+fruits.update({color: 'blue'}); // it will write to log:
+// Some apple change color from red to blue
+// Some apple change color from yellow to blue
+// Some apple change color from green to blue
+
+```
+ ---
 
 ##Roadmap to 0.2.0
  - static **ActiveData.test** method
@@ -543,5 +623,6 @@ in development
  - compatibility with nodejs
 
 ##Roadmap to 0.6.0
+ - **groupBy** method
  - left join and right join
  - collections merge
