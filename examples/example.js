@@ -16,6 +16,16 @@ $(function () {
 		]
 	}
 
+	window.messages = new ActiveData ({
+		columns: ['text', 'subject', 'user'],
+		rows: [
+			['Hello word!', 'programming', {id: 1, name: 'Bob'}],
+			['Happy new year!', 'new year', {id: 2, name: 'Kate'}],
+			['How to learn javascript?', 'programming', {id: 2, name: 'Stan'}],
+			['Enybody want to dance?', 'new year', {id: 2, name: 'James'}]
+		]
+	});
+
 	var selectors = {
 		all: true,
 		apples: {type: 'apple'},

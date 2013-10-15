@@ -161,6 +161,17 @@
 		},
 
 		/**
+		 * find rows
+		 * @param {Object|Function|Boolean} expr
+		 * @param {Array|Boolean} [fields=true]
+		 * @param {Object} [options]
+		 * @returns {ActiveData}
+		 */
+		search: function (expr, fields, options) {
+			return new ActiveData(this.find(expr, fields, options));
+		},
+
+		/**
 		 * find first row
 		 * @param {Object|Function|Boolean} expr
 		 * @param {Array|Boolean} [fields=true]
@@ -187,7 +198,7 @@
 			var list = [];
 			var rows = expr ? this.find(expr) : this.rows;
 			for (var i = 0; i < rows.length; i++) {
-				var value = rows[i][key];
+				var value = ActiveData.getVal(rows[i], key);
 				if (~$.inArray(value, list)) continue;
 				list.push(value);
 			}
@@ -304,7 +315,7 @@
 			var operationChanges = [];
 			for (var key = 0; key < this.rows.length; key++) {
 				var row = this.rows[key];
-				if (!expr || this.test(row, expr)) {
+				if (!expr || ActiveData.test(row, expr)) {
 					var rowValues = $.isFunction(values) ? values(row) : values;
 					if (!rowValues) continue;
 					cnt++;
@@ -542,6 +553,17 @@
 			this.fire('change', {action: 'removeFields', fields: fields});
 		},
 
+		getChanges: function () {
+			if (this.changes.length) return null;
+			var changes = [];
+			for (var idx in this.changes) {
+				var change = this.changes[idx];
+				change.idx = idx;
+				changes.push(change);
+			}
+			return new ActiveData(changes);
+		},
+
 		setListener: function (listener) {
 			this.listener = listener;
 		}
@@ -571,22 +593,12 @@
 
 			if (!options) options =  {item: item};
 
-			var fnGetVal = function (item, key) {
-				var way = key.split('.');
-				var curVal = item;
-				for (var i = 0; i < way.length; i++) {
-					if (typeof  curVal != 'object') return undefined;
-					curVal = curVal[way[i]];
-				}
-				return curVal;
-			}
-
 			//simple values
 			if (typeof(expr) != 'object' && typeof(expr) != 'function') {
 				if (typeof expr == 'string' && expr.charAt(0) == '$') {
 					if (expr.charAt(1) == '.') {
 						var way = expr.substr(2);
-						expr = fnGetVal(options.item, way);
+						expr = ActiveData.getVal(options.item, way);
 					}
 				}
 				flag = flag || '$eq';
@@ -609,7 +621,7 @@
 
 			if (flag == '$and') {
 				for (var key = 0; key < expr.length; key++) {
-					if (!this.test(item, expr[key]), null, options) return false;
+					if (!this.test(item, expr[key], null, options)) return false;
 				}
 				return true;
 			}
@@ -643,7 +655,7 @@
 
 					if (typeof item != 'object') return false;
 
-					if (!this.test(fnGetVal(item, key), expr[key], null, options)) return false;
+					if (!this.test(ActiveData.getVal(item, key), expr[key], null, options)) return false;
 				}
 				return true;
 			}
@@ -685,7 +697,10 @@
 				if (fields && $.isArray(fields)) {
 					var filteredRow = {};
 					for (var i = fields.length; i--;) {
-						filteredRow[fields[i]] = row[fields[i]];
+						var fieldDef = fields[i].split(':');
+						var alias = fieldDef[1] ? fieldDef[1] : fieldDef[0];
+						var value = ActiveData.getVal(row, fieldDef[0]);
+						filteredRow[alias] = value;
 					}
 					result.push(filteredRow);
 					continue;
@@ -693,6 +708,16 @@
 				result.push(row);
 			}
 			return result;
+		},
+
+		getVal: function (item, key) {
+			var way = key.split('.');
+			var curVal = item;
+			for (var i = 0; i < way.length; i++) {
+				if (typeof  curVal != 'object') return undefined;
+				curVal = curVal[way[i]];
+			}
+			return curVal;
 		}
 	});
 	
