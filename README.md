@@ -564,30 +564,38 @@ returns collection of changes
 
 Examples:
 ```js
+	// we need get the list of idx of removed items
 	fruits.remove({type: 'apple'});
 	var changes = fruits.getChanges();
 	changes.search({action: 'remove'}).getList('source.idx');// [1, 4, 9]
 ```
-
+<!--
 ```js
-	var pearsChanges = changes.search({action: 'update'});
+	// we need get updates for fruits
 	fruits.update({type: 'pear'}, {color: 'blue', price: 0.5});
+	var updates = fruits.getChanges().search({action: 'update'}, ['idx:id', ':values']);
 	
 ```
+-->
  ---
 
 <a name="commit"></a>
 ####commit
-in development
+Commit changes.
 
-<a name="revert"></a>
-####revert
-in development
+ ---
+ 
+<a name="rollback"></a>
+####rollback
+Revert all changes.
 
+ ---
+ 
+ 
 <a name="softMode"></a>
 ####softMode
 in development
--->
+
 
 <a name="utilites"></a>
 ###Utilites
