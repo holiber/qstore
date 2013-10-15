@@ -15,6 +15,7 @@
  - **search** method
  - fields aliases
  - short subfields access as 'user.company.name'
+ - сomparison of fields with values of other fields
 
 ##Roadmap to 0.5.0
  - **continue** option
