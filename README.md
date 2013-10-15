@@ -78,6 +78,7 @@ See more [examples](http://holiber.github.io/activedata/examples/)
 - [Events](#events)
   - [Events list](#eventsList)
   - [setListener](#setListener)
+
 <a name="initialisation"></a>
 ###Initialisation
 
@@ -168,6 +169,7 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   	//select type, color, price from fruits where type = 'apple'
  	fruits.find({type: 'apple'}, ['type', 'color', 'price']);
   ```
+Also you can use fields [aliases](#aliases)
  
 - **[options] {Object}**  
   - limit: rowsCount
@@ -187,9 +189,33 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
 
 #####Deep search:
 ```js
-	// find all messages with topic 'New year' from user with name 'Bob' who works in 'IBM' company
-	messages.find({topic: 'New year', user: {name: 'Bob', company: {name: 'IBM'} }});
+	// find all messages with subject 'New year' from user with name 'Bob' who works in 'IBM' company
+	messages.find({subject: 'new year', user: {name: 'Bob', company: {name: 'IBM'} }});
+	
+	// or
+	messages.find({subject: 'new year', 'user.name': 'Bob', 'user.company.name': 'IBM'});
 ```
+
+<a href="aliases">
+#####Aliases
+
+You can use aliases fields using the syntax "fieldName:aliasName"
+
+```js
+	var messages = new ActiveData ({
+		columns: ['text', 'subject', 'user'],
+		rows: [
+			['Hello world!', 'programming', {id: 1, name: 'Bob'}],
+			['Happy new year!', 'new year', {id: 2, name: 'Kate'}],
+			['How to learn javascript?', 'programming', {id: 2, name: 'Stan'}],
+			['Anyone want to dance?', 'new year', {id: 2, name: 'James'}]
+		]
+	});
+	
+	messages.find({subject: 'new year'}, ['text', 'user.name:userName']);// it will return:
+	// [ {text: 'Happy new year!', userName: 'Kate'}, {text: 'Anyone want to dance?', userName: 'James'}]
+```
+
 
 #####Queries concatenation:
 ```js
