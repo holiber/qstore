@@ -52,6 +52,4 @@ $(function () {
 	var fruits = window.fruits = new ActiveData(data);
 	fruits.addFields([{name: 'image', compute: function (row) { return '<img src="images/' + row.type + '-' + row.color + '.jpeg">'}}])
 	render(fruits.rows);
-
-
 })

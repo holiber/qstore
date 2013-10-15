@@ -1,5 +1,5 @@
 /**
- * @license ActiveData 0.3.0 by Holiber
+ * @license ActiveData 0.3.1 by Holiber
  * work with collections
  *
  * Available via the MIT license.
@@ -41,7 +41,6 @@
 			if (typeof props[name] == "function"
 				&& typeof parentPropsObj[name] == "function"
 				&& fnTest.test(props[name])) {
-				// скопировать, завернув в обёртку
 				targetPropsObj[name] = wrap(props[name], parentPropsObj[name]);
 			} else {
 				targetPropsObj[name] = props[name];
@@ -201,7 +200,7 @@
 			@data
 		*/
 		fire: function (eventName, data) {
-			this.listener(eventName, data);
+			this.listener(eventName, data, this);
 		},
 
 		/**
@@ -217,6 +216,7 @@
 
 			if ($.isFunction(opt)) {
 				this.rows.sort(opt);
+				this.fire('sort', opt);
 				return;
 			}
 
@@ -286,6 +286,7 @@
 			} else {
 				this.rows.sort(fnAscSort);
 			}
+			this.fire('sort', opt);
 		},
 
 		/**
@@ -314,12 +315,13 @@
 					}
 					change.current = row;
 					if (!soft) {
-						operationChanges.push(change);
+						operationChanges.push($.extend({}, change, {patch: rowValues}));
 						this.changes[row.idx] = change;
 					}
 				}
 			}
 			this.compute();
+			operationChanges = new ActiveData(operationChanges);
 			if (!soft) this.fire('change', {action: 'update', changes: operationChanges});
 			return cnt;
 		},
@@ -353,7 +355,8 @@
 		 */
 		add: function (rows, soft) {
 			rows = $.isArray(rows) ? rows : [rows];
-			rowsToAdd = [];
+			var rowsToAdd = [];
+			var operationChanges = [];
 			for (var key = 0; key < rows.length; key++) {
 				var row = rows[key];
 
@@ -365,12 +368,13 @@
 				row.idx = ++this.lastIdx;
 				var change = {action: 'add', values: row};
 				if (!soft) this.changes[row.idx] = change;
+				operationChanges.push(change);
 				rowsToAdd.push(row);
 			}
 			this.rows = rowsToAdd.concat(this.rows);
 			this.compute();
 			this.sortFields = null;
-			this.fire('change', change);
+			this.fire('change', operationChanges);
 			return true;
 		},
 
@@ -389,7 +393,7 @@
 
 			for (i = 0; i < this.rows.length; i++) {
 				var row = this.rows[i];
-				if (this.test(row, expr)) {
+				if (ActiveData.test(row, expr)) {
 					cnt++;
 					if (!soft) {
 						if (this.changes[row.idx]) {
@@ -405,6 +409,7 @@
 					i--;
 				}
 			}
+			operationChanges = new ActiveData(operationChanges);
 			if (!soft) this.fire('change', {action: 'remove', changes: operationChanges});
 			return cnt;
 		},
@@ -413,8 +418,6 @@
 		 * rollback changes
 		 */
 		rollback: function () {
-			//TODO: rollback removed rows
-
 			for (var i = this.rows.length; i--;) {
 				var row = this.rows[i];
 				var change = this.changes[row.idx];
@@ -427,6 +430,12 @@
 						this.rows.splice(i, 1);
 					break;
 				}
+			}
+
+			for (var idx in this.changes) {
+				var change = this.changes[idx];
+				if (change.action != 'remove') continue;
+				this.rows.push(change.source)
 			}
 
 			this.fire('change', {action: 'rollback', changes: $.extend({}, this.changes)});
@@ -531,7 +540,12 @@
 				}
 			}
 			this.fire('change', {action: 'removeFields', fields: fields});
+		},
+
+		setListener: function (listener) {
+			this.listener = listener;
 		}
+
 	}, {
 		operators: {},
 
@@ -553,9 +567,28 @@
 		 *  var apple = {type: 'apple', color: 'red'};
 		 *  var isRed = data.test(apple, {color: 'red'});
 		 */
-		test: function (item, expr, flag) {
+		test: function (item, expr, flag, options) {
 
+			if (!options) options =  {item: item};
+
+			var fnGetVal = function (item, key) {
+				var way = key.split('.');
+				var curVal = item;
+				for (var i = 0; i < way.length; i++) {
+					if (typeof  curVal != 'object') return undefined;
+					curVal = curVal[way[i]];
+				}
+				return curVal;
+			}
+
+			//simple values
 			if (typeof(expr) != 'object' && typeof(expr) != 'function') {
+				if (typeof expr == 'string' && expr.charAt(0) == '$') {
+					if (expr.charAt(1) == '.') {
+						var way = expr.substr(2);
+						expr = fnGetVal(options.item, way);
+					}
+				}
 				flag = flag || '$eq';
 				switch (flag) {
 					case '$eq': return item == expr;
@@ -576,7 +609,7 @@
 
 			if (flag == '$and') {
 				for (var key = 0; key < expr.length; key++) {
-					if (!this.test(item, expr[key])) return false;
+					if (!this.test(item, expr[key]), null, options) return false;
 				}
 				return true;
 			}
@@ -589,7 +622,7 @@
 			// "or" condtions
 			if (expr instanceof Array) {
 				for (var key = 0; key < expr.length; key++) {
-					if (this.test(item, expr[key])) return true;
+					if (this.test(item, expr[key]), null, options) return true;
 				}
 				return false;
 			}
@@ -599,17 +632,18 @@
 				for (var key in expr) {
 
 					if (key == '$and') {
-						if (!this.test(item, expr[key], key)) return false;
+						if (!this.test(item, expr[key], key, options)) return false;
 						continue;
 					}
 
 					if (typeof(key) == 'string' && key.charAt(0) == '$') {
-						if (!this.test(item, expr[key], key)) return false;
+						if (!this.test(item, expr[key], key, options)) return false;
 						continue;
 					}
 
 					if (typeof item != 'object') return false;
-					if (!this.test(item[key], expr[key])) return false;
+
+					if (!this.test(fnGetVal(item, key), expr[key], null, options)) return false;
 				}
 				return true;
 			}
