@@ -11,7 +11,7 @@
  - **removeFields** method
  - fields with default values
 
-#Roadmap to 0.4.0
+##Roadmap to 0.4.0
  - **search** method
  - fields aliases
  - short subfields access as 'user.company.name'
