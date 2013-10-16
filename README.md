@@ -9,25 +9,14 @@ Work with collections in javascript
 - Extend your query language.
 
 ###Simple examples
-  We need find all green apples from fruits collection. In SQL it will be:
-  
-```sql
-select * from fruits where type = 'apple' and color = 'green'
-```
-
-It's same as Qstore query:
+  We need find all green apples from fruits collection:
 
 ```js
 fruits.find({type: 'apple', color: 'green'});
 ```
 
  ---
-  We need find all apples and pears from fruits collection. In SQL it will be:
-  
-```sql
-  select * from fruits where type in ('apple', 'pear')
-```
-It's same as Qstore query:
+  We need find all apples and pears from fruits collection:
 
 ```js
 fruits.find({type: ['apple', 'pear']});
@@ -119,8 +108,8 @@ var fruits = new Qstore({
 <a name="find"></a>
 ####.find (query, [fields], [options])
 
-Returns all objects from collection which compliance query  
-See [examples of usage](http://holiber.github.io/Qstore/examples/)
+Returns all objects which valid for query. 
+See [examples of usage](http://holiber.github.io/qstore/examples/)
  
 
 - **query {Object|Array|Function|Bolean}**  
@@ -166,12 +155,10 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   fruits.find([price: 0.5, function (row) { return row.price % 1 == 0});
   ```
 - **[fields=true] {Array|Boolean}**  
- Array of fields names which will be added to result.  
+ Array of field names which will be added to result.  
  Example:
  
   ```js
-  	//same as SQL query:
-  	//select type, color, price from fruits where type = 'apple'
  	fruits.find({type: 'apple'}, ['type', 'color', 'price']);
   ```
   
@@ -198,10 +185,11 @@ Also you can use fields [aliases](#aliases)
 
 ```js
 	// find all messages with subject 'New year' from user with name 'Bob' who works in 'IBM' company
-	messages.find({subject: 'new year', user: {name: 'Bob', company: {name: 'IBM'} }});
 	
-	// or
 	messages.find({subject: 'new year', 'user.name': 'Bob', 'user.company.name': 'IBM'});
+
+	// or
+	messages.find({subject: 'new year', user: {name: 'Bob', company: {name: 'IBM'} }});
 ```
 
 <a name="aliases"></a>
@@ -210,6 +198,7 @@ Also you can use fields [aliases](#aliases)
 You can use aliases fields using the syntax *"fieldName:aliasName"*
 
 ```js
+	// create collection of messages
 	var messages = new Qstore ({
 		columns: ['text', 'subject', 'user'],
 		rows: [
@@ -227,6 +216,7 @@ You can use aliases fields using the syntax *"fieldName:aliasName"*
 Use *"fieldname:"* syntax for extract filed values on one level up.
 
 ```js
+	// create collection of changes
 	var usersChanges = new Qstore ({
 		columns: ['source', 'patch'],
 		rows: [
@@ -245,8 +235,9 @@ Use *"fieldname:"* syntax for extract filed values on one level up.
 <a name="comparisonOfFields"></a>
 #####Comparison of fields.
 
-Use '$.fieldName' syntax to get the value of field
+Use *'$.fieldName'* syntax to get the value of field
 ```js
+	// create collection of diet
 	var diet = new Qstore ({
 		columns: ['month', 'breakfast', 'dinner'],
 		rows: [
@@ -262,20 +253,21 @@ Use '$.fieldName' syntax to get the value of field
 
 #####Queries concatenation:
 ```js
+	// create two filters
 	var filter1 = {type: 'apple'};
 	var filter2 = {color: 'red'};
 	
-	//search rows valid for filter1 or filter2
+	// search rows valid for filter1 or filter2
 	var commonFilter1 = [filter1, filter2]
 	
-	//search rows valid for filter1 and filter2
+	// search rows valid for filter1 and filter2
 	var commonFilter2 = {$and: [filter1, filter2]};
 	
 ```
  ---
 
 <a name="search"></a>
-####.search (query, [fields], [options])
+####.search (query [,fields=true] [,options])
 Same as [.find](#find) but returns Qstore collection
 
 ```js
@@ -298,7 +290,7 @@ It same as:
 
 <a name="findIn"></a>
 ####Qstore.findIn (rows, query, [,fields=true] [,options])
-same as [.find](#find) but work as static method with you array
+same as [.find](#find) but work as static method with array.
 
 ```js
 	var users = [
@@ -315,7 +307,7 @@ same as [.find](#find) but work as static method with you array
 
 <a name="test"></a>
 ####Qstore.test (object, query)
-checks that the object match the query
+Checks that the object match the query.
 
 ```js
 	var fruit = {type: 'pineapple', color: 'yellow', weight: 1, price: 4};
@@ -360,7 +352,7 @@ Examples:
 	// list of deep fields
 	messages.getList('user.name'); // ['Bob', 'Kate', 'Stan', 'James']
 ```
----
+ ---
 
 <a name="operators"></a>
 ###Operators
@@ -410,7 +402,7 @@ Example:
 
 <a name="removeOperator"></a>
 ####Qstore.removeOperator (operatorName)
-remove operator
+Remove operator by operatorName.
  ---
 
 <a name="dataManipulation"></a>
@@ -443,11 +435,11 @@ Examples:
 
 <a name="update"></a>
 ####.update ([searchQuery,] updateQuery [,soft=false])
-update items in collection
+Update items in collection.
 
  - **[searchQuery] {Object|Function}** if option is set then will be updated only finded items
  - **updateQuery {Object|Function}** patch or function returned patch
- - **[soft=false]** soft update. See [soft mode](#softMode).  
+ - **[soft=false]** soft update. See [soft mode](#softMode)  
 
 Examples:
 
@@ -530,7 +522,7 @@ Computed fields:
  
 <a name="compute"></a>
 #### .compute ()
-Forced recalculates computed fields.  
+Forced recalculate computed fields.  
 Computed fields automatically recalculeted whan collection was changed.
 Use this method if you need recalculate computed fields manualy.
 
@@ -556,21 +548,26 @@ remove fields from collection
 another variant:
 **sort (fn)**  where **fn** is sort function
 
-sort collection
+Sort collection.
 
 Examples:
 ```js
-	fruits.sort();//sort by idx
+	// sort by idx
+	fruits.sort();
 	
+	// sort by type (asc)
 	fruits.sort({fieldName: 'type', order: 'asc'});
 	
+	// sort by type (asc) when by price (desc)
 	fruits.sort([
 		{fieldName: 'type', order: 'asc'},
 		{fieldName: 'price', order: 'desc'},
 	]);
 	
+	// sort by price, zero values will be in end of collection
 	fruits.sort({fieldName: 'price', zeroIsLast: true});
 	
+	// use sort function
 	fruits.sort(function (fruit1, fruit2) {
 		return fruit1.price - fruit2.price;
 	});
@@ -580,7 +577,8 @@ Examples:
 
 <a name="changes"></a>
 ###Work with changes
-By default, your collections keep changes until you call the method commit or rollback. If you do not need this functionality, see [soft mode](#softMode).
+By default, your collections keep changes until you call the method **commit** or **rollback**.
+If you do not need this functionality, see [soft mode](#softMode).
 
 <a name="getChanges"></a>
 ####getChanges ()
@@ -644,13 +642,13 @@ Revert all changes.
 ####softMode
 Some actions may be called with soft mode. This means that they do not add information about the change in the list of changes.
 
-If you want that your collection always work in soft mode use **.setSoftMode** method
+If you want that your collection always work in soft mode use **.setSoftMode** method.
 
 ```js
 	fruits.setSoftMode(true)
 ```
 
-If you want that anyone new collection will be work in soft mode use **AQstore.setSoftMode** method
+If you want that anyone new collection will be work in soft mode use **Qstore.setSoftMode** method
 
  ---
 
@@ -659,15 +657,16 @@ If you want that anyone new collection will be work in soft mode use **AQstore.s
 
 <a name="size"></a>
 ####.size ()
-returns rows count
+Returns rows count.
 
  ---
  
 <a name="pack"></a>
 ####.pack ([query] [,fields])
-returs reduced collection
+Returs reduced collection.
 
 ```js
+	// create fruits collection
 	var fruits = new Qstore([
 		{type: 'apple', color: 'red', weight: 0.25, price: 1.5},
 		{type: 'pear', color: 'green', weight: 0.4, price: 2},
@@ -687,7 +686,7 @@ returs reduced collection
 	}
 	
 ```
-Use this method if you whant to send collection or part of collection by network,
+You can use this method if you whant to send collection or part of collection by network,
 because it will reduce the outgoing traffic.
 
  ---
