@@ -1,4 +1,4 @@
-![activedata](activedata-big.png)
+![Qstore](qstore.png)
 
 ##Overview
 Work with collections in javascript
@@ -15,7 +15,7 @@ Work with collections in javascript
 select * from fruits where type = 'apple' and color = 'green'
 ```
 
-It's same as ActiveData query:
+It's same as Qstore query:
 
 ```js
 fruits.find({type: 'apple', color: 'green'});
@@ -27,7 +27,7 @@ fruits.find({type: 'apple', color: 'green'});
 ```sql
   select * from fruits where type in ('apple', 'pear')
 ```
-It's same as ActiveData query:
+It's same as Qstore query:
 
 ```js
 fruits.find({type: ['apple', 'pear']});
@@ -43,7 +43,7 @@ fruits.find({type: ['apple', 'pear']});
  
  ---
  
-See more [examples](http://holiber.github.io/activedata/examples/)
+See more [examples](http://holiber.github.io/Qstore/examples/)
 
 ##API
 - [Initialisation](#initialisation)
@@ -90,7 +90,7 @@ See more [examples](http://holiber.github.io/activedata/examples/)
 Using array of objects:
 
 ```js
-var fruits = new ActiveData([
+var fruits = new Qstore([
 	{type: 'apple', color: 'red', weight: 0.25, price: 1.5},
 	{type: 'pear', color: 'green', weight: 0.4, price: 2},
 	{type: 'pear', color: 'red', weight: 0.3, price: 1.8},
@@ -101,7 +101,7 @@ var fruits = new ActiveData([
 Using reduce format:
 
 ```js
-var fruits = new ActiveData({
+var fruits = new Qstore({
 	columns: ['type', 'color', 'weight', 'price'],
 	rows: [
 		['apple', 'red', 0.25, 1.5],
@@ -120,7 +120,7 @@ var fruits = new ActiveData({
 ####.find (query, [fields], [options])
 
 Returns all objects from collection which compliance query  
-See [examples of usage](http://holiber.github.io/activedata/examples/)
+See [examples of usage](http://holiber.github.io/Qstore/examples/)
  
 
 - **query {Object|Array|Function|Bolean}**  
@@ -210,7 +210,7 @@ Also you can use fields [aliases](#aliases)
 You can use aliases fields using the syntax *"fieldName:aliasName"*
 
 ```js
-	var messages = new ActiveData ({
+	var messages = new Qstore ({
 		columns: ['text', 'subject', 'user'],
 		rows: [
 			['Hello world!', 'programming', {id: 1, name: 'Bob'}],
@@ -227,7 +227,7 @@ You can use aliases fields using the syntax *"fieldName:aliasName"*
 Use *"fieldname:"* syntax for extract filed values on one level up.
 
 ```js
-	var usersChanges = new ActiveData ({
+	var usersChanges = new Qstore ({
 		columns: ['source', 'patch'],
 		rows: [
 			[{id: 2, name: 'Bob', age: 23}, {name: 'Mike'}],
@@ -247,7 +247,7 @@ Use *"fieldname:"* syntax for extract filed values on one level up.
 
 Use '$.fieldName' syntax to get the value of field
 ```js
-	var diet = new ActiveData ({
+	var diet = new Qstore ({
 		columns: ['month', 'breakfast', 'dinner'],
 		rows: [
 			['april', {calories: 400, food: 'egg'}, {calories: 300, food: 'soup'}],
@@ -276,7 +276,7 @@ Use '$.fieldName' syntax to get the value of field
 
 <a name="search"></a>
 ####.search (query, [fields], [options])
-Same as [.find](#find) but returns ActiveData collection
+Same as [.find](#find) but returns Qstore collection
 
 ```js
 	// get collection of red fruits sorted by type
@@ -297,7 +297,7 @@ It same as:
 ---
 
 <a name="findIn"></a>
-####ActiveData.findIn (rows, query, [,fields=true] [,options])
+####Qstore.findIn (rows, query, [,fields=true] [,options])
 same as [.find](#find) but work as static method with you array
 
 ```js
@@ -309,28 +309,28 @@ same as [.find](#find) but work as static method with you array
 	];
 	
 	// find user with id = 3
-	ActiveData.findIn(users, {id: 3});
+	Qstore.findIn(users, {id: 3});
 ```
 ---
 
 <a name="test"></a>
-####ActiveData.test (object, query)
+####Qstore.test (object, query)
 checks that the object match the query
 
 ```js
 	var fruit = {type: 'pineapple', color: 'yellow', weight: 1, price: 4};
 	
 	// The fruit is yellow?
-	ActiveData.test(fruit, {color: 'yellow'}); //true
+	Qstore.test(fruit, {color: 'yellow'}); //true
 	
 	// The fruit is pineapple or pear?
-	ActiveData.test(fruit, {type: ['pear', 'pineapple']}); //true
+	Qstore.test(fruit, {type: ['pear', 'pineapple']}); //true
 	
 	// The fruit has "apple" in type?
-	ActiveData.test(fruit, {type: {$like: 'apple'}}); //true
+	Qstore.test(fruit, {type: {$like: 'apple'}}); //true
 	
 	// Fruit price less when 1$ per kg
-	ActiveData.test(fruit, function (fruit) { return fruit.price/fruit.weight < 1});//false
+	Qstore.test(fruit, function (fruit) { return fruit.price/fruit.weight < 1});//false
 ```
 ---
 
@@ -384,7 +384,7 @@ Examples:
 ---
 
 <a name="addOperator"></a>
-####ActiveData.addOperator (operatorName, function)
+####Qstore.addOperator (operatorName, function)
 
 Example:
 
@@ -392,7 +392,7 @@ Example:
 	/* we need find fruits with integer price */
 	
 	// add "isInt" operator
-	ActiveData.addOperator('isInt', function (left, right) {
+	Qstore.addOperator('isInt', function (left, right) {
 		var isInt = (left % 1 == 0);
 		return right ? isInt : !isInt
 	});
@@ -409,7 +409,7 @@ Example:
  ---
 
 <a name="removeOperator"></a>
-####ActiveData.removeOperator (operatorName)
+####Qstore.removeOperator (operatorName)
 remove operator
  ---
 
@@ -650,7 +650,7 @@ If you want that your collection always work in soft mode use **.setSoftMode** m
 	fruits.setSoftMode(true)
 ```
 
-If you want that anyone new collection will be work in soft mode use **AactiveData.setSoftMode** method
+If you want that anyone new collection will be work in soft mode use **AQstore.setSoftMode** method
 
  ---
 
@@ -668,7 +668,7 @@ returns rows count
 returs reduced collection
 
 ```js
-	var fruits = new ActiveData([
+	var fruits = new Qstore([
 		{type: 'apple', color: 'red', weight: 0.25, price: 1.5},
 		{type: 'pear', color: 'green', weight: 0.4, price: 2},
 		{type: 'pear', color: 'red', weight: 0.3, price: 1.8},
