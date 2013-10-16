@@ -706,20 +706,28 @@ Returns a new independent collection, which will be copy of current collection.
  - commit
  - sort
 
-Use [addListener](#addListener) method to react on changes
+Use [setListener](#setListener) method to react on changes.
 
  ---
 
-#### .addListener (fn)
+#### .setListener (fn)
  - fn {Function} listener function
 
 Example: 
 ```js
-// Add message to log if some apple has changed color
+// We want to add messages to the log, if any apple will change its color.
 var listener = function (name, data, collection) {
+
+	// We are interested only in the event "change" with the action "update"
 	if (name != 'change' || data.action != 'update') return;
+	
+	// get operations changes
 	var changes = data.changes;
+	
+	// find apples whitch changed color
 	var applePainting = changes.find({'source.type': 'apple', 'patch.color': {$ne: undefined} });
+	
+	// write to log
 	for (var i = 0; i < applePainting.length; i++) {
 		var change = applePainting[i];
 		console.log('Some apple change color from ' + change.source.color + ' to ' + change.patch.color);
