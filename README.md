@@ -36,9 +36,11 @@ fruits.find({type: ['apple', 'pear']});
  ---
  
  What fruits can be red?
+ 
  ```js
 	fruits.getList({color: 'red'}, 'type');// ['apple', 'pear', 'strawberries']
  ```
+ 
  ---
  
 See more [examples](http://holiber.github.io/activedata/examples/)
@@ -109,6 +111,7 @@ var fruits = new ActiveData({
 	]
 });
 ```
+
  ---
 
 <a name="dataSearch"></a>
@@ -121,7 +124,6 @@ See [examples of usage](http://holiber.github.io/activedata/examples/)
  
 
 - **query {Object|Array|Function|Bolean}**  
- See [examples](http://holiber.github.io/activedata/examples/)  
  If query is **true** then will be returned all rows.  
  If query is **Object** or **Array**:  
  { } - contains conditions separeted with **and**  
@@ -172,6 +174,7 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   	//select type, color, price from fruits where type = 'apple'
  	fruits.find({type: 'apple'}, ['type', 'color', 'price']);
   ```
+  
 Also you can use fields [aliases](#aliases)
  
 - **[options] {Object}**  
@@ -192,6 +195,7 @@ Also you can use fields [aliases](#aliases)
 
 <a name="deepSearch"></a>
 #####Deep search:
+
 ```js
 	// find all messages with subject 'New year' from user with name 'Bob' who works in 'IBM' company
 	messages.find({subject: 'new year', user: {name: 'Bob', company: {name: 'IBM'} }});
@@ -203,7 +207,7 @@ Also you can use fields [aliases](#aliases)
 <a name="aliases"></a>
 #####Aliases:
 
-You can use aliases fields using the syntax "fieldName:aliasName"
+You can use aliases fields using the syntax *"fieldName:aliasName"*
 
 ```js
 	var messages = new ActiveData ({
@@ -219,6 +223,24 @@ You can use aliases fields using the syntax "fieldName:aliasName"
 	messages.find({subject: 'new year'}, ['text', 'user.name:userName']);// it will return:
 	// [ {text: 'Happy new year!', userName: 'Kate'}, {text: 'Anyone want to dance?', userName: 'James'}]
 ```
+
+Use *"fieldname:"* syntax for extract filed values on one level up.
+
+```js
+	var usersChanges = new ActiveData ({
+		columns: ['source', 'patch'],
+		rows: [
+			[{id: 2, name: 'Bob', age: 23}, {name: 'Mike'}],
+			[{id: 4, name: 'Stan', age: 30}, {age: 31}]
+		]
+	});
+	
+	var patchForDataBase = usersChanges.find(true, ['sourse.id:id', 'patch:']);
+	// now patchForDataBase contains:
+	// [{id: 2, name: 'Mike'}, {id: 4, age: 31}];
+	
+```
+
 
 <a name="comparisonOfFields"></a>
 #####Comparison of fields.
@@ -558,6 +580,7 @@ Examples:
 
 <a name="changes"></a>
 ###Work with changes
+By default, your collections keep changes until you call the method commit or rollback. If you do not need this functionality, see [soft mode](#softMode).
 
 <a name="getChanges"></a>
 ####getChanges ()
@@ -567,18 +590,42 @@ Examples:
 ```js
 	// we need get the list of idx of removed items
 	fruits.remove({type: 'apple'});
-	var changes = fruits.getChanges();
-	changes.search({action: 'remove'}).getList('source.idx');// [1, 4, 9]
+	fruits.getChanges().search({action: 'remove'}).getList('source.idx');// [1, 4, 9]
 ```
-<!--
+
 ```js
-	// we need get updates for fruits
+	
+	// do some changes
 	fruits.update({type: 'pear'}, {color: 'blue', price: 0.5});
-	var updates = fruits.getChanges().search({action: 'update'}, ['idx:id', ':values']);
+	fruits.add({type: 'apple', color: 'green'});
+	fruits.remove({type: 'pineapple'});
+	
+	// we need to create patch for database
+	var changes = fruits.getChanges();
+	var patch = {};
+	patch.add = changes.find({action: 'add'}, ['values:']);
+	patch.remove = changes.search({action: 'remove'}).getList('source.idx');
+	patch.update = changes.find(true, ['source.idx:id', 'values:']);
 	
 ```
--->
+
+An easier way to get the map of changes - use [getChangesMap](#getChnagesMap) method. 
+
  ---
+
+<a name="getChangesMap"></a>
+####getChangesMap ([keyField='idx'])
+
+Use this method to get map of changes group by action like:  
+
+```
+{
+	add: [array of added items]
+	remove: [array of removed keys]
+	update: [array of updated values]
+}	
+```
+
 
 <a name="commit"></a>
 ####commit
@@ -595,8 +642,17 @@ Revert all changes.
  
 <a name="softMode"></a>
 ####softMode
-in development
+Some actions may be called with soft mode. This means that they do not add information about the change in the list of changes.
 
+If you want that your collection always work in soft mode use **.setSoftMode** method
+
+```js
+	fruits.setSoftMode(true)
+```
+
+If you want that anyone new collection will be work in soft mode use **AactiveData.setSoftMode** method
+
+ ---
 
 <a name="utilites"></a>
 ###Utilites

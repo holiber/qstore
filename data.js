@@ -1,5 +1,5 @@
 /**
- * @license ActiveData 0.4.0 by Holiber
+ * @license ActiveData 0.4.1 by Holiber
  * work with collections
  *
  * Available via the MIT license.
@@ -74,6 +74,7 @@
 
 		init: function (reduce) {
 			this.changes = {};
+			this.softMode = ActiveData.softMode;
 			this.sortFields = null;
 			this.reduce = $.extend({}, reduce);
 			var unpacked = this.unpack(reduce);
@@ -311,6 +312,7 @@
 			var expr = opt2 ? opt1 : null;
 			var values = opt2 ? opt2 : opt1;
 			var soft = typeof(opt2) == "boolean" ? opt2 : (typeof(opt3) == "boolean") ? opt3 : false;
+			soft = soft || this.softMode;
 			var cnt = 0;
 			var operationChanges = [];
 			for (var key = 0; key < this.rows.length; key++) {
@@ -346,7 +348,7 @@
 		 */
 		patch: function (items, key, soft) {
 			key = key || 'idx';
-			soft = soft || false;
+			soft = soft || this.softMode;
 			if (!items) return 0;
 			var patchMap = {};
 			for (var i = 0; i < items.length; i++) {
@@ -366,6 +368,7 @@
 		 */
 		add: function (rows, soft) {
 			rows = $.isArray(rows) ? rows : [rows];
+			soft = soft || this.softMode;
 			var rowsToAdd = [];
 			var operationChanges = [];
 			for (var key = 0; key < rows.length; key++) {
@@ -398,7 +401,7 @@
 		 *  data.remove({type: 'apple', color: ['red', 'green']});
 		 */
 		remove: function (expr, soft) {
-			soft = soft || false;
+			soft = soft || this.softMode;
 			var operationChanges = [];
 			var cnt = 0;
 
@@ -564,12 +567,31 @@
 			return new ActiveData(changes);
 		},
 
+		/**
+		 *
+		 * @param {String} [keyField='idx']
+		 */
+		getChangesMap: function (keyField) {
+			keyField = keyField || 'idx';
+			var changes = this.getChanges();
+			var patch = {};
+			patch.add = changes.find({action: 'add'}, ['values:']);
+			patch.remove = changes.search({action: 'remove'}).getList('source.' + keyField);
+			patch.update = changes.find(true, ['source.' + keyField + ':' + keyField, 'values:']);
+			return patch;
+		},
+
 		setListener: function (listener) {
 			this.listener = listener;
+		},
+
+		setSoftMode: function (state) {
+			this.softMode = state;
 		}
 
 	}, {
 		operators: {},
+		softMode: false,
 
 		addOperator: function (name, fn) {
 			ActiveData.operators[name] = fn;
@@ -700,7 +722,14 @@
 						var fieldDef = fields[i].split(':');
 						var alias = fieldDef[1] ? fieldDef[1] : fieldDef[0];
 						var value = ActiveData.getVal(row, fieldDef[0]);
-						filteredRow[alias] = value;
+
+						if (fieldDef[1] === '' && typeof value == 'object') {
+							for (var fieldName in value) {
+								filteredRow[fieldName] = value[fieldName];
+							}
+						} else {
+							filteredRow[alias] = value;
+						}
 					}
 					result.push(filteredRow);
 					continue;
@@ -718,6 +747,14 @@
 				curVal = curVal[way[i]];
 			}
 			return curVal;
+		},
+
+		/**
+		 *
+		 * @param {Boolean} state
+		 */
+		setSoftMode: function (state) {
+			this.softMode = state;
 		}
 	});
 	

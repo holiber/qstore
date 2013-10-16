@@ -19,10 +19,19 @@ $(function () {
 	window.messages = new ActiveData ({
 		columns: ['text', 'subject', 'user'],
 		rows: [
-			['Hello word!', 'programming', {id: 1, name: 'Bob'}],
+			['Hello world!', 'programming', {id: 1, name: 'Bob'}],
 			['Happy new year!', 'new year', {id: 2, name: 'Kate'}],
 			['How to learn javascript?', 'programming', {id: 2, name: 'Stan'}],
-			['Enybody want to dance?', 'new year', {id: 2, name: 'James'}]
+			['Anyone want to dance?', 'new year', {id: 2, name: 'James'}]
+		]
+	});
+
+	window.diet = new ActiveData ({
+		columns: ['month', 'breakfast', 'dinner'],
+		rows: [
+			['april', {calories: 400, food: 'egg'}, {calories: 300, food: 'soup'}],
+			['may', {calories: 300, food: 'bacon'}, {calories: 500, food: 'soup'}],
+			['june', {calories: 350, food: 'porridge'}, {calories: 300, food: 'chicken'}]
 		]
 	});
 
