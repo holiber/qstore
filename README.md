@@ -544,7 +544,7 @@ remove fields from collection
  ---
 
 <a name="sort"></a>
-####sort (fields [,zeroIsLast=false])
+####.sort (fields [,zeroIsLast=false])
 another variant:
 **sort (fn)**  where **fn** is sort function
 
@@ -581,7 +581,7 @@ By default, your collections keep changes until you call the method **commit** o
 If you do not need this functionality, see [soft mode](#softMode).
 
 <a name="getChanges"></a>
-####getChanges ()
+####.getChanges ()
 returns collection of changes
 
 Examples:
@@ -612,7 +612,7 @@ An easier way to get the map of changes - use [getChangesMap](#getChnagesMap) me
  ---
 
 <a name="getChangesMap"></a>
-####getChangesMap ([keyField='idx'])
+####.getChangesMap ([keyField='idx'])
 
 Use this method to get map of changes group by action like:  
 
@@ -626,13 +626,13 @@ Use this method to get map of changes group by action like:
 
 
 <a name="commit"></a>
-####commit
+####.commit ()
 Commit changes.
 
  ---
  
 <a name="rollback"></a>
-####rollback
+####.rollback ()
 Revert all changes.
 
  ---
