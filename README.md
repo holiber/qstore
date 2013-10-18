@@ -46,6 +46,7 @@ See more [examples](http://holiber.github.io/Qstore/examples/)
   - [findIn](#findIn)
   - [test](#test)
   - [getList](#getList)
+  - [each](#each)
 - [Operators](#operators)
   - [Availble operators](#availOperators)
   - [addOperator](#addOperator)
@@ -352,6 +353,30 @@ Examples:
 	// list of deep fields
 	messages.getList('user.name'); // ['Bob', 'Kate', 'Stan', 'James']
 ```
+ ---
+ 
+<a name="each"></a>
+####.each ([query=true,] fn)
+apply function for each row
+
+- **[query=true] {Object|Function|Boolean}** filter query
+- **fn {Function}** function to apply
+
+```js
+	// add message to log for each fruit
+	fruits.each(function (row, i, query) {
+		conslole.log('fruit №' + i + ' is ' + row.type);
+	});
+	
+	// it will write:
+	//
+	// fruit №1 is apple
+	// fruit №2 is pear
+	// etc... 
+	//
+	
+```
+
  ---
 
 <a name="operators"></a>
