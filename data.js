@@ -186,6 +186,18 @@
 		},
 
 		/**
+		 * apply function for each element
+		 * @param [expr]
+		 * @param fn
+		 * @returns {Number} processed rows
+		 */
+		each: function (expr, fn) {
+			if (!fn) fn = expr;
+			var rows = this.find(expr, {goNext: fn});
+			return rows.length;
+		},
+
+		/**
 		 *
 		 * @param [expr]
 		 * @param key
@@ -207,10 +219,10 @@
 		},
 
 		/**
-			fire event
-			@eventName {Sting}
-			@data
-		*/
+		 fire event
+		 @eventName {Sting}
+		 @data
+		 */
 		fire: function (eventName, data) {
 			this.listener(eventName, data, this);
 		},
@@ -439,10 +451,10 @@
 				switch (change.action) {
 					case 'update':
 						this.rows[i] = change.source;
-					break;
+						break;
 					case 'add':
 						this.rows.splice(i, 1);
-					break;
+						break;
 				}
 			}
 
@@ -697,13 +709,18 @@
 		findIn: function (data, expr, fields, options) {
 			if (!data) throw 'empty data';
 			if (!expr) return [];
+
+			// swap arguments
 			if (!$.isArray(fields) && typeof fields != 'boolean') {
 				options = fields;
 				fields = null;
 			}
 			fields = fields || true;
 			options = options || {};
+
 			var limit = options.limit;
+			var goNext = options.goNext;
+
 			if (typeof limit == 'number') {
 				limit = [1, limit];
 			}
@@ -715,6 +732,7 @@
 				if (limit && counter >= limit[1]) break;
 				if (expr !== true && !ActiveData.test(row, expr)) continue;
 				counter++;
+				if (goNext && goNext(row, counter, expr) === false) break;
 				if (limit && counter < limit[0]) continue;
 				if (fields && $.isArray(fields)) {
 					var filteredRow = {};
@@ -757,5 +775,5 @@
 			this.softMode = state;
 		}
 	});
-	
+
 })(window);
