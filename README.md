@@ -749,7 +749,7 @@ var listener = function (name, data, collection) {
 	// get operations changes
 	var changes = data.changes;
 	
-	// find apples whitch changed color
+	// find apples with changed color
 	var applePainting = changes.find({'source.type': 'apple', 'patch.color': {$ne: undefined} });
 	
 	// write to log
