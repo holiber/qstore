@@ -1,5 +1,5 @@
 /**
- * @license ActiveData 0.4.1 by Holiber
+ * @license Qstore 0.5.0 by Holiber
  * work with collections
  *
  * Available via the MIT license.
@@ -69,12 +69,12 @@
 		return new F;
 	};
 
-	/*ActiveData*/
-	var ActiveData = context.ActiveData = Class.extend({
+	/*Qstore*/
+	var Qstore = context.Qstore = Class.extend({
 
 		init: function (reduce) {
 			this.changes = {};
-			this.softMode = ActiveData.softMode;
+			this.softMode = Qstore.softMode;
 			this.sortFields = null;
 			this.reduce = $.extend({}, reduce);
 			var unpacked = this.unpack(reduce);
@@ -158,7 +158,7 @@
 		 * @returns {Array}
 		 */
 		find: function (expr, fields, options) {
-			return ActiveData.findIn(this.rows, expr, fields, options);
+			return Qstore.findIn(this.rows, expr, fields, options);
 		},
 
 		/**
@@ -166,10 +166,10 @@
 		 * @param {Object|Function|Boolean} expr
 		 * @param {Array|Boolean} [fields=true]
 		 * @param {Object} [options]
-		 * @returns {ActiveData}
+		 * @returns {Qstore}
 		 */
 		search: function (expr, fields, options) {
-			return new ActiveData(this.find(expr, fields, options));
+			return new Qstore(this.find(expr, fields, options));
 		},
 
 		/**
@@ -183,6 +183,19 @@
 			options = options || {};
 			options = $.extend({}, {limit: 1}, options);
 			return this.find(expr, fields, options)[0]
+		},
+
+		/**
+		 * @param {String|Function|Array} indexes
+		 * @param {Object} [options]
+		 * @returns {Object}
+		 */
+		indexBy: function (indexes, options) {
+			return Qstore.indexBy(this.rows, indexes, options);
+		},
+
+		mapOf: function (indexes, options) {
+			return Qstore.indexBy(this.rows, indexes, $.extend({}, {alwaysWrap: true}, options));
 		},
 
 		/**
@@ -211,7 +224,7 @@
 			var list = [];
 			var rows = expr ? this.find(expr) : this.rows;
 			for (var i = 0; i < rows.length; i++) {
-				var value = ActiveData.getVal(rows[i], key);
+				var value = Qstore.getVal(rows[i], key);
 				if (~$.inArray(value, list)) continue;
 				list.push(value);
 			}
@@ -329,7 +342,7 @@
 			var operationChanges = [];
 			for (var key = 0; key < this.rows.length; key++) {
 				var row = this.rows[key];
-				if (!expr || ActiveData.test(row, expr)) {
+				if (!expr || Qstore.test(row, expr)) {
 					var rowValues = $.isFunction(values) ? values(row) : values;
 					if (!rowValues) continue;
 					cnt++;
@@ -346,7 +359,7 @@
 				}
 			}
 			this.compute();
-			operationChanges = new ActiveData(operationChanges);
+			operationChanges = new Qstore(operationChanges);
 			if (!soft) this.fire('change', {action: 'update', changes: operationChanges});
 			return cnt;
 		},
@@ -419,7 +432,7 @@
 
 			for (i = 0; i < this.rows.length; i++) {
 				var row = this.rows[i];
-				if (ActiveData.test(row, expr)) {
+				if (Qstore.test(row, expr)) {
 					cnt++;
 					if (!soft) {
 						if (this.changes[row.idx]) {
@@ -435,7 +448,7 @@
 					i--;
 				}
 			}
-			operationChanges = new ActiveData(operationChanges);
+			operationChanges = new Qstore(operationChanges);
 			if (!soft) this.fire('change', {action: 'remove', changes: operationChanges});
 			return cnt;
 		},
@@ -536,12 +549,12 @@
 		/**
 		 * getCopy ([expr])
 		 * @param {Object|Function} [expr]
-		 * @returns {ActiveData}
+		 * @returns {Qstore}
 		 */
 		getCopy: function (expr) {
 			var rows = this.rows;
 			if (expr) rows = this.find(expr);
-			var copyData = new context.ActiveData(JSON.parse(JSON.stringify({columns: this.columns, rows: []})));
+			var copyData = new context.Qstore(JSON.parse(JSON.stringify({columns: this.columns, rows: []})));
 			copyData.rows = JSON.parse(JSON.stringify(rows));
 			copyData.lastIdx = this.lastIdx;
 			return copyData;
@@ -576,7 +589,7 @@
 				change.idx = idx;
 				changes.push(change);
 			}
-			return new ActiveData(changes);
+			return new Qstore(changes);
 		},
 
 		/**
@@ -606,11 +619,11 @@
 		softMode: false,
 
 		addOperator: function (name, fn) {
-			ActiveData.operators[name] = fn;
+			Qstore.operators[name] = fn;
 		},
 
 		removeOperator: function (name) {
-			delete ActiveData.operators[name];
+			delete Qstore.operators[name];
 		},
 
 		/**
@@ -632,7 +645,7 @@
 				if (typeof expr == 'string' && expr.charAt(0) == '$') {
 					if (expr.charAt(1) == '.') {
 						var way = expr.substr(2);
-						expr = ActiveData.getVal(options.item, way);
+						expr = Qstore.getVal(options.item, way);
 					}
 				}
 				flag = flag || '$eq';
@@ -647,7 +660,7 @@
 					default:
 						//search custom operator
 						var operator = flag.split('$')[1];
-						var fn = ActiveData.operators[operator];
+						var fn = Qstore.operators[operator];
 						if (!fn) throw 'operator ' + operator + ' not found';
 						return fn(item, expr);
 				}
@@ -689,7 +702,7 @@
 
 					if (typeof item != 'object') return false;
 
-					if (!this.test(ActiveData.getVal(item, key), expr[key], null, options)) return false;
+					if (!this.test(Qstore.getVal(item, key), expr[key], null, options)) return false;
 				}
 				return true;
 			}
@@ -730,7 +743,7 @@
 			for (var key = 0; key < data.length; key++) {
 				var row = data[key];
 				if (limit && counter >= limit[1]) break;
-				if (expr !== true && !ActiveData.test(row, expr)) continue;
+				if (expr !== true && !Qstore.test(row, expr)) continue;
 				counter++;
 				if (goNext && goNext(row, counter, expr) === false) break;
 				if (limit && counter < limit[0]) continue;
@@ -739,7 +752,7 @@
 					for (var i = fields.length; i--;) {
 						var fieldDef = fields[i].split(':');
 						var alias = fieldDef[1] ? fieldDef[1] : fieldDef[0];
-						var value = ActiveData.getVal(row, fieldDef[0]);
+						var value = Qstore.getVal(row, fieldDef[0]);
 
 						if (fieldDef[1] === '' && typeof value == 'object') {
 							for (var fieldName in value) {
@@ -753,6 +766,35 @@
 					continue;
 				}
 				result.push(row);
+			}
+			return result;
+		},
+
+		indexBy: function (data, indexes, options) {
+			options = $.extend({}, {alwaysWrap: false, undefinedKey: false}, options)
+			var result = {};
+			if (!(indexes instanceof Array)) indexes = [indexes];
+			var index = indexes[0];
+			for (var i = 0; i < data.length; i++) {
+				var row = data[i];
+				var indexValue = (typeof index == 'function') ? index(row) : Qstore.getVal(row, index);
+				if (indexValue == undefined) {
+					if (!options.undefinedKey) continue;
+					indexValue = options.undefinedKey;
+				}
+				if (options.alwaysWrap) {
+					if (!result[indexValue]) result[indexValue] = [];
+					result[indexValue].push(row);
+				} else {
+					if (!result[indexValue]) result[indexValue] = row;
+					else if (result[indexValue] instanceof Array) result[indexValue].push(row)
+					else result[indexValue] = [result[indexValue], row];
+				}
+			}
+			var nextIndexes = indexes.splice(1);
+			if (nextIndexes.length) for (var key in result) {
+				var rows = (result[key] instanceof Array) ? result[key] : [result[key]];
+				result[key] = Qstore.indexBy(rows, nextIndexes, options);
 			}
 			return result;
 		},

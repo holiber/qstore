@@ -16,7 +16,7 @@ $(function () {
 		]
 	}
 
-	window.messages = new ActiveData ({
+	window.messages = new Qstore ({
 		columns: ['text', 'subject', 'user'],
 		rows: [
 			['Hello world!', 'programming', {id: 1, name: 'Bob'}],
@@ -26,7 +26,7 @@ $(function () {
 		]
 	});
 
-	window.diet = new ActiveData ({
+	window.diet = new Qstore ({
 		columns: ['month', 'breakfast', 'dinner'],
 		rows: [
 			['april', {calories: 400, food: 'egg'}, {calories: 300, food: 'soup'}],
@@ -68,7 +68,7 @@ $(function () {
 	});
 
 
-	var fruits = window.fruits = new ActiveData(data);
+	var fruits = window.fruits = new Qstore(data);
 	fruits.addFields([{name: 'image', compute: function (row) { return '<img src="images/' + row.type + '-' + row.color + '.jpeg">'}}])
 	render(fruits.rows);
 })
