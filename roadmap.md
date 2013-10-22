@@ -26,10 +26,14 @@
  - work with changes
 
 ##Roadmap to 0.6.0
+ - **indexBy** method
+ - **mapOf** method
+
+##Roadmap to 0.7.0
  - exclude jquery
  - compatibility with nodejs
 
-##Roadmap to 0.7.0
+##Roadmap to 0.8.0
  - **groupBy** method
  - left join and right join
  - collections merge
