@@ -1,5 +1,5 @@
 /**
- * @license Qstore 0.5.0 by Holiber
+ * @license Qstore 0.5.1 by Holiber
  * work with collections
  *
  * Available via the MIT license.
@@ -324,6 +324,7 @@
 				this.rows.sort(fnAscSort);
 			}
 			this.fire('sort', opt);
+			return this;
 		},
 
 		/**
