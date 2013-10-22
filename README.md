@@ -32,7 +32,7 @@ fruits.find({type: ['apple', 'pear']});
  
  ---
  
-See more [examples](http://holiber.github.io/Qstore/examples/)
+See more [examples](http://holiber.github.io/activedata/examples/)
 
 ##API
 - [Initialisation](#initialisation)
@@ -110,7 +110,7 @@ var fruits = new Qstore({
 ####.find (query, [fields], [options])
 
 Returns all objects which valid for query. 
-See [examples of usage](http://holiber.github.io/qstore/examples/)
+See [examples of usage](http://holiber.github.io/activedata/examples/)
  
 
 - **query {Object|Array|Function|Bolean}**  
