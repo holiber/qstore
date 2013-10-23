@@ -1,5 +1,5 @@
 /**
- * @license Qstore 0.5.1 by Holiber
+ * @license Qstore 0.5.2 by Holiber
  * work with collections
  *
  * Available via the MIT license.
@@ -195,7 +195,7 @@
 		},
 
 		mapOf: function (indexes, options) {
-			return Qstore.indexBy(this.rows, indexes, $.extend({}, {alwaysWrap: true}, options));
+			return Qstore.mapOf(this.rows, indexes, options);
 		},
 
 		/**
@@ -798,6 +798,10 @@
 				result[key] = Qstore.indexBy(rows, nextIndexes, options);
 			}
 			return result;
+		},
+
+		mapOf: function (data, indexes, options) {
+			return Qstore.indexBy(data, indexes, $.extend({}, {alwaysWrap: true}, options));
 		},
 
 		getVal: function (item, key) {
