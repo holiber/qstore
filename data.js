@@ -1,5 +1,5 @@
 /**
- * @license Qstore 0.5.2 by Holiber
+ * @license Qstore 0.7.0 by Holiber
  * work with collections
  *
  * Available via the MIT license.
@@ -198,6 +198,13 @@
 			return Qstore.mapOf(this.rows, indexes, options);
 		},
 
+
+		groupBy: function () {
+			var args = Array.prototype.slice.call(arguments);
+			args.unshift(this.rows);
+			return new Qstore(Qstore.groupBy.apply(Qstore, args)) ;
+		},
+
 		/**
 		 * apply function for each element
 		 * @param [expr]
@@ -259,6 +266,15 @@
 
 			var fields = $.isArray(opt) ? opt : [opt];
 			var self = this;
+
+			// extract string params
+			for (var i = 0; i < fields.length; i++) {
+				var sortParams = fields[i];
+				if (typeof sortParams != 'string') continue;
+				sortParams = sortParams.split(':');
+				var order = sortParams[1] || 'asc';
+				fields[i] = {fieldName: sortParams[0], order: order}
+			}
 
 			this.sortFields = fields || this.sortFields || [{fieldName: 'idx', order: 'asc'}];
 
@@ -616,15 +632,39 @@
 		}
 
 	}, {
+		Class: Class,
 		operators: {},
+		functions: {},
 		softMode: false,
 
+		len: function (item) {
+			if (item.length) return item.length;
+			var result = 0;
+			for (var key in item) result++;
+			return result;
+		},
+
+		first: function (item) {
+			if (typeof item == 'string') return item.charAt(0);
+			if (item instanceof Array) return item[0];
+			if (item instanceof Object) for (var key in item) return item[key];
+			return item;
+		},
+
 		addOperator: function (name, fn) {
-			Qstore.operators[name] = fn;
+			this.operators[name] = fn;
 		},
 
 		removeOperator: function (name) {
-			delete Qstore.operators[name];
+			delete this.operators[name];
+		},
+
+		addFunction: function (name, fn) {
+			this.functions[name] = fn;
+		},
+
+		removeFunction: function (name) {
+			delete this.functions[name];
 		},
 
 		/**
@@ -725,10 +765,6 @@
 			if (!expr) return [];
 
 			// swap arguments
-			if (!$.isArray(fields) && typeof fields != 'boolean') {
-				options = fields;
-				fields = null;
-			}
 			fields = fields || true;
 			options = options || {};
 
@@ -748,22 +784,8 @@
 				counter++;
 				if (goNext && goNext(row, counter, expr) === false) break;
 				if (limit && counter < limit[0]) continue;
-				if (fields && $.isArray(fields)) {
-					var filteredRow = {};
-					for (var i = fields.length; i--;) {
-						var fieldDef = fields[i].split(':');
-						var alias = fieldDef[1] ? fieldDef[1] : fieldDef[0];
-						var value = Qstore.getVal(row, fieldDef[0]);
-
-						if (fieldDef[1] === '' && typeof value == 'object') {
-							for (var fieldName in value) {
-								filteredRow[fieldName] = value[fieldName];
-							}
-						} else {
-							filteredRow[alias] = value;
-						}
-					}
-					result.push(filteredRow);
+				if (fields !== true) {
+					result.push(Qstore.getFields(row, fields));
 					continue;
 				}
 				result.push(row);
@@ -779,7 +801,7 @@
 			for (var i = 0; i < data.length; i++) {
 				var row = data[i];
 				var indexValue = (typeof index == 'function') ? index(row) : Qstore.getVal(row, index);
-				if (indexValue == undefined) {
+				if (indexValue !== 0 && !indexValue) {
 					if (!options.undefinedKey) continue;
 					indexValue = options.undefinedKey;
 				}
@@ -800,18 +822,159 @@
 			return result;
 		},
 
+		groupBy: function () {
+			var args = Array.prototype.slice.call(arguments);
+			var data = args[0];
+			var groups = args.splice(1);
+			var group = groups[0];
+			var result = [];
+			var fields = (typeof group == 'string') ? [group] : group;
+			fields = JSON.parse(JSON.stringify(fields));
+			var additional = Qstore.getAdditionalFields(fields);
+
+			// make groups
+			for (var i = 0; i < data.length; i++) {
+				var row = data[i];
+				var values = Qstore.getFields(row, fields);
+				var currentPlace = Qstore.findIn(result, values, true, {limit: 1})[0];
+				if (currentPlace) {
+					currentPlace['_g'].push(row);
+				} else {
+					values['_g'] = [row];
+					result.push(values);
+				}
+			}
+
+			// make deep groups
+			var nextGroups = groups.splice(1);
+			if (nextGroups.length) for (var i = 0; i < result.length; i++) {
+				var rowGroup = result[i];
+				var groupArgs = [rowGroup['_g']].concat(nextGroups);
+				rowGroup['_g'] = Qstore.groupBy.apply(Qstore, groupArgs);
+			}
+
+			// calculate additional fields
+			for (var i = 0; i < result.length; i++) {
+				var rowGroup = result[i];
+				var additionalValues = Qstore.getFields(rowGroup['_g'], additional, {row: rowGroup});
+				$.extend(rowGroup, additionalValues);
+			}
+			return result;
+		},
+
 		mapOf: function (data, indexes, options) {
 			return Qstore.indexBy(data, indexes, $.extend({}, {alwaysWrap: true}, options));
 		},
 
-		getVal: function (item, key) {
+		/**
+		 *
+		 * @param item
+		 * @param key
+		 * @param [fnName]
+		 * @param [args]
+		 * @returns {*}
+		 */
+		getVal: function (item, key, fnName, args) {
 			var way = key.split('.');
 			var curVal = item;
 			for (var i = 0; i < way.length; i++) {
-				if (typeof  curVal != 'object') return undefined;
-				curVal = curVal[way[i]];
+				var wayPart = way[i];
+				if (wayPart.charAt(0) == '$') {
+					var fname = wayPart.split('$')[1];
+					var fn = this.functions[fname];
+					if (fn) curVal = fn(curVal);
+					else throw 'function ' + fname + ' not found';
+					continue;
+				}
+				if (typeof curVal != 'object') return undefined;
+				curVal = curVal[wayPart];
+			}
+			if (fnName) {
+				var fn = this.functions[fnName];
+				if (!fn) throw 'function ' + fnName + ' not found';
+				curVal = (args === undefined) ? fn(curVal) : fn(curVal, args);
 			}
 			return curVal;
+		},
+
+		getFields: function (row, fields, options) {
+			if (typeof fields != 'object') fields = [fields];
+			var filteredRow = {};
+			var currentRow = null;
+			if (fields instanceof Array) {
+				for (var i = fields.length; i--;) {
+					currentRow = row;
+					var result = null;
+					if (typeof fields[i] == 'string') {
+						var fieldDef = fields[i].split(':');
+						var way = fieldDef[0];
+						var alias = fieldDef[1];
+						way = way.split('$.');
+						if (way[0] == '') currentRow = options.row; //search from root
+						way = way[0] || way[1];
+						result = Qstore.getField(currentRow, way, alias);
+					} else if (typeof  fields[i] == 'object'){
+						result = Qstore.getFields(row, fields[i], options)
+					} else if (typeof fields[i] == 'function') {
+						//TODO:
+						fnValue = fields[i](row);
+						if (typeof fnValue == 'string') {
+							result = {};
+							result[fnValue] = true;
+						} else result = fnValue;
+					}
+					$.extend(filteredRow, result);
+				}
+			} else for (var key in fields) {
+				if (typeof fields[key] == 'object') {
+					var fieldDef = key.split(':');
+					var way = fieldDef[0];
+					var alias = fieldDef[1];
+					var fnDef = fields[key];
+					for (var fnName in fnDef) {
+						var args = fnDef[fnName];
+						break;
+					}
+					fnName = fnName.split('$')[1];
+				} else {
+					var alias = key;
+					var way = fields[key];
+				}
+				$.extend(filteredRow, Qstore.getField(row, way, alias, fnName, args));
+			}
+			return filteredRow;
+		},
+
+		getField: function (row, way, alias, fn, args) {
+			if (alias === '') return Qstore.getVal(row, way, fn, args);
+			if (alias === undefined) alias = way;
+			if (way === true) way = alias;
+			var result = {};
+			result[alias] = Qstore.getVal(row, way, fn, args);
+			return result;
+		},
+
+		getAdditionalFields: function (fields) {
+			var fnSearchInObject = function (obj) {
+				for (var key in obj) if (key == '$add') {
+					var fields = obj[key];
+					delete obj[key];
+					return fields;
+				}
+				return false;
+			}
+
+			if (fields instanceof Array) {
+				for (var i = 0; i < fields.length; i++) {
+					var field = fields[i];
+					if (typeof field == 'object') {
+						var result = fnSearchInObject(field);
+						if (result) return result;
+					}
+				}
+			}
+
+			if (typeof fields == 'object') return fnSearchInObject(fields);
 		},
 
 		/**
@@ -822,5 +985,45 @@
 			this.softMode = state;
 		}
 	});
+
+	var builtInFunctions = {
+
+		len: function (item) {
+			return Qstore.len(item);
+		},
+
+		first: function (item) {
+			return Qstore.first(item);
+		},
+
+		find: function (item, expr) {
+			return Qstore.findIn(item, expr);
+		},
+
+		mapOf: function (item, expr) {
+			return Qstore.mapOf(expr);
+		},
+
+		test: function (item, expr) {
+			return Qstore.test(item, expr);
+		},
+
+		getList: function (item, expr) {
+			return Qstore.getList(item, expr)
+		},
+
+		upper: function (item) {
+			return String(item).toUpperCase();
+		},
+
+		lower: function () {
+			return String(item).toLowerCase();
+		}
+	}
+
+	for (var fnName in builtInFunctions) {
+		Qstore.addFunction(fnName, builtInFunctions[fnName]);
+	}
+
 
 })(window);
