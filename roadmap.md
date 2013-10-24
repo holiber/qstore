@@ -35,6 +35,7 @@
 ##Roadmap to 0.8.0
  - exclude jquery
  - compatibility with nodejs
+ - AMD and CommonJS support
 
 ##Roadmap to 0.9.0
  - left join and right join
