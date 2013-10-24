@@ -33,6 +33,7 @@
  - **groupBy** method
 
 ##Roadmap to 0.8.0
+ - add functions support in sort method
  - exclude jquery
  - compatibility with nodejs
  - AMD and CommonJS support
