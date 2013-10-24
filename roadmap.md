@@ -21,7 +21,7 @@
  - сomparison of fields with values of other fields
 
 ##Roadmap to 0.5.0
- - **continue** option
+ - **goNext** option
  - **each** method
  - work with changes
 
@@ -30,10 +30,13 @@
  - **mapOf** method
 
 ##Roadmap to 0.7.0
- - exclude jquery
- - compatibility with nodejs
+ - **groupBy** method
 
 ##Roadmap to 0.8.0
- - **groupBy** method
+ - exclude jquery
+ - compatibility with nodejs
+ - AMD and CommonJS support
+
+##Roadmap to 0.9.0
  - left join and right join
  - collections merge
