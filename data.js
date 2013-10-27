@@ -1,5 +1,5 @@
 /**
- * @license Qstore 0.7.1 by Holiber
+ * @license Qstore 0.7.2 by Holiber
  * work with collections
  *
  * Available via the MIT license.
@@ -525,7 +525,7 @@
 				var isNewColumn = false;
 				var columnExist = ~$.inArray(field.name, this.columns);
 				if (!columnExist) {
-					var isNewColumn = true;
+					isNewColumn = true;
 					this.columns.push(field.name);
 				}
 				if (field.compute) this.computed[field.name] = field.compute;
@@ -911,9 +911,6 @@
 						var fieldDef = fields[i].split(':');
 						var way = fieldDef[0];
 						var alias = fieldDef[1];
-						way = way.split('$.');
-						if (way[0] == '') currentRow = options.row; //search from root
-						way = way[0] || way[1];
 						result = Qstore.getField(currentRow, way, alias);
 					} else if (typeof  fields[i] == 'object'){
 						result = Qstore.getFields(row, fields[i], options)
