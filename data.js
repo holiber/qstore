@@ -1,5 +1,5 @@
 /**
- * @license Qstore 0.7.0 by Holiber
+ * @license Qstore 0.7.1 by Holiber
  * work with collections
  *
  * Available via the MIT license.
@@ -829,7 +829,8 @@
 			var group = groups[0];
 			var result = [];
 			var fields = (typeof group == 'string') ? [group] : group;
-			fields = JSON.parse(JSON.stringify(fields));
+			//fields = $.extend(true, [], fields);
+			//JSON.parse(JSON.stringify(fields));
 			var additional = Qstore.getAdditionalFields(fields);
 
 			// make groups
@@ -875,6 +876,7 @@
 		 * @returns {*}
 		 */
 		getVal: function (item, key, fnName, args) {
+			if (typeof key == 'function') return key(item);
 			var way = key.split('.');
 			var curVal = item;
 			for (var i = 0; i < way.length; i++) {
@@ -926,6 +928,7 @@
 					$.extend(filteredRow, result);
 				}
 			} else for (var key in fields) {
+				if (key == '$add') continue;
 				if (typeof fields[key] == 'object') {
 					var fieldDef = key.split(':');
 					var way = fieldDef[0];
@@ -958,7 +961,7 @@
 			var fnSearchInObject = function (obj) {
 				for (var key in obj) if (key == '$add') {
 					var fields = obj[key];
-					delete obj[key];
+					//delete obj[key];
 					return fields;
 				}
 				return false;
