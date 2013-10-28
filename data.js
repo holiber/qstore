@@ -1,5 +1,5 @@
 /**
- * @license Qstore 0.7.2 by Holiber
+ * @license Qstore 0.7.3 by Holiber
  * work with collections
  *
  * Available via the MIT license.
@@ -829,8 +829,6 @@
 			var group = groups[0];
 			var result = [];
 			var fields = (typeof group == 'string') ? [group] : group;
-			//fields = $.extend(true, [], fields);
-			//JSON.parse(JSON.stringify(fields));
 			var additional = Qstore.getAdditionalFields(fields);
 
 			// make groups
@@ -857,7 +855,7 @@
 			// calculate additional fields
 			for (var i = 0; i < result.length; i++) {
 				var rowGroup = result[i];
-				var additionalValues = Qstore.getFields(rowGroup['_g'], additional, {row: rowGroup});
+				var additionalValues = Qstore.getFields(rowGroup, additional);
 				$.extend(rowGroup, additionalValues);
 			}
 			return result;
