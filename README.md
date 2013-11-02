@@ -114,11 +114,11 @@ See [examples of usage](http://holiber.github.io/activedata/examples/)
  
 
 - **query {Object|Array|Function|Bolean}**  
- If query is **true** then will be returned all rows.  
+ If query is **true** then all rows will be returned.  
  If query is **Object** or **Array**:  
  { } - contains conditions separeted with **and**  
  [ ] - contains conditions separeted with **or**  
- Operators describes as **$&lt;operator name&gt;**, see [Operators](#operators).  
+ Operators describe as **$&lt;operator name&gt;**, see [Operators](#operators).  
   Example:
   
   ```js
