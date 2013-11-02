@@ -109,7 +109,7 @@ var fruits = new Qstore({
 <a name="find"></a>
 ####.find (query, [fields], [options])
 
-Returns all objects which valid for query. 
+Returns all objects which are valid for query. 
 See [examples of usage](http://holiber.github.io/activedata/examples/)
  
 
