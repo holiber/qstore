@@ -4,7 +4,7 @@
 Work with collections in javascript
 - Create your collections.
 - Search and update data using queries.
-- Use computed fields
+- Use computed fields.
 - Get collections changes.
 - Extend your query language.
 
@@ -24,7 +24,7 @@ fruits.find({type: ['apple', 'pear']});
 
  ---
  
- What fruits can be red?
+ Which fruits can be red?
  
  ```js
 	fruits.getList({color: 'red'}, 'type');// ['apple', 'pear', 'strawberries']
