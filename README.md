@@ -88,7 +88,7 @@ var fruits = new Qstore([
 ]);
 ```
 
-Using reduce format:
+Using reduced format:
 
 ```js
 var fruits = new Qstore({
