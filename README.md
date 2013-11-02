@@ -122,12 +122,12 @@ See [examples of usage](http://holiber.github.io/activedata/examples/)
   Example:
   
   ```js
-//find all red or green fruits with price between 0.5 and 1.5  
+// find all red or green fruits with price between 0.5 and 1.5  
 fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   ```
 
   ```js
-  //using regular expressions
+  // using regular expressions
   fruits.find({type: /apple/});//returns all apples and pineapples
   ```
 
@@ -135,7 +135,7 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   Example:
   
   ```js
-  //find all red fruits
+  // find all red fruits
   fruits.find(function (row) {
       return row.color == 'red';
   });
@@ -145,14 +145,14 @@ fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
   Function with field-context:
   
   ```js
-  //find all fruits with integer price or with 0.5$ price
+  // find all fruits with integer price or with 0.5$ price
   fruits.find({price: [0.5, function (price) { return price % 1 == 0}]);
   ```
   
   Function with row-context:
   
   ```js
-  //find all fruits with integer price or with 0.5$ price
+  // find all fruits with integer price or with 0.5$ price
   fruits.find([price: 0.5, function (row) { return row.price % 1 == 0});
   ```
 - **[fields=true] {Array|Boolean}**  
@@ -173,10 +173,10 @@ Also you can use fields [aliases](#aliases)
   Example:
   
   ```js
-  	//find first two apples
+  	// find first two apples
   	fruits.find({type: 'apple'}, true, {limit: 2});
   	
-  	//find two yellow fruits begins from third yellow fruit
+  	// find two yellow fruits beginning with third yellow fruit
   	fruits.find ({color: 'yelow'}, true, {limit: [3,2]});
   	
   ```
@@ -214,7 +214,7 @@ You can use aliases fields using the syntax *"fieldName:aliasName"*
 	// [ {text: 'Happy new year!', userName: 'Kate'}, {text: 'Anyone want to dance?', userName: 'James'}]
 ```
 
-Use *"fieldname:"* syntax for extract filed values on one level up.
+Use *"fieldname:"* syntax to extract field values on one level up.
 
 ```js
 	// create collection of changes
