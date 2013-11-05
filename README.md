@@ -34,6 +34,9 @@ fruits.find({type: ['apple', 'pear']});
  
 See more [examples](http://holiber.github.io/activedata/examples/)
 
+##Instalation
+in development
+
 ##API
 - [Initialisation](#initialisation)
 - [Data search](#dataSearch)
