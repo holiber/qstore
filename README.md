@@ -302,7 +302,7 @@ It same as:
 ---
 
 <a name="findIn"></a>
-####Qstore.findIn (rows, query, [,fields=true] [,options])
+####Qstore.findIn (rows, query [,fields=true] [,options])
 same as [.find](#find) but work as static method with array.
 
 ```js
