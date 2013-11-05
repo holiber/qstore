@@ -682,7 +682,7 @@
 			if (!options) options =  {item: item};
 
 			//simple values
-			if (typeof(expr) != 'object' && typeof(expr) != 'function') {
+			if (flag || typeof(expr) != 'object' && typeof(expr) != 'function') {
 				if (typeof expr == 'string' && expr.charAt(0) == '$') {
 					if (expr.charAt(1) == '.') {
 						var way = expr.substr(2);
@@ -707,6 +707,13 @@
 				}
 			}
 
+			if (item instanceof Array) {
+				for (var i = 0; i < item.length; i++) {
+					if (this.test(item[i], expr, null, options)) return true;
+				}
+				return false;
+			}
+
 			if (flag == '$and') {
 				for (var key = 0; key < expr.length; key++) {
 					if (!this.test(item, expr[key], null, options)) return false;
@@ -722,7 +729,7 @@
 			// "or" condtions
 			if (expr instanceof Array) {
 				for (var key = 0; key < expr.length; key++) {
-					if (this.test(item, expr[key]), null, options) return true;
+					if (this.test(item, expr[key], null, options)) return true;
 				}
 				return false;
 			}
@@ -877,23 +884,27 @@
 			if (typeof key == 'function') return key(item);
 			var way = key.split('.');
 			var curVal = item;
+
+			if (fnName) {
+				var fn = this.functions[fnName];
+				if (!fn) throw 'function ' + fnName + ' not found';
+				curVal = (args === undefined) ? fn(curVal) : fn(curVal, args);
+				return curVal;
+			}
+
 			for (var i = 0; i < way.length; i++) {
 				var wayPart = way[i];
 				if (wayPart.charAt(0) == '$') {
 					var fname = wayPart.split('$')[1];
 					var fn = this.functions[fname];
-					if (fn) curVal = fn(curVal);
+					if (fn) curVal = (args === undefined) ? fn(curVal) : fn(curVal, args);
 					else throw 'function ' + fname + ' not found';
 					continue;
 				}
 				if (typeof curVal != 'object') return undefined;
 				curVal = curVal[wayPart];
 			}
-			if (fnName) {
-				var fn = this.functions[fnName];
-				if (!fn) throw 'function ' + fnName + ' not found';
-				curVal = (args === undefined) ? fn(curVal) : fn(curVal, args);
-			}
+
 			return curVal;
 		},
 
@@ -928,17 +939,18 @@
 					var fieldDef = key.split(':');
 					var way = fieldDef[0];
 					var alias = fieldDef[1];
-					var fnDef = fields[key];
-					for (var fnName in fnDef) {
-						var args = fnDef[fnName];
-						break;
-					}
-					fnName = fnName.split('$')[1];
+//					var fnDef = fields[key];
+//					for (var fnName in fnDef) {
+//						var args = fnDef[fnName];
+//						break;
+//					}
+//					fnName = fnName.split('$')[1];
+					var args = fields[key];
 				} else {
 					var alias = key;
 					var way = fields[key];
 				}
-				$.extend(filteredRow, Qstore.getField(row, way, alias, fnName, args));
+				$.extend(filteredRow, Qstore.getField(row, way, alias, undefined, args));
 			}
 			return filteredRow;
 		},
@@ -986,7 +998,7 @@
 
 	var builtInFunctions = {
 
-		len: function (item) {
+		lenth: function (item) {
 			return Qstore.len(item);
 		},
 
@@ -1014,13 +1026,53 @@
 			return String(item).toUpperCase();
 		},
 
-		lower: function () {
+		lower: function (item) {
 			return String(item).toLowerCase();
+		},
+
+		asNumber: function (item) {
+			return Number(item);
+		},
+
+		asString: function (item) {
+			return String(item);
+		}
+	}
+
+	var builtInOperators = {
+
+		has: function (item, expr) {
+			if (typeof expr == 'object') {
+				return Qstore.findIn(item, expr).length
+			}
+
+			if (item instanceof Array) {
+				if (expr instanceof Array) {
+					for (var i = 0; i < item.length; i++) {
+						if (~expr.indexOf(item[i])) return true;
+					}
+				} else if (~item.indexOf(expr)) return true;
+			}
+
+			if (typeof item  == 'object') {
+				if (item[expr] !== undefined) return true;
+				return false;
+			}
+
+			if (typeof item == 'string') {
+				return !!~item.indexOf(expr);
+			}
+
+			return false
 		}
 	}
 
 	for (var fnName in builtInFunctions) {
 		Qstore.addFunction(fnName, builtInFunctions[fnName]);
+	}
+
+	for (var fnName in builtInOperators) {
+		Qstore.addOperator(fnName, builtInOperators[fnName]);
 	}
 
 
