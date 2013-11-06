@@ -375,6 +375,7 @@ apply function for each row
 - **fn {Function}** function to apply
 
 ```js
+
 	// add message to log for each fruit
 	fruits.each(function (row, i, query) {
 		conslole.log('fruit №' + i + ' is ' + row.type);
@@ -387,13 +388,15 @@ apply function for each row
 	// etc... 
 	//
 	
-```
+``` 
 
  ---
 
 <a name="operators"></a>
 ###Operators
-Оperators are used to extend the query language.
+Оperators are used to extending the query language of search operations.
+Each operator is function which returs *true* if item valid for query or *false* if not.
+
 
 <a name="availOperators"></a>
 ####Available operators
@@ -407,8 +410,14 @@ apply function for each row
  $lte  | less or equals then
  $and  | change condition of [ ] operator from **or** to **and**
  $like | "like" search
+ $has  | check exsisting of value in array, object or string see [$has operator](#hasOperator)
  
  you can also add your operators - see [addOperator](#addOperator) method
+ 
+ <a name="hasOperator"></a>
+ **$has operator:**
+ 
+ 
  
 ---
 
@@ -439,8 +448,66 @@ Example:
 
 <a name="removeOperator"></a>
 ####Qstore.removeOperator (operatorName)
+
 Remove operator by operatorName.
+
  ---
+
+<a name="functions""></a>
+### Functions
+
+<a name="buildinFunctions"></a>
+#### Build-in functions
+
+in development
+
+---
+
+<a name="addFunction"></a>
+#### Add function
+
+in development
+
+---
+
+<a href="removeFunction"></a>
+#### Remove function
+
+in develomnent
+
+---
+
+<a name="fieldsSelection"></a>
+###Fields selection
+
+in development
+
+---
+
+<a name="grouping"></a>
+###Grouping
+
+<a name="indexby"></a>
+#### .indexBy
+
+in development
+
+---
+
+<a name="mapOf"></a>
+#### .mapOf
+
+in development 
+
+---
+
+<a name="groupBy"></a>
+#### .groupBy
+
+in development
+
+---
+
 
 <a name="dataManipulation"></a>
 ###Data manipulation
