@@ -398,8 +398,8 @@ apply function for each row
 Each operator is function which returs *true* if item valid for query or *false* if not.
 
 
-<a name="availOperators"></a>
-####Available operators
+<a name="buildinOperators"></a>
+####Build-in operators
  name  | description
  ----- | -----------
  $eq   | equals
@@ -417,6 +417,19 @@ Each operator is function which returs *true* if item valid for query or *false*
  <a name="hasOperator"></a>
  **$has operator:**
  
+ ```
+ 	var cloves = new Qstore([
+ 		{name: 'cl', sizes: ['xs', 's', 'xl']},
+ 		{name: 'cl2', sizes: ['m', 'xxl']},
+ 		{name: 'cl3', sizes: ['xs', 's', 'xl']}
+ 	]);
+ 	
+ 	cloves.find({name: 'skirt', size: {$has: 'xs'}});
+ 	
+ 	cloves.find({name: 'skirt', size: {$has: ['xs', 's'] }});
+ 	
+ 	
+ ```
  
  
 ---
@@ -455,11 +468,42 @@ Remove operator by operatorName.
 
 <a name="functions""></a>
 ### Functions
+Functions used for runtime calculations in query
+
+
+Example of usage "length" function
+```js 
+	users = new Qstore ([
+		{id: 1, name: 'Bob', friends: ['Mike', 'Sam']},
+		{id: 2, name: 'Martin', friends: ['Bob']},
+		{id: 3, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']},
+		{id: 4, name: 'Sam', friends: []}
+	]);
+
+	// find users who have not any friend
+	users.find({'friends.$length': 0});
+	
+	// find users who have more than 2 friends
+	users.find({'friends.$length': {$gt: 2} });
+	 
+```
+
+Functions also can be used in fields selection
+
+```js
+	// select user name and count of friends
+	users.find(true, ['name', 'friends.$length:friendsCount']);
+```
+
 
 <a name="buildinFunctions"></a>
 #### Build-in functions
 
-in development
+ name  		| description
+ ----- 		| -----------
+ $length	| length of array, string or count of keys in object
+ $first		| first item of array or first letter of string or first property of object
+ 
 
 ---
 

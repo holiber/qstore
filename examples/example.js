@@ -35,6 +35,13 @@ $(function () {
 		]
 	});
 
+	window.users = new Qstore ([
+		{id: 1, name: 'Bob', friends: ['Mike', 'Sam']},
+		{id: 2, name: 'Martin', friends: ['Bob']},
+		{id: 3, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']},
+		{id: 4, name: 'Sam', friends: []}
+	]);
+
 	var selectors = {
 		all: true,
 		apples: {type: 'apple'},

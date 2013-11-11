@@ -998,7 +998,7 @@
 
 	var builtInFunctions = {
 
-		lenth: function (item) {
+		length: function (item) {
 			return Qstore.len(item);
 		},
 
@@ -1006,12 +1006,12 @@
 			return Qstore.first(item);
 		},
 
-		find: function (item, expr) {
+		findIn: function (item, expr) {
 			return Qstore.findIn(item, expr);
 		},
 
 		mapOf: function (item, expr) {
-			return Qstore.mapOf(expr);
+			return Qstore.mapOf(item, expr);
 		},
 
 		test: function (item, expr) {
