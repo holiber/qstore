@@ -1,5 +1,5 @@
 /**
- * @license Qstore 0.7.3 by Holiber
+ * @license Qstore 0.7.4 by Holiber
  * work with collections
  *
  * Available via the MIT license.
