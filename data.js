@@ -1006,7 +1006,7 @@
 			return Qstore.first(item);
 		},
 
-		findIn: function (item, expr) {
+		find: function (item, expr) {
 			return Qstore.findIn(item, expr);
 		},
 
