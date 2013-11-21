@@ -82,6 +82,8 @@ in development
   - [pack](#pack)
   - [unpack](#unpack)
   - [getCopy](#getCopy)
+  - [getVal](#getVal)
+  - [parseArgs](#parsArgs)
 - [Events](#events)
   - [Events list](#eventsList)
   - [setListener](#setListener)
@@ -135,7 +137,7 @@ See [examples of usage](http://holiber.github.io/activedata/examples/)
   
   ```js
 // find all red or green fruits with price between 0.5 and 1.5  
-fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5});
+fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5}});
   ```
 
   ```js
@@ -189,20 +191,49 @@ Also you can use fields [aliases](#aliases)
   	fruits.find({type: 'apple'}, true, {limit: 2});
   	
   	// find two yellow fruits beginning with third yellow fruit
-  	fruits.find ({color: 'yelow'}, true, {limit: [3,2]});
+  	fruits.find ({color: 'yellow'}, true, {limit: [3,2]});
   	
   ```
 
 <a name="deepSearch"></a>
 #####Deep search:
 
+Deep search in object:
+
 ```js
+
+usersMessages = new Qstore ({
+	columns: ['text', 'subject', 'user'],
+	rows: [
+		['Hi', 'new year', {id: 1, name: 'Bob', company: {name: 'IBM', phone: '+9999'} }],
+		['Happy new year!', 'new year', {id: 2, name: 'Kate', company: {name: 'Microsoft', phone: '+8888'}}],
+		['How to learn javascript?', 'programming', {id: 2, name: 'Stan'}],
+		['Anyone want to dance?', 'new year', {id: 2, name: 'James'}]
+	]
+});
+
 	// find all messages with subject 'New year' from user with name 'Bob' who works in 'IBM' company
 	
 	messages.find({subject: 'new year', 'user.name': 'Bob', 'user.company.name': 'IBM'});
 
 	// or
 	messages.find({subject: 'new year', user: {name: 'Bob', company: {name: 'IBM'} }});
+	
+```
+
+Deep search in collection:
+
+```js
+	
+	// create collection of costumes
+	var costumes = new Qstore([
+		{name: 'policeman', items: [ {name: 'tie', color: 'black'}, {name: 'cap', color: 'blue'}]},
+		{name: 'fireman', items: [{name: 'hemlet', color: 'yellow'}]},
+		{name: 'solder', items: [{name: 'hemlet', color: 'green'}]}
+	]);
+	
+	// find costumes which have hemlet in items
+	costumes.find({items: {name: 'hemlet'} });
 ```
 
 <a name="aliases"></a>
@@ -238,7 +269,7 @@ Use *"fieldname:"* syntax to extract field values on one level up.
 		]
 	});
 	
-	var patchForDataBase = usersChanges.find(true, ['sourse.id:id', 'patch:']);
+	var patchForDataBase = usersChanges.find(true, ['source.id:id', 'patch:']);
 	// now patchForDataBase contains:
 	// [{id: 2, name: 'Mike'}, {id: 4, age: 31}];
 	
@@ -410,7 +441,7 @@ Each operator is function which returs *true* if item valid for query or *false*
  $lte  | less or equals then
  $and  | change condition of [ ] operator from **or** to **and**
  $like | "like" search
- $has  | check exsisting of value in array, object or string see [$has operator](#hasOperator)
+ $has  | check exsisting of value in array or in object or in string see [$has operator](#hasOperator)
  
  you can also add your operators - see [addOperator](#addOperator) method
  
@@ -418,15 +449,15 @@ Each operator is function which returs *true* if item valid for query or *false*
  **$has operator:**
  
  ```
- 	var cloves = new Qstore([
- 		{name: 'cl', sizes: ['xs', 's', 'xl']},
- 		{name: 'cl2', sizes: ['m', 'xxl']},
- 		{name: 'cl3', sizes: ['xs', 's', 'xl']}
+ 	var clothes = new Qstore([
+ 		{name: 'skirt', sizes: ['xs', 's', 'xl']},
+ 		{name: 'jeans', sizes: ['m', 'xxl']},
+ 		{name: 'skirt', sizes: ['xs', 's', 'xl']}
  	]);
  	
- 	cloves.find({name: 'skirt', size: {$has: 'xs'}});
+ 	clothes.find({name: 'skirt', sizes: {$has: 'xs'}});
  	
- 	cloves.find({name: 'skirt', size: {$has: ['xs', 's'] }});
+ 	clothes.find({name: 'skirt', sizes: {$has: ['xs', 's'] }});
  	
  	
  ```
@@ -435,7 +466,7 @@ Each operator is function which returs *true* if item valid for query or *false*
 ---
 
 <a name="addOperator"></a>
-####Qstore.addOperator (operatorName, function)
+####Qstore.addOperator (operatorName, function [isSimple=true])
 
 Example:
 
@@ -468,11 +499,15 @@ Remove operator by operatorName.
 
 <a name="functions""></a>
 ### Functions
-Functions used for runtime calculations in query
+Functions used for runtime calculations in query.
+You may use [build-in functions](#buildinFunctions) or you [own functions](#addFunction)
 
 
 Example of usage "length" function
+
 ```js 
+
+	// create collection of users
 	users = new Qstore ([
 		{id: 1, name: 'Bob', friends: ['Mike', 'Sam']},
 		{id: 2, name: 'Martin', friends: ['Bob']},
@@ -488,13 +523,81 @@ Example of usage "length" function
 	 
 ```
 
-Functions also can be used in fields selection
+Example of usage "max" and "min" function:
+
 
 ```js
-	// select user name and count of friends
-	users.find(true, ['name', 'friends.$length:friendsCount']);
+
+	// create collection of clothes
+	var clothes =  new Qstore([
+		{name: 'skirt', sizes: [42, 48, 50]},
+		{name: 'jeans', sizes: [48, 54]},
+		{name: 'skirt', sizes: [42, 45, 48]}
+	]);
+	
+	// select name and maxSize of each item
+	clothes.find(true, ['name', 'sizes.$max:maxSize']);
+	
+	// find clothes with min size = 42
+	clothes.find({'size.$min': 42});
+	
 ```
 
+Functions also can be used in fields selection
+
+
+```js
+
+	// select user name and count of friends
+	users.find(true, ['name', 'friends.$length:friendsCount']);
+	
+```
+
+The [grouping](#grouping) methods and [getList](#getList) method also supports the functions syntax:
+
+```js
+
+	// get list of all first friends
+	users.getList('friends.$first')
+```
+
+You can use result of one function as arguments for another function:
+
+```js
+	
+	// get first letter in lower case of first friends
+	
+	users.getList({'friends.$length': {$gt: 0}}, 'friends.$first.$first.$lower')
+	
+```
+You can pass additional arguments to functions:
+
+```js
+
+// create collection of сostumes for Halloween
+costumes = new Qstore([
+		{name: 'policeman', items: [ {name: 'tie', color: 'black'}, {name: 'cap', color: 'blue'}]},
+		{name: 'fireman', items: [{name: 'helmet', color: 'yellow'}]},
+		{name: 'solder', items: [{name: 'helmet', color: 'green'}]},
+		{name: 'zombie', items: [{name: 'skin', color: 'green'}, {name: 'brain', color: 'pink'}]}
+	]);
+	
+// get list of colors for each costume
+costumes.find(true, ['name', 'items.$getList("color"):colors']);
+
+
+```
+
+When you use functions, avoid redundant expressions. For example we need to find all costumes wich have yellow color. We may use **find** and **lenght** function: 
+
+```js
+	costumes.find({'items.$find({"color": "yellow"}).$length': {$gt: 0} });
+```
+But in this case the right way - using a [deep search](#deepSearch).
+
+```js
+	costumes.find({'items': {color: 'yellow'}});
+```
 
 <a name="buildinFunctions"></a>
 #### Build-in functions
@@ -503,7 +606,27 @@ Functions also can be used in fields selection
  ----- 		| -----------
  $length	| length of array, string or count of keys in object
  $first		| first item of array or first letter of string or first property of object
- 
+ $min		| retunrs max of array
+ $max		| returns min of array
+ $abs		| absolute value
+ $find		| use **Qstore.findIn** method
+ $mapOf		| use **Qstore.mapOf** method
+ $indexBy 	| use **Qstore.indexBy** method
+ $test		| use **Qstore.test** method
+ $getList 	| use **Qstore.getList** method
+ $upper		| translate string to upper case
+ $lower		| translate string to lower case
+ $asNumber 	| cast to Number
+ $asString	| cast to String
+
+
+You can also add your functions - see [addFunction](#addFunction) method
+
+/masks find/
+
+/avoid functions/
+
+costumes.find({'items': {color: 'yellow'}})
 
 ---
 

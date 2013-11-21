@@ -1,10 +1,14 @@
-/**
- * @license Qstore 0.7.4 by Holiber
- * work with collections
- *
- * Available via the MIT license.
- * see: http://github.com/holiber/activedata
- */
+/*!
+* Qstore
+* v0.7.4
+*
+* smart tool for work with collections
+* @license Licensed under the MIT license.
+* @see http://github.com/holiber/qstore
+
+* build at 2013-11-21 18:33
+*/
+
 ;(function (context) {
 
 	//inheritance realisation
@@ -224,18 +228,7 @@
 		 * @returns {Array}
 		 */
 		getList: function (expr, key) {
-			if (typeof(expr) == 'string') {
-				key = expr;
-				expr = null;
-			}
-			var list = [];
-			var rows = expr ? this.find(expr) : this.rows;
-			for (var i = 0; i < rows.length; i++) {
-				var value = Qstore.getVal(rows[i], key);
-				if (~$.inArray(value, list)) continue;
-				list.push(value);
-			}
-			return list;
+			return Qstore.getList(this.rows, expr, key);
 		},
 
 		/**
@@ -651,8 +644,9 @@
 			return item;
 		},
 
-		addOperator: function (name, fn) {
-			this.operators[name] = fn;
+		addOperator: function (name, fn, isSimple) {
+			if (isSimple === undefined) isSimple = true
+			this.operators[name] = {fn: fn, isSimple: isSimple};
 		},
 
 		removeOperator: function (name) {
@@ -682,7 +676,7 @@
 			if (!options) options =  {item: item};
 
 			//simple values
-			if (flag || typeof(expr) != 'object' && typeof(expr) != 'function') {
+			if ((flag && flag != '$and') || typeof(expr) != 'object' && typeof(expr) != 'function') {
 				if (typeof expr == 'string' && expr.charAt(0) == '$') {
 					if (expr.charAt(1) == '.') {
 						var way = expr.substr(2);
@@ -701,15 +695,15 @@
 					default:
 						//search custom operator
 						var operator = flag.split('$')[1];
-						var fn = Qstore.operators[operator];
+						var fn = Qstore.operators[operator].fn;
 						if (!fn) throw 'operator ' + operator + ' not found';
-						return fn(item, expr);
+						return fn(item, expr, options);
 				}
 			}
 
 			if (item instanceof Array) {
 				for (var i = 0; i < item.length; i++) {
-					if (this.test(item[i], expr, null, options)) return true;
+					if (this.test(item[i], expr, null, $.extend({}, options, {currentItem: item}) )) return true;
 				}
 				return false;
 			}
@@ -743,9 +737,23 @@
 						continue;
 					}
 
+					// from root
 					if (typeof(key) == 'string' && key.charAt(0) == '$') {
+						var operator = Qstore.operators[key.split('$')[1]];
+						if (operator && operator.isSimple === false) {
+							return operator.fn(options.currentItem, expr[key], options);
+						}
 						if (!this.test(item, expr[key], key, options)) return false;
 						continue;
+					}
+
+					// not simple opearators
+					if (typeof(key) == 'string' && key.charAt(0) == '$' && key.charAt(1) != '.') {
+						var operator = Qstore.operators[key.split('$')[1]];
+						if (operator && operator.isSimple === false) {
+							if (!operator.fn(options.currentItem, expr[key], options)) return false;
+							continue;
+						}
 					}
 
 					if (typeof item != 'object') return false;
@@ -792,12 +800,34 @@
 				if (goNext && goNext(row, counter, expr) === false) break;
 				if (limit && counter < limit[0]) continue;
 				if (fields !== true) {
-					result.push(Qstore.getFields(row, fields));
+					result.push(Qstore.getFields(row, fields, {}));
 					continue;
 				}
 				result.push(row);
 			}
 			return result;
+		},
+
+		/**
+		 * @paran data
+		 * @param [expr]
+		 * @param [key='idx']
+		 * @returns {Array}
+		 */
+		getList: function (data, expr, key) {
+			if (typeof(expr) == 'string') {
+				key = expr;
+				expr = null;
+			}
+			key = key || 'idx';
+			var list = [];
+			data = expr ? Qstore.findIn(data, expr) : data;
+			for (var i = 0; i < data.length; i++) {
+				var value = Qstore.getVal(data[i], key);
+				if (~$.inArray(value, list)) continue;
+				list.push(value);
+			}
+			return list;
 		},
 
 		indexBy: function (data, indexes, options) {
@@ -873,6 +903,37 @@
 		},
 
 		/**
+		 * @param {String} args
+		 * @returns {Array}
+		 */
+		parseArgs: function (argsStr) {
+			var args = argsStr.split(',');
+			var result = [];
+			for (var i = 0; i < args.length; i++) {
+				var arg = args[i].trim();
+
+				// string
+				if (arg.charAt(0) == '"' && arg.charAt(arg.length - 1) == '"' || arg.charAt(0) == "'" && arg.charAt(arg.length - 1) == "'") {
+					result.push(arg.substr(1, arg.length - 2));
+					continue
+				}
+				// number
+				if (/^[\d\.]+$/.test(arg)) {
+					result.push(Number(arg));
+					continue;
+				}
+				// object or array
+				if (arg.charAt(0) == '[' && arg.charAt(arg.length - 1) == ']' || arg.charAt(0) == '{' && arg.charAt(arg.length - 1) == '}') {
+					result.push(JSON.parse(arg));
+					continue;
+				}
+
+				result.push(arg);
+			}
+			return result;
+		},
+
+		/**
 		 *
 		 * @param item
 		 * @param key
@@ -895,10 +956,12 @@
 			for (var i = 0; i < way.length; i++) {
 				var wayPart = way[i];
 				if (wayPart.charAt(0) == '$') {
-					var fname = wayPart.split('$')[1];
-					var fn = this.functions[fname];
-					if (fn) curVal = (args === undefined) ? fn(curVal) : fn(curVal, args);
-					else throw 'function ' + fname + ' not found';
+					var fnDesc = wayPart.split('$')[1].split('(');
+					var fnName = fnDesc[0];
+					var args = fnDesc[1] ? fnDesc[1].substr(0, fnDesc[1].length - 1) : null;
+					var fn = this.functions[fnName];
+					if (fn) curVal = (args) ? fn(curVal, args) : fn(curVal);
+					else throw 'function ' + fnName + ' not found';
 					continue;
 				}
 				if (typeof curVal != 'object') return undefined;
@@ -935,7 +998,10 @@
 				}
 			} else for (var key in fields) {
 				if (key == '$add') continue;
-				if (typeof fields[key] == 'object') {
+				if (typeof fields[key] === true) {
+					var alias = key;
+					var way = fields[key];
+				} else {
 					var fieldDef = key.split(':');
 					var way = fieldDef[0];
 					var alias = fieldDef[1];
@@ -946,9 +1012,6 @@
 //					}
 //					fnName = fnName.split('$')[1];
 					var args = fields[key];
-				} else {
-					var alias = key;
-					var way = fields[key];
 				}
 				$.extend(filteredRow, Qstore.getField(row, way, alias, undefined, args));
 			}
@@ -1002,24 +1065,54 @@
 			return Qstore.len(item);
 		},
 
+		max: function (item) {
+			if (!(item instanceof Array)) return;
+			var max = -Infinity;
+			for (var i = item.length; i--;) {
+				max = Math.max(max, item[i]);
+			}
+			return max;
+		},
+
+		min: function (item) {
+			if (!(item instanceof Array)) return;
+			var min = Infinity;
+			for (var i = item.length; i--;) {
+				min = Math.min(min, item[i]);
+			}
+			return min;
+		},
+
+		abs: function (item) {
+			return Math.abs(item);
+		},
+
 		first: function (item) {
 			return Qstore.first(item);
 		},
 
-		find: function (item, expr) {
-			return Qstore.findIn(item, expr);
+		find: function (item, args) {
+			args = Qstore.parseArgs(args);
+			args.unshift(item);
+			return Qstore.findIn.apply(Qstore, args);
 		},
 
 		mapOf: function (item, expr) {
 			return Qstore.mapOf(item, expr);
 		},
 
+		indexBy: function (item, expr) {
+			return Qstore.indexBy(item, expr);
+		},
+
 		test: function (item, expr) {
 			return Qstore.test(item, expr);
 		},
 
-		getList: function (item, expr) {
-			return Qstore.getList(item, expr)
+		getList: function (item, args) {
+			args = Qstore.parseArgs(args);
+			args.unshift(item);
+			return Qstore.getList.apply(Qstore, args);
 		},
 
 		upper: function (item) {
@@ -1041,29 +1134,32 @@
 
 	var builtInOperators = {
 
-		has: function (item, expr) {
-			if (typeof expr == 'object') {
-				return Qstore.findIn(item, expr).length
-			}
+		has: {
+			isSimple: false,
+			fn: function (item, expr) {
+				if (typeof expr == 'object') {
+					return Qstore.findIn(item, expr).length
+				}
 
-			if (item instanceof Array) {
-				if (expr instanceof Array) {
-					for (var i = 0; i < item.length; i++) {
-						if (~expr.indexOf(item[i])) return true;
-					}
-				} else if (~item.indexOf(expr)) return true;
-			}
+				if (item instanceof Array) {
+					if (expr instanceof Array) {
+						for (var i = 0; i < item.length; i++) {
+							if (~expr.indexOf(item[i])) return true;
+						}
+					} else if (~item.indexOf(expr)) return true;
+				}
 
-			if (typeof item  == 'object') {
-				if (item[expr] !== undefined) return true;
-				return false;
-			}
+				if (typeof item  == 'object') {
+					if (item[expr] !== undefined) return true;
+					return false;
+				}
 
-			if (typeof item == 'string') {
-				return !!~item.indexOf(expr);
-			}
+				if (typeof item == 'string') {
+					return !!~item.indexOf(expr);
+				}
 
-			return false
+				return false
+			}
 		}
 	}
 
@@ -1072,7 +1168,7 @@
 	}
 
 	for (var fnName in builtInOperators) {
-		Qstore.addOperator(fnName, builtInOperators[fnName]);
+		Qstore.addOperator(fnName, builtInOperators[fnName].fn, builtInOperators[fnName].isSimple);
 	}
 
 

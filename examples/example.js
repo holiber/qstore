@@ -42,6 +42,19 @@ $(function () {
 		{id: 4, name: 'Sam', friends: []}
 	]);
 
+	window.costumes = new Qstore([
+		{name: 'policeman', items: [ {name: 'tie', color: 'black'}, {name: 'cap', color: 'blue'}]},
+		{name: 'fireman', items: [{name: 'helmet', color: 'yellow'}]},
+		{name: 'solder', items: [{name: 'helmet', color: 'green'}]},
+		{name: 'zombie', items: [{name: 'skin', color: 'green'}, {name: 'brain', color: 'pink'}]}
+	]);
+
+	window.clothes =  new Qstore([
+		{name: 'skirt', sizes: [42, 48, 50]},
+		{name: 'jeans', sizes: [48, 54]},
+		{name: 'skirt', sizes: [42, 45, 48]}
+	]);
+
 	var selectors = {
 		all: true,
 		apples: {type: 'apple'},
