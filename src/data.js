@@ -891,6 +891,10 @@
 			return Qstore.indexBy(data, indexes, $.extend({}, {alwaysWrap: true}, options));
 		},
 
+		flatten: function (map, keys) {
+			// TODO:
+		},
+
 		/**
 		 * @param {String} args
 		 * @returns {Array}

@@ -2,14 +2,6 @@ module.exports = function(grunt) {
 
 	var banner = grunt.file.read('src/banner.txt');
 
-//		'/*!\n' +
-//		'* Qstore \n' +
-//		'* v<%= pkg.version %>\n' +
-//		'* smart tool for work with collections\n' +
-//		'* @license Licensed under the MIT license.\n' +
-//		'* @see http://github.com/holiber/activetable\n' +
-//		'*/\n\n';
-
 	grunt.initConfig({
 
 		pkg: grunt.file.readJSON('bower.json'),

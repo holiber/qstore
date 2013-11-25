@@ -622,12 +622,6 @@ But in this case the right way - using a [deep search](#deepSearch).
 
 You can also add your functions - see [addFunction](#addFunction) method
 
-/masks find/
-
-/avoid functions/
-
-costumes.find({'items': {color: 'yellow'}})
-
 ---
 
 <a name="addFunction"></a>
@@ -647,24 +641,129 @@ in develomnent
 <a name="fieldsSelection"></a>
 ###Fields selection
 
-in development
-
 ---
 
 <a name="grouping"></a>
 ###Grouping
 
 <a name="indexby"></a>
-#### .indexBy
+#### .indexBy (indexes)
 
-in development
+returns map of keys for collection
+
+**indexes {String|Array}** key or array of keys
+
+
+```js
+	// create collection of users
+	var users = new Qstore ([
+		{id: 12, name: 'Bob', friends: ['Mike', 'Sam']},
+		{id: 4, name: 'Martin', friends: ['Bob']},
+		{id: 5, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']},
+		{id: 10, name: 'Sam', friends: []},
+		{id: 15, name: 'Sam', friends: ['Mike']}
+	]);
+
+	// index by user's name
+	users.indexBy('name');
+	
+```
+
+Result of previous example:
+
+```js
+{
+	Bob: {id: 12, name: 'Bob', friends: ['Mike', 'Sam']},
+	Martin: {id: 4, name: 'Martin', friends: ['Bob']}
+	Mike: {id: 5, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']},
+	Sam: [{id: 10, name: 'Sam', friends: []}, {id: 15, name: 'Sam', friends: ['Mike']}]
+}
+```
+
+If for one key exixting more then one item then values will be wrapped in array.
+
+You can also use more then one key:
+
+```js
+
+	// first indexed by name, and then by id
+	users.indexBy(['name', 'id']);
+```
+
+Result of previous example:
+
+```js
+
+{
+	Bob: {
+		12: {id: 12, name: 'Bob', friends: ['Mike', 'Sam']}
+	Martin: {
+		4: {id: 4, name: 'Martin', friends: ['Bob']}
+	},
+	Mike: {
+		5: {id: 5, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']}
+	},
+	Sam: {
+		10: {id: 10, name: 'Sam', friends: []},
+		15: {id: 15, name: 'Sam', friends: ['Mike']}
+	}
+}
+
+```
 
 ---
 
 <a name="mapOf"></a>
-#### .mapOf
+#### .mapOf (indexes)
 
-in development 
+same as *.indexBy*, but it always wrap values in array
+
+**indexes {String|Array}** key or array of keys
+
+example:
+
+```js
+
+	// create collection of shop's locations
+	window.shops = new Qstore ({
+		columns: ['country', 'city', 'address'],
+		rows: [
+			['UK', 'London', 'mace st. 5'],
+			['UK', 'York', 'temple ave. 10'],
+			['France', 'Paris', 'de rivoli st. 20'],
+			['France', 'Paris', 'pelleport st. 3'],
+			['Germany', 'Dresden', 'haydn st. 2'],
+			['Germany', 'Berlin', 'bornitz st. 50'],
+			['Germany', 'Munchen', 'eva st. 12'],
+			['Russia', 'Vladivostok', 'stroiteley st. 9']
+		]
+	});
+	
+	// first group by country, and then by city
+	shops.mapOf(['country', 'city']);
+	
+```
+in previous example *.mapOf* returns object like this:
+
+```js
+
+{
+	France: {
+		Paris: Array[2],
+	Germany: {
+		Berlin: Array[1],
+		Dresden: Array[1],
+		Munchen: Array[1]
+	},
+	Russia: {
+		Vladivostok: Array[1]
+	},
+	UK: {
+		London: Array[1]
+		York: Array[1]
+	}
+}
+```
 
 ---
 

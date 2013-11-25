@@ -5,8 +5,8 @@
 * smart tool for work with collections
 * @license Licensed under the MIT license.
 * @see http://github.com/holiber/qstore
-
-* build at 2013-11-21 18:33
+*
+* build at 2013-11-26 1:22
 */
 
 ;(function (context) {
@@ -900,6 +900,10 @@
 
 		mapOf: function (data, indexes, options) {
 			return Qstore.indexBy(data, indexes, $.extend({}, {alwaysWrap: true}, options));
+		},
+
+		flatten: function (map, keys) {
+			// TODO:
 		},
 
 		/**

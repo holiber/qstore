@@ -75,10 +75,11 @@ window.diet = new Qstore ({
 });
 
 window.users = new Qstore ([
-	{id: 1, name: 'Bob', friends: ['Mike', 'Sam']},
-	{id: 2, name: 'Martin', friends: ['Bob']},
-	{id: 3, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']},
-	{id: 4, name: 'Sam', friends: []}
+	{id: 12, name: 'Bob', friends: ['Mike', 'Sam']},
+	{id: 4, name: 'Martin', friends: ['Bob']},
+	{id: 5, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']},
+	{id: 10, name: 'Sam', friends: []},
+	{id: 15, name: 'Sam', friends: ['Mike']}
 ]);
 
 window.costumes = new Qstore([
@@ -101,6 +102,20 @@ window.usersChanges = new Qstore ({
 		[{id: 4, name: 'Stan', age: 30}, {age: 31}]
 	]
 });
+
+window.shops = new Qstore ({
+	columns: ['country', 'city', 'address'],
+	rows: [
+		['UK', 'London', 'mace st. 5'],
+		['UK', 'York', 'temple ave. 10'],
+		['France', 'Paris', 'rue de rivoli st. 20'],
+		['Germany', 'Dresden', 'haydn st. 2'],
+		['Germany', 'Berlin', 'bornitz st. 50'],
+		['Germany', 'Munchen', 'eva st. 12'],
+		['Russia', 'Vladivostok', 'stroiteley st. 9']
+	]
+});
+
 
 
 // other tests
