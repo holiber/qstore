@@ -1,12 +1,12 @@
 /*!
 * Qstore
-* v0.7.4
+* v0.7.5
 *
 * smart tool for work with collections
 * @license Licensed under the MIT license.
 * @see http://github.com/holiber/qstore
 *
-* build at 2013-11-26 21:23
+* build at 2013-11-26 21:05
 */
 
 ;(function (context) {
@@ -1344,4 +1344,6 @@
 	}
 
 
-})(window);
+})(window || {});
+
+module.exports || module.exports(Qstore);
