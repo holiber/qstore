@@ -1,5 +1,5 @@
 {
-	"name": "activedata",
+	"name": "qstore",
 	"version": "0.7.5",
 	"ignore": [
 		"**/.*"
