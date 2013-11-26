@@ -1,6 +1,95 @@
 ;(function (context) {
 
-	//inheritance realisation
+	// extend method, got from https://github.com/justmoon/node-extend
+
+	var hasOwn = Object.prototype.hasOwnProperty;
+	var toString = Object.prototype.toString;
+
+	function isArray (obj) {
+		return toString.call(obj) === '[object Array]';
+	}
+
+	function isFunction (obj) {
+		return typeof obj === 'function';
+	}
+
+	function isPlainObject(obj) {
+		if (!obj || toString.call(obj) !== '[object Object]' || obj.nodeType || obj.setInterval)
+			return false;
+
+		var has_own_constructor = hasOwn.call(obj, 'constructor');
+		var has_is_property_of_method = hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
+		// Not own constructor property must be Object
+		if (obj.constructor && !has_own_constructor && !has_is_property_of_method)
+			return false;
+
+		// Own properties are enumerated firstly, so to speed up,
+		// if last one is own, then all properties are own.
+		var key;
+		for ( key in obj ) {}
+
+		return key === undefined || hasOwn.call( obj, key );
+	};
+
+	function extend() {
+		var options, name, src, copy, copyIsArray, clone,
+			target = arguments[0] || {},
+			i = 1,
+			length = arguments.length,
+			deep = false;
+
+		// Handle a deep copy situation
+		if ( typeof target === "boolean" ) {
+			deep = target;
+			target = arguments[1] || {};
+			// skip the boolean and the target
+			i = 2;
+		}
+
+		// Handle case when target is a string or something (possible in deep copy)
+		if ( typeof target !== "object" && typeof target !== "function") {
+			target = {};
+		}
+
+		for ( ; i < length; i++ ) {
+			// Only deal with non-null/undefined values
+			if ( (options = arguments[ i ]) != null ) {
+				// Extend the base object
+				for ( name in options ) {
+					src = target[ name ];
+					copy = options[ name ];
+
+					// Prevent never-ending loop
+					if ( target === copy ) {
+						continue;
+					}
+
+					// Recurse if we're merging plain objects or arrays
+					if ( deep && copy && ( isPlainObject(copy) || (copyIsArray = isArray(copy)) ) ) {
+						if ( copyIsArray ) {
+							copyIsArray = false;
+							clone = src && isArray(src) ? src : [];
+
+						} else {
+							clone = src && isPlainObject(src) ? src : {};
+						}
+
+						// Never move original objects, clone them
+						target[ name ] = extend( deep, clone, copy );
+
+						// Don't bring in undefined values
+					} else if ( copy !== undefined ) {
+						target[ name ] = copy;
+					}
+				}
+			}
+		}
+
+		// Return the modified object
+		return target;
+	};
+
+	//inheritance
 	var Class = function () {}
 	Class.extend = function(props, staticProps) {
 
@@ -62,6 +151,85 @@
 		return new F;
 	};
 
+	var hasOwn = Object.prototype.hasOwnProperty;
+	var toString = Object.prototype.toString;
+
+	function isPlainObject(obj) {
+		if (!obj || toString.call(obj) !== '[object Object]' || obj.nodeType || obj.setInterval)
+			return false;
+
+		var has_own_constructor = hasOwn.call(obj, 'constructor');
+		var has_is_property_of_method = hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
+		// Not own constructor property must be Object
+		if (obj.constructor && !has_own_constructor && !has_is_property_of_method)
+			return false;
+
+		// Own properties are enumerated firstly, so to speed up,
+		// if last one is own, then all properties are own.
+		var key;
+		for ( key in obj ) {}
+
+		return key === undefined || hasOwn.call( obj, key );
+	};
+
+	module.exports = function extend() {
+		var options, name, src, copy, copyIsArray, clone,
+			target = arguments[0] || {},
+			i = 1,
+			length = arguments.length,
+			deep = false;
+
+		// Handle a deep copy situation
+		if ( typeof target === "boolean" ) {
+			deep = target;
+			target = arguments[1] || {};
+			// skip the boolean and the target
+			i = 2;
+		}
+
+		// Handle case when target is a string or something (possible in deep copy)
+		if ( typeof target !== "object" && typeof target !== "function") {
+			target = {};
+		}
+
+		for ( ; i < length; i++ ) {
+			// Only deal with non-null/undefined values
+			if ( (options = arguments[ i ]) != null ) {
+				// Extend the base object
+				for ( name in options ) {
+					src = target[ name ];
+					copy = options[ name ];
+
+					// Prevent never-ending loop
+					if ( target === copy ) {
+						continue;
+					}
+
+					// Recurse if we're merging plain objects or arrays
+					if ( deep && copy && ( isPlainObject(copy) || (copyIsArray = Array.isArray(copy)) ) ) {
+						if ( copyIsArray ) {
+							copyIsArray = false;
+							clone = src && Array.isArray(src) ? src : [];
+
+						} else {
+							clone = src && isPlainObject(src) ? src : {};
+						}
+
+						// Never move original objects, clone them
+						target[ name ] = extend( deep, clone, copy );
+
+						// Don't bring in undefined values
+					} else if ( copy !== undefined ) {
+						target[ name ] = copy;
+					}
+				}
+			}
+		}
+
+		// Return the modified object
+		return target;
+	};
+
 	/*Qstore*/
 	var Qstore = context.Qstore = Class.extend({
 
@@ -69,7 +237,7 @@
 			this.changes = {};
 			this.softMode = Qstore.softMode;
 			this.sortFields = null;
-			this.reduce = $.extend({}, reduce);
+			this.reduce = extend({}, reduce);
 			var unpacked = this.unpack(reduce);
 			this.rows = unpacked.rows;
 			this.columns = unpacked.columns;
@@ -96,7 +264,7 @@
 			var empty = {columns: ['idx'], rows: [], lastIdx: 1};
 			if (!reduce) return empty;
 
-			if ($.isArray(reduce)) {
+			if (isArray(reduce)) {
 				if (!reduce.length) return empty;
 				var firstRow = reduce[0];
 				var columns = ['idx'];
@@ -106,7 +274,7 @@
 					columns.push(fieldName);
 				}
 				for (var rowKey = 0; rowKey < reduce.length; rowKey++) {
-					var row = $.extend({idx: idx}, reduce[rowKey]);
+					var row = extend({idx: idx}, reduce[rowKey]);
 					rows.push(row);
 					idx++
 				}
@@ -174,7 +342,7 @@
 		 */
 		findOne: function (expr, fields, options) {
 			options = options || {};
-			options = $.extend({}, {limit: 1}, options);
+			options = extend({}, {limit: 1}, options);
 			return this.find(expr, fields, options)[0]
 		},
 
@@ -240,13 +408,13 @@
 
 			if (!opt) return false;
 
-			if ($.isFunction(opt)) {
+			if (isFunction(opt)) {
 				this.rows.sort(opt);
 				this.fire('sort', opt);
 				return;
 			}
 
-			var fields = $.isArray(opt) ? opt : [opt];
+			var fields = isArray(opt) ? opt : [opt];
 			var self = this;
 
 			// extract string params
@@ -342,17 +510,17 @@
 			for (var key = 0; key < this.rows.length; key++) {
 				var row = this.rows[key];
 				if (!expr || Qstore.test(row, expr)) {
-					var rowValues = $.isFunction(values) ? values(row) : values;
+					var rowValues = isFunction(values) ? values(row) : values;
 					if (!rowValues) continue;
 					cnt++;
 					var lastChange = (this.changes[row.idx]) || {};
-					var change =  {action: 'update', source: lastChange.source || $.extend({}, row), values: $.extend({}, lastChange.values || {}, rowValues), current: null};
+					var change =  {action: 'update', source: lastChange.source || extend({}, row), values: extend({}, lastChange.values || {}, rowValues), current: null};
 					for (var fieldName in rowValues) {
 						row[fieldName] = rowValues[fieldName];
 					}
 					change.current = row;
 					if (!soft) {
-						operationChanges.push($.extend({}, change, {patch: rowValues}));
+						operationChanges.push(extend({}, change, {patch: rowValues}));
 						this.changes[row.idx] = change;
 					}
 				}
@@ -380,7 +548,7 @@
 			};
 			this.update(function (row) {
 				if (!patchMap[row[key]]) return false;
-				var patch = $.extend({}, patchMap[row[key]]);
+				var patch = extend({}, patchMap[row[key]]);
 				delete patch[key];
 				return patch;
 			}, soft);
@@ -391,7 +559,7 @@
 		 * @param {Array|Object} rows
 		 */
 		add: function (rows, soft) {
-			rows = $.isArray(rows) ? rows : [rows];
+			rows = isArray(rows) ? rows : [rows];
 			soft = soft || this.softMode;
 			var rowsToAdd = [];
 			var operationChanges = [];
@@ -476,7 +644,7 @@
 				this.rows.push(change.source)
 			}
 
-			this.fire('change', {action: 'rollback', changes: $.extend({}, this.changes)});
+			this.fire('change', {action: 'rollback', changes: extend({}, this.changes)});
 			this.changes = {};
 		},
 
@@ -502,10 +670,10 @@
 			var newDefaults = [];
 			if (!length) return false;
 			for (var i = 0; i < length; i++) {
-				var field = $.extend({name: false, compute: false}, typeof(fields[i]) == 'string' ? {name: fields[i]} : fields[i]);
+				var field = extend({name: false, compute: false}, typeof(fields[i]) == 'string' ? {name: fields[i]} : fields[i]);
 				if (!field.name) continue;
 				var isNewColumn = false;
-				var columnExist = ~$.inArray(field.name, this.columns);
+				var columnExist = ~this.columns.indexOf(field.name);
 				if (!columnExist) {
 					isNewColumn = true;
 					this.columns.push(field.name);
@@ -692,7 +860,7 @@
 
 			if (item instanceof Array) {
 				for (var i = 0; i < item.length; i++) {
-					if (this.test(item[i], expr, null, $.extend({}, options, {currentItem: item}) )) return true;
+					if (this.test(item[i], expr, null, extend({}, options, {currentItem: item}) )) return true;
 				}
 				return false;
 			}
@@ -813,14 +981,14 @@
 			data = expr ? Qstore.findIn(data, expr) : data;
 			for (var i = 0; i < data.length; i++) {
 				var value = Qstore.getVal(data[i], key);
-				if (~$.inArray(value, list)) continue;
+				if (~list.indexOf(value)) continue;
 				list.push(value);
 			}
 			return list;
 		},
 
 		indexBy: function (data, indexes, options) {
-			options = $.extend({}, {alwaysWrap: false, undefinedKey: false}, options)
+			options = extend({}, {alwaysWrap: false, undefinedKey: false}, options)
 			var result = {};
 			if (!(indexes instanceof Array)) indexes = [indexes];
 			var index = indexes[0];
@@ -882,13 +1050,13 @@
 			for (var i = 0; i < result.length; i++) {
 				var rowGroup = result[i];
 				var additionalValues = Qstore.getFields(rowGroup, additional);
-				$.extend(rowGroup, additionalValues);
+				extend(rowGroup, additionalValues);
 			}
 			return result;
 		},
 
 		mapOf: function (data, indexes, options) {
-			return Qstore.indexBy(data, indexes, $.extend({}, {alwaysWrap: true}, options));
+			return Qstore.indexBy(data, indexes, extend({}, {alwaysWrap: true}, options));
 		},
 
 		flatten: function (map, keys) {
@@ -987,7 +1155,7 @@
 							result[fnValue] = true;
 						} else result = fnValue;
 					}
-					$.extend(filteredRow, result);
+					extend(filteredRow, result);
 				}
 			} else for (var key in fields) {
 				if (key == '$add') continue;
@@ -1006,7 +1174,7 @@
 //					fnName = fnName.split('$')[1];
 					var args = fields[key];
 				}
-				$.extend(filteredRow, Qstore.getField(row, way, alias, undefined, args));
+				extend(filteredRow, Qstore.getField(row, way, alias, undefined, args));
 			}
 			return filteredRow;
 		},
@@ -1165,4 +1333,6 @@
 	}
 
 
-})(window);
+})(window || {});
+
+module.exports || module.exports(Qstore);

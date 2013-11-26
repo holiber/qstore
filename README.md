@@ -202,15 +202,15 @@ Deep search in object:
 
 ```js
 
-usersMessages = new Qstore ({
-	columns: ['text', 'subject', 'user'],
-	rows: [
-		['Hi', 'new year', {id: 1, name: 'Bob', company: {name: 'IBM', phone: '+9999'} }],
-		['Happy new year!', 'new year', {id: 2, name: 'Kate', company: {name: 'Microsoft', phone: '+8888'}}],
-		['How to learn javascript?', 'programming', {id: 2, name: 'Stan'}],
-		['Anyone want to dance?', 'new year', {id: 2, name: 'James'}]
-	]
-});
+	var usersMessages = new Qstore ({
+		columns: ['text', 'subject', 'user'],
+		rows: [
+			['Hi', 'new year', {id: 1, name: 'Bob', company: {name: 'IBM', phone: '+9999'} }],
+			['Happy new year!', 'new year', {id: 2, name: 'Kate', company: {name: 'Microsoft', phone: '+8888'}}],
+			['How to learn javascript?', 'programming', {id: 2, name: 'Stan'}],
+			['Anyone want to dance?', 'new year', {id: 2, name: 'James'}]
+		]
+	});
 
 	// find all messages with subject 'New year' from user with name 'Bob' who works in 'IBM' company
 	
@@ -711,6 +711,9 @@ Result of previous example:
 
 ```
 
+You can also use static implementation of *.indexBy* :
+**Qstore.indexBy (items, indexes)**
+
 ---
 
 <a name="mapOf"></a>
@@ -764,6 +767,9 @@ in previous example *.mapOf* returns object like this:
 	}
 }
 ```
+
+You can also use static implementation of *.mapOf* :
+**Qstore.mapOf (items, indexes)**
 
 ---
 
