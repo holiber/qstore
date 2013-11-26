@@ -6,7 +6,7 @@
 * @license Licensed under the MIT license.
 * @see http://github.com/holiber/qstore
 *
-* build at 2013-11-26 21:05
+* build at 2013-11-26 22:53
 */
 
 ;(function (context) {
@@ -1344,6 +1344,6 @@
 	}
 
 
-})(window || {});
+})(typeof window === 'undefined' ? {} : window);
 
 module.exports || module.exports(Qstore);

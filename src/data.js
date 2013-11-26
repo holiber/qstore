@@ -1333,6 +1333,6 @@
 	}
 
 
-})(window || {});
+})(typeof window === 'undefined' ? {} : window);
 
 module.exports || module.exports(Qstore);
