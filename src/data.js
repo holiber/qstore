@@ -1,3 +1,5 @@
+if (typeof window === 'undefined') var window = {};
+
 ;(function (context) {
 
 	// extend method, got from https://github.com/justmoon/node-extend
@@ -1332,7 +1334,7 @@
 		Qstore.addOperator(fnName, builtInOperators[fnName].fn, builtInOperators[fnName].isSimple);
 	}
 
+})(window);
 
-})(typeof window === 'undefined' ? {} : window);
-
-module.exports || module.exports(Qstore);
+// export nodejs module
+if (module.exports) module.exports = window.Qstore;
