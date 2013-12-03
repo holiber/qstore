@@ -1337,4 +1337,4 @@ if (typeof window === 'undefined') var window = {};
 })(window);
 
 // export nodejs module
-if (module.exports) module.exports = window.Qstore;
+if (typeof(module) != 'undefined' && module.exports) module.exports = window.Qstore;
