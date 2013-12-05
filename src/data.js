@@ -1,5 +1,4 @@
-if (typeof window === 'undefined') var window = {};
-
+;var context = (typeof window !== 'undefined') ? window : {};
 ;(function (context) {
 
 	// extend method, got from https://github.com/justmoon/node-extend
@@ -274,7 +273,8 @@ if (typeof window === 'undefined') var window = {};
 		 * @returns {Qstore}
 		 */
 		search: function (expr, fields, options) {
-			return new Qstore(this.find(expr, fields, options));
+			//console.log(this)
+			return new this.constructor(this.find(expr, fields, options));
 		},
 
 		/**
@@ -1276,7 +1276,7 @@ if (typeof window === 'undefined') var window = {};
 		Qstore.addOperator(fnName, builtInOperators[fnName].fn, builtInOperators[fnName].isSimple);
 	}
 
-})(window);
+})(context);
 
 // export nodejs module
-if (typeof(module) != 'undefined' && module.exports) module.exports = window.Qstore;
+if (typeof(module) != 'undefined' && module.exports) module.exports = context.Qstore;

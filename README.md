@@ -319,6 +319,12 @@ Same as [.find](#find) but returns Qstore collection
 	fruits.search({color: 'red'}).sort({fieldName: 'type', order: 'asc');
 ```
 
+**search** with extending
+
+```js
+	clients.search({status: 'online'}).sendMessage('hello!');
+```
+
  ---
 
 <a name="findOne"></a>
