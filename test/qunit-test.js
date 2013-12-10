@@ -147,7 +147,7 @@ window.mittings = new Qstore({
 		[13, 'may', 2013, 'Meeting with Cleopatra']
 	]
 
-})
+});
 
 // other tests
 
@@ -280,7 +280,7 @@ test('getList', 5, function () {
 });
 
 
-test('groupings', 8, function () {
+test('groupings', 12, function () {
 	equal(json(users.indexBy('name')),
 		'{"Bob":{"idx":1,"id":12,"name":"Bob","friends":["Mike","Sam"]},"Martin":{"idx":2,"id":4,"name":"Martin","friends":["Bob"]},"Mike":{"idx":3,"id":5,"name":"Mike","friends":["Bob","Martin","Sam"]},"Sam":[{"idx":4,"id":10,"name":"Sam","friends":[]},{"idx":5,"id":15,"name":"Sam","friends":["Mike"]}]}',
 		'indexBy single index'
@@ -314,11 +314,45 @@ test('groupings', 8, function () {
 	equal(json(shops.search({country: ['Germany', 'France']}).groupBy('country', 'city').rows),
 		'[{"idx":1,"country":"France","_g":[{"city":"Paris","_g":[{"idx":3,"country":"France","city":"Paris","address":"de rivoli st. 20"},{"idx":4,"country":"France","city":"Paris","address":"pelleport st. 3"}]}]},{"idx":2,"country":"Germany","_g":[{"city":"Dresden","_g":[{"idx":5,"country":"Germany","city":"Dresden","address":"haydn st. 2"}]},{"city":"Berlin","_g":[{"idx":6,"country":"Germany","city":"Berlin","address":"bornitz st. 50"}]},{"city":"Munchen","_g":[{"idx":7,"country":"Germany","city":"Munchen","address":"eva st. 12"}]}]}]',
 		'group by one value and then by another'
-	)
+	);
 
 	equal(json(contacts.search(true, true, {limit: [5,8]}).groupBy('name.$first:letter').rows),
 		'[{"idx":1,"letter":"W","_g":[{"idx":5,"name":"Walt Disney","phone":"123456464"},{"idx":8,"name":"William Shakespeare","phone":"235667"}]},{"idx":2,"letter":"A","_g":[{"idx":6,"name":"Albert Einstein","phone":"0865443"},{"idx":7,"name":"Aristotle","phone":"23090533"}]}]',
 		'alias and function in groupBy'
-	)
+	);
 
+	equal(json(shops.search({country: ['Germany', 'Russia']}).groupBy({country: true, $add: {shopsCount: '_g.$length'}}).rows),
+		'[{"idx":1,"country":"Germany","_g":[{"idx":5,"country":"Germany","city":"Dresden","address":"haydn st. 2"},{"idx":6,"country":"Germany","city":"Berlin","address":"bornitz st. 50"},{"idx":7,"country":"Germany","city":"Munchen","address":"eva st. 12"}],"shopsCount":3},{"idx":2,"country":"Russia","_g":[{"idx":8,"country":"Russia","city":"Vladivostok","address":"stroiteley st. 9"}],"shopsCount":1}]',
+		'additional fields in groupBy (object notation)'
+	);
+
+	equal(json(shops.search({country: ['Germany', 'Russia']}).groupBy({country: true, $add: ['_g.$length:shopsCount']}).rows),
+		'[{"idx":1,"country":"Germany","_g":[{"idx":5,"country":"Germany","city":"Dresden","address":"haydn st. 2"},{"idx":6,"country":"Germany","city":"Berlin","address":"bornitz st. 50"},{"idx":7,"country":"Germany","city":"Munchen","address":"eva st. 12"}],"shopsCount":3},{"idx":2,"country":"Russia","_g":[{"idx":8,"country":"Russia","city":"Vladivostok","address":"stroiteley st. 9"}],"shopsCount":1}]',
+		'additional fields in groupBy (array notation)'
+	);
+
+	equal(json(shops.search({country: ['Germany', 'Russia']}).groupBy({
+			country: true,
+			$add: {
+				shopsCities: function (item) {
+					var cities = Qstore.getList(item._g, 'city');
+					return cities.join(', ');
+				}
+			}
+		}).rows),
+		'[{"idx":1,"country":"Germany","_g":[{"idx":5,"country":"Germany","city":"Dresden","address":"haydn st. 2"},{"idx":6,"country":"Germany","city":"Berlin","address":"bornitz st. 50"},{"idx":7,"country":"Germany","city":"Munchen","address":"eva st. 12"}],"shopsCities":"Dresden, Berlin, Munchen"},{"idx":2,"country":"Russia","_g":[{"idx":8,"country":"Russia","city":"Vladivostok","address":"stroiteley st. 9"}],"shopsCities":"Vladivostok"}]',
+		'function as additional field in groupBy'
+	);
+
+	equal(json(shops.search({country: ['Germany', 'Russia']}).groupBy({
+			country: true,
+			$add: function (item) {
+				return {
+					oneOfCity: Qstore.first(item._g).city
+				}
+			}
+		}).rows),
+		'[{"idx":1,"country":"Germany","_g":[{"idx":5,"country":"Germany","city":"Dresden","address":"haydn st. 2"},{"idx":6,"country":"Germany","city":"Berlin","address":"bornitz st. 50"},{"idx":7,"country":"Germany","city":"Munchen","address":"eva st. 12"}],"oneOfCity":"Dresden"},{"idx":2,"country":"Russia","_g":[{"idx":8,"country":"Russia","city":"Vladivostok","address":"stroiteley st. 9"}],"oneOfCity":"Vladivostok"}]',
+		'function that returns additional fields in group by'
+	);
 });

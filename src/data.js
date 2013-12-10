@@ -152,27 +152,6 @@
 		return new F;
 	};
 
-	var hasOwn = Object.prototype.hasOwnProperty;
-	var toString = Object.prototype.toString;
-
-	function isPlainObject(obj) {
-		if (!obj || toString.call(obj) !== '[object Object]' || obj.nodeType || obj.setInterval)
-			return false;
-
-		var has_own_constructor = hasOwn.call(obj, 'constructor');
-		var has_is_property_of_method = hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
-		// Not own constructor property must be Object
-		if (obj.constructor && !has_own_constructor && !has_is_property_of_method)
-			return false;
-
-		// Own properties are enumerated firstly, so to speed up,
-		// if last one is own, then all properties are own.
-		var key;
-		for ( key in obj ) {}
-
-		return key === undefined || hasOwn.call( obj, key );
-	};
-
 	/*Qstore*/
 	var Qstore = context.Qstore = Class.extend({
 
@@ -1045,7 +1024,7 @@
 			if (fields instanceof Array) for (var i = fields.length; i--;) {
 				results.push(Qstore.getField(row, fields[i]));
 			} else for (var expr in fields) {
-				if (key == '$add') continue;
+				if (expr == '$add') continue;
 				results.push(Qstore.getField(row, expr, fields[expr]));
 			}
 			for (var i = 0; i < results.length;i++) {
@@ -1059,6 +1038,9 @@
 
 		getField: function (row, expr, arg) {
 			var alias;
+			if (typeof expr == 'function') {
+				return expr(row);
+			}
 			if (typeof arg == 'string') {
 				alias = expr;
 				expr = arg;
@@ -1098,105 +1080,10 @@
 				curVal = curVal[wayPart];
 			}
 			if (typeof arg == 'function') {
-				curVal = arg(curVal, item);
+				curVal = arg(item, curVal);
 			}
 			return curVal;
 		},
-
-//
-//		/**
-//		 *
-//		 * @param item
-//		 * @param key
-//		 * @param [fnName]
-//		 * @param [args]
-//		 * @returns {*}
-//		 */
-//		getVal: function (item, key, fnName, args) {
-//			if (typeof key == 'function') return key(item);
-//			var way = key.split('.');
-//			var curVal = item;
-//
-//			if (fnName) {
-//				var fn = this.functions[fnName];
-//				if (!fn) throw 'function ' + fnName + ' not found';
-//				curVal = (args === undefined) ? fn(curVal) : fn(curVal, args);
-//				return curVal;
-//			}
-//
-//			for (var i = 0; i < way.length; i++) {
-//				var wayPart = way[i];
-//				if (wayPart.charAt(0) == '$') {
-//					var fnDesc = wayPart.split('$')[1].split('(');
-//					var fnName = fnDesc[0];
-//					var args = fnDesc[1] ? fnDesc[1].substr(0, fnDesc[1].length - 1) : null;
-//					var fn = this.functions[fnName];
-//					if (fn) curVal = (args) ? fn(curVal, args) : fn(curVal);
-//					else throw 'function ' + fnName + ' not found';
-//					continue;
-//				}
-//				if (typeof curVal != 'object') return undefined;
-//				curVal = curVal[wayPart];
-//			}
-//
-//			return curVal;
-//		},
-//
-//		getFields: function (row, fields, options) {
-//			if (typeof fields != 'object') fields = [fields];
-//			var filteredRow = {};
-//			var currentRow = null;
-//			if (fields instanceof Array) {
-//				for (var i = fields.length; i--;) {
-//					currentRow = row;
-//					var result = null;
-//					if (typeof fields[i] == 'string') {
-//						var fieldDef = fields[i].split(':');
-//						var way = fieldDef[0];
-//						var alias = fieldDef[1];
-//						result = Qstore.getField(currentRow, way, alias);
-//					} else if (typeof  fields[i] == 'object'){
-//						result = Qstore.getFields(row, fields[i], options)
-//					} else if (typeof fields[i] == 'function') {
-//						//TODO:
-//						fnValue = fields[i](row);
-//						if (typeof fnValue == 'string') {
-//							result = {};
-//							result[fnValue] = true;
-//						} else result = fnValue;
-//					}
-//					extend(filteredRow, result);
-//				}
-//			} else for (var key in fields) {
-//				if (key == '$add') continue;
-//				if (typeof fields[key] === true) {
-//					var alias = key;
-//					var way = fields[key];
-//				} else {
-//					var fieldDef = key.split(':');
-//					var way = fieldDef[0];
-//					var alias = fieldDef[1];
-////					var fnDef = fields[key];
-////					for (var fnName in fnDef) {
-////						var args = fnDef[fnName];
-////						break;
-////					}
-////					fnName = fnName.split('$')[1];
-//					var args = fields[key];
-//				}
-//				extend(filteredRow, Qstore.getField(row, way, alias, undefined, args));
-//			}
-//			return filteredRow;
-//		},
-//
-//		getField: function (row, way, alias, fn, args) {
-//			if (alias === '') return Qstore.getVal(row, way, fn, args);
-//			if (alias === undefined) alias = way;
-//			if (way === true) way = alias;
-//			var result = {};
-//			result[alias] = Qstore.getVal(row, way, fn, args);
-//			return result;
-//		},
 
 		getAdditionalFields: function (fields) {
 			var fnSearchInObject = function (obj) {
