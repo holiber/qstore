@@ -108,7 +108,8 @@ window.shops = new Qstore ({
 	rows: [
 		['UK', 'London', 'mace st. 5'],
 		['UK', 'York', 'temple ave. 10'],
-		['France', 'Paris', 'rue de rivoli st. 20'],
+		['France', 'Paris', 'de rivoli st. 20'],
+		['France', 'Paris', 'pelleport st. 3'],
 		['Germany', 'Dresden', 'haydn st. 2'],
 		['Germany', 'Berlin', 'bornitz st. 50'],
 		['Germany', 'Munchen', 'eva st. 12'],
@@ -116,11 +117,41 @@ window.shops = new Qstore ({
 	]
 });
 
+window.contacts = new Qstore({
+	columns: ['name', 'phone'],
+	rows: [
+		['Leonardo Da Vinci', '23090533'],
+		['Elvis Presley', '247543'],
+		['Christopher Columbus', '85321443'],
+		['Pablo Piccaso', '2512567'],
+		['Walt Disney', '123456464'],
+		['Albert Einstein', '0865443'],
+		['Aristotle', '23090533'],
+		['William Shakespeare', '235667'],
+		['Ludwig van Beethoven', '245433'],
+		['Cleopatra', '346422'],
+		['Paul McCartney', '5532173'],
+	]
+});
 
+window.mittings = new Qstore({
+	columns: ['day','month', 'year', 'details'],
+	rows: [
+		[2, 'feb', 2012, 'Meeting with Albert Einstein'],
+		[14, 'feb', 2012,'Meeting with Elvis Presley'],
+		[20, 'feb', 2013, 'Meeting with Christopher Columbus'],
+		[3, 'mar', 2013, 'Meeting with Pablo Piccaso'],
+		[2, 'apr', 2013, 'Meeting with Walt Disney'],
+		[10, 'apr', 2013,'Meeting with Aristotle'],
+		[11, 'may', 2013, 'Meeting with William Shakespeare'],
+		[13, 'may', 2013, 'Meeting with Cleopatra']
+	]
+
+})
 
 // other tests
 
-test('data search', 10, function() {
+test('data search', 11, function () {
 
 	equal(json(clothes.find(true)),
 		'[{"idx":1,"name":"skirt","sizes":[42,48,50]},{"idx":2,"name":"jeans","sizes":[48,54]},{"idx":3,"name":"skirt","sizes":[42,45,48]}]',
@@ -170,6 +201,11 @@ test('data search', 10, function() {
 	equal(json(clothes.find({sizes: {$has: 42}})),
 		'[{"idx":1,"name":"skirt","sizes":[42,48,50]},{"idx":3,"name":"skirt","sizes":[42,45,48]}]',
 		'$has operator'
+	);
+
+	equal(json(clothes.find({sizes: {$has: [42,45]}})),
+		'[{"idx":1,"name":"skirt","sizes":[42,48,50]},{"idx":3,"name":"skirt","sizes":[42,45,48]}]',
+		'$has operator with array as argument'
 	)
 });
 
@@ -194,7 +230,7 @@ test('limits', 3, function() {
 });
 
 
-test('fields selection', 6, function () {
+test('fields selection', 7, function () {
 
 	equal(json(fruits.find({type: 'apple'}, ['type', 'color', 'price'])),
 		'[{"price":1.5,"color":"red","type":"apple"},{"price":1.2,"color":"yellow","type":"apple"},{"price":1,"color":"green","type":"apple"}]',
@@ -211,6 +247,11 @@ test('fields selection', 6, function () {
 		'object notation'
 	);
 
+	equal(json(users.find({name: 'Mike'}, {username: 'name', friendsCnt: 'friends.$length'})),
+		'[{"username":"Mike","friendsCnt":3}]',
+		'aliases in object notation'
+	);
+
 	equal(json(usersChanges.find(true, ['source.id:id', 'patch:'])),
 		'[{"name":"Mike","id":2},{"age":31,"id":4}]',
 		'fields extraction'
@@ -224,7 +265,9 @@ test('fields selection', 6, function () {
 	equal(json(costumes.find(true, ['name', 'items.$getList("color"):colors'])),
 		'[{"colors":["black","blue"],"name":"policeman"},{"colors":["yellow"],"name":"fireman"},{"colors":["green"],"name":"solder"},{"colors":["green","pink"],"name":"zombie"}]',
 		'functions with additional arguments'
-	)
+	);
+
+
 });
 
 
@@ -237,6 +280,45 @@ test('getList', 5, function () {
 });
 
 
-//test('functions', function () {
-//
-//});
+test('groupings', 8, function () {
+	equal(json(users.indexBy('name')),
+		'{"Bob":{"idx":1,"id":12,"name":"Bob","friends":["Mike","Sam"]},"Martin":{"idx":2,"id":4,"name":"Martin","friends":["Bob"]},"Mike":{"idx":3,"id":5,"name":"Mike","friends":["Bob","Martin","Sam"]},"Sam":[{"idx":4,"id":10,"name":"Sam","friends":[]},{"idx":5,"id":15,"name":"Sam","friends":["Mike"]}]}',
+		'indexBy single index'
+	);
+
+	equal(json(users.indexBy(['name', 'id'])),
+		'{"Bob":{"12":{"idx":1,"id":12,"name":"Bob","friends":["Mike","Sam"]}},"Martin":{"4":{"idx":2,"id":4,"name":"Martin","friends":["Bob"]}},"Mike":{"5":{"idx":3,"id":5,"name":"Mike","friends":["Bob","Martin","Sam"]}},"Sam":{"10":{"idx":4,"id":10,"name":"Sam","friends":[]},"15":{"idx":5,"id":15,"name":"Sam","friends":["Mike"]}}}',
+		'indexBy double index'
+	);
+
+	equal(json(shops.mapOf(['country', 'city'])),
+		'{"UK":{"London":[{"idx":1,"country":"UK","city":"London","address":"mace st. 5"}],"York":[{"idx":2,"country":"UK","city":"York","address":"temple ave. 10"}]},"France":{"Paris":[{"idx":3,"country":"France","city":"Paris","address":"de rivoli st. 20"},{"idx":4,"country":"France","city":"Paris","address":"pelleport st. 3"}]},"Germany":{"Dresden":[{"idx":5,"country":"Germany","city":"Dresden","address":"haydn st. 2"}],"Berlin":[{"idx":6,"country":"Germany","city":"Berlin","address":"bornitz st. 50"}],"Munchen":[{"idx":7,"country":"Germany","city":"Munchen","address":"eva st. 12"}]},"Russia":{"Vladivostok":[{"idx":8,"country":"Russia","city":"Vladivostok","address":"stroiteley st. 9"}]}}',
+		'mapOf'
+	);
+
+	equal(json(shops.search(true, true, {limit: 4}).mapOf(function (item) {return item.country + ' - ' + item.city})),
+		'{"UK - London":[{"idx":1,"country":"UK","city":"London","address":"mace st. 5"}],"UK - York":[{"idx":2,"country":"UK","city":"York","address":"temple ave. 10"}],"France - Paris":[{"idx":3,"country":"France","city":"Paris","address":"de rivoli st. 20"},{"idx":4,"country":"France","city":"Paris","address":"pelleport st. 3"}]}',
+		'function as index'
+	);
+
+	equal(json(shops.search({country: ['Germany', 'France']}).groupBy('country').rows),
+		'[{"idx":1,"country":"France","_g":[{"idx":3,"country":"France","city":"Paris","address":"de rivoli st. 20"},{"idx":4,"country":"France","city":"Paris","address":"pelleport st. 3"}]},{"idx":2,"country":"Germany","_g":[{"idx":5,"country":"Germany","city":"Dresden","address":"haydn st. 2"},{"idx":6,"country":"Germany","city":"Berlin","address":"bornitz st. 50"},{"idx":7,"country":"Germany","city":"Munchen","address":"eva st. 12"}]}]',
+		'simple groupBy'
+	);
+
+	equal(json(shops.search(true, true, {limit: 4}).groupBy(['country', 'city']).rows),
+		'[{"idx":1,"city":"London","country":"UK","_g":[{"idx":1,"country":"UK","city":"London","address":"mace st. 5"}]},{"idx":2,"city":"York","country":"UK","_g":[{"idx":2,"country":"UK","city":"York","address":"temple ave. 10"}]},{"idx":3,"city":"Paris","country":"France","_g":[{"idx":3,"country":"France","city":"Paris","address":"de rivoli st. 20"},{"idx":4,"country":"France","city":"Paris","address":"pelleport st. 3"}]}]',
+		'group by two fields'
+	);
+
+	equal(json(shops.search({country: ['Germany', 'France']}).groupBy('country', 'city').rows),
+		'[{"idx":1,"country":"France","_g":[{"city":"Paris","_g":[{"idx":3,"country":"France","city":"Paris","address":"de rivoli st. 20"},{"idx":4,"country":"France","city":"Paris","address":"pelleport st. 3"}]}]},{"idx":2,"country":"Germany","_g":[{"city":"Dresden","_g":[{"idx":5,"country":"Germany","city":"Dresden","address":"haydn st. 2"}]},{"city":"Berlin","_g":[{"idx":6,"country":"Germany","city":"Berlin","address":"bornitz st. 50"}]},{"city":"Munchen","_g":[{"idx":7,"country":"Germany","city":"Munchen","address":"eva st. 12"}]}]}]',
+		'group by one value and then by another'
+	)
+
+	equal(json(contacts.search(true, true, {limit: [5,8]}).groupBy('name.$first:letter').rows),
+		'[{"idx":1,"letter":"W","_g":[{"idx":5,"name":"Walt Disney","phone":"123456464"},{"idx":8,"name":"William Shakespeare","phone":"235667"}]},{"idx":2,"letter":"A","_g":[{"idx":6,"name":"Albert Einstein","phone":"0865443"},{"idx":7,"name":"Aristotle","phone":"23090533"}]}]',
+		'alias and function in groupBy'
+	)
+
+});

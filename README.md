@@ -239,7 +239,7 @@ Deep search in collection:
 <a name="aliases"></a>
 #####Aliases:
 
-You can use aliases fields using the syntax *"fieldName:aliasName"*
+You can create aliases for fields by using the syntax *"fieldName:aliasName"* or by alias map
 
 ```js
 	// create collection of messages
@@ -252,9 +252,25 @@ You can use aliases fields using the syntax *"fieldName:aliasName"*
 			['Anyone want to dance?', 'new year', {id: 2, name: 'James'}]
 		]
 	});
-	
-	messages.find({subject: 'new year'}, ['text', 'user.name:userName']);// it will return:
+
+	// we need to select "text" and "user.name" from messages collection
+
+	// first way
+	messages.find({subject: 'new year'}, ['text', 'user.name:userName']);
+
+	// second way
+	messages.find({subject: 'new year'}, {text: true, userName: 'user.name'});
+
 	// [ {text: 'Happy new year!', userName: 'Kate'}, {text: 'Anyone want to dance?', userName: 'James'}]
+```
+
+result of example:
+
+```js
+	[
+		{text: 'Happy new year!', userName: 'Kate'},
+		{text: 'Anyone want to dance?', userName: 'James'}
+	]
 ```
 
 Use *"fieldname:"* syntax to extract field values on one level up.
@@ -772,7 +788,32 @@ in previous example *.mapOf* returns object like this:
 		York: Array[1]
 	}
 }
+
 ```
+
+You can use function which returns index:
+
+```js
+
+	shops.mapOf(function (shop) {
+		return shop.country + ' - ' + shop.city
+	});
+
+```
+
+Reslut:
+
+```js
+	'France - Paris': Array[2]
+	'Germany - Berlin': Array[1]
+	'Germany - Dresden': Array[1]
+	'Germany - Munchen': Array[1]
+	'Russia - Vladivostok': Array[1]
+	'UK - London': Array[1]
+	'UK - York': Array[1]
+```
+
+
 
 You can also use static implementation of *.mapOf* :
 **Qstore.mapOf (items, indexes)**
