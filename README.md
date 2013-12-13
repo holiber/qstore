@@ -987,7 +987,7 @@ Examples:
 		{fieldName: 'price', order: 'desc'},
 	]);
 	
-	// sort by price, zero values will be in end of collection
+	// sort by price, zero values will be in the end of collection
 	fruits.sort({fieldName: 'price', zeroIsLast: true});
 	
 	// use sort function
