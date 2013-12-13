@@ -417,6 +417,10 @@ Examples:
 	
 	// list of deep fields
 	messages.getList('user.name'); // ['Bob', 'Kate', 'Stan', 'James']
+
+	// use function
+	in development
+
 ```
  ---
  

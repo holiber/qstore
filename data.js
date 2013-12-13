@@ -6,7 +6,7 @@
 * @license Licensed under the MIT license.
 * @see http://github.com/holiber/qstore
 *
-* build at 2013-12-11 0:35
+* build at 2013-12-13 19:03
 */
 
 ;var context = (typeof window !== 'undefined') ? window : {};
@@ -291,6 +291,7 @@
 		mapOf: function (indexes, options) {
 			return Qstore.mapOf(this.rows, indexes, options);
 		},
+
 
 		groupBy: function () {
 			var args = Array.prototype.slice.call(arguments);
@@ -780,7 +781,7 @@
 					case '$lt': return item < expr;
 					case '$gte': return item >= expr;
 					case '$lte': return item <= expr;
-					case '$like': return item !== null ? ~String(item).toLowerCase().indexOf(expr) : false;
+					case '$like': return item !== null ? ~String(item).toLowerCase().indexOf(expr.toLowerCase()) : false;
 					default:
 						//search custom operator
 						var operator = flag.split('$')[1];
@@ -905,7 +906,7 @@
 		 * @returns {Array}
 		 */
 		getList: function (data, expr, key) {
-			if (typeof(expr) == 'string') {
+			if (typeof(expr) == 'string' || typeof(expr) == 'function') {
 				key = expr;
 				expr = null;
 			}
@@ -1072,6 +1073,11 @@
 		},
 
 		getVal: function (item, key, arg) {
+
+			if (typeof key == 'function') {
+				return key(item, arg);
+			}
+
 			var way = key.split('.');
 			var curVal = item;
 
@@ -1191,11 +1197,11 @@
 			return String(item).toLowerCase();
 		},
 
-		asNumber: function (item) {
+		toNumber: function (item) {
 			return Number(item);
 		},
 
-		asString: function (item) {
+		toString: function (item) {
 			return String(item);
 		}
 	}

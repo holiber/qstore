@@ -895,7 +895,7 @@
 		 * @returns {Array}
 		 */
 		getList: function (data, expr, key) {
-			if (typeof(expr) == 'string') {
+			if (typeof(expr) == 'string' || typeof(expr) == 'function') {
 				key = expr;
 				expr = null;
 			}
@@ -1062,6 +1062,11 @@
 		},
 
 		getVal: function (item, key, arg) {
+
+			if (typeof key == 'function') {
+				return key(item, arg);
+			}
+
 			var way = key.split('.');
 			var curVal = item;
 
