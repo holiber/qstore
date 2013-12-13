@@ -292,7 +292,6 @@
 			return Qstore.mapOf(this.rows, indexes, options);
 		},
 
-
 		groupBy: function () {
 			var args = Array.prototype.slice.call(arguments);
 			args.unshift(this.rows);

@@ -638,8 +638,8 @@ But in this case the right way - using a [deep search](#deepSearch).
  $getList 	| use **Qstore.getList** method
  $upper		| translate string to upper case
  $lower		| translate string to lower case
- $asNumber 	| cast to Number
- $asString	| cast to String
+ $toNumber 	| cast to Number
+ $toString	| cast to String
 
 
 You can also add your functions - see [addFunction](#addFunction) method

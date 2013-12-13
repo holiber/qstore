@@ -770,7 +770,7 @@
 					case '$lt': return item < expr;
 					case '$gte': return item >= expr;
 					case '$lte': return item <= expr;
-					case '$like': return item !== null ? ~String(item).toLowerCase().indexOf(expr) : false;
+					case '$like': return item !== null ? ~String(item).toLowerCase().indexOf(expr.toLowerCase()) : false;
 					default:
 						//search custom operator
 						var operator = flag.split('$')[1];
@@ -1181,11 +1181,11 @@
 			return String(item).toLowerCase();
 		},
 
-		asNumber: function (item) {
+		toNumber: function (item) {
 			return Number(item);
 		},
 
-		asString: function (item) {
+		toString: function (item) {
 			return String(item);
 		}
 	}
