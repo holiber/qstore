@@ -418,10 +418,14 @@ Examples:
 	// list of deep fields
 	messages.getList('user.name'); // ['Bob', 'Kate', 'Stan', 'James']
 
-	// use function
-	in development
+	// you can also use function instead field name
+	fruits.getList({type: 'apple'}, function (fruit) {
+		return fruit.color + ' ' + fruit.type}
+	} // ['red apple', 'yellow apple', 'green apple']
 
 ```
+
+
  ---
  
 <a name="each"></a>
@@ -825,9 +829,65 @@ You can also use static implementation of *.mapOf* :
 ---
 
 <a name="groupBy"></a>
-#### .groupBy
+#### .groupBy (group1 [, group2, ..., groupN])
 
-in development
+Powerful method for creating grouped collections.
+Returns Qstore.
+
+Group by country:
+
+```js
+	var groups = shops.search({country: ['Germany', 'France']}).groupBy('country');
+```
+
+Result of groups.rows:
+
+```js
+	[
+		{
+			_g: Array[2],
+			country: "France",
+			idx: 1
+		},
+		{
+			_g: Array[3],
+			country: "Germany",
+			idx: 2
+		}
+	]
+```
+
+
+Group first 4 items by country and city:
+
+```js
+	var groups = shops.search(true, true, {limit: 4}).groupBy(['country', 'city'])
+```
+
+Result of groups.rows:
+
+```js
+	[
+		{
+			_g: Array[1],
+			city: "London",
+			country: "UK",
+			idx: 1
+		},
+		{
+			_g: Array[1],
+			city: "York",
+			country: "UK",
+			idx: 2
+		},
+		{
+			_g: Array[2]
+			city: "Paris"
+			country: "France"
+			idx: 3
+		}
+	]
+```
 
 ---
 

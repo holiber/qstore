@@ -939,6 +939,10 @@
 			return result;
 		},
 
+		/**
+		 * groupBy (data, group1 [,group2, ... , groupN])
+		 * @returns {Array}
+		 */
 		groupBy: function () {
 			var args = Array.prototype.slice.call(arguments);
 			var data = args[0];

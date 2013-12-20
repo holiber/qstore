@@ -267,16 +267,24 @@ test('fields selection', 7, function () {
 		'functions with additional arguments'
 	);
 
-
 });
 
 
-test('getList', 5, function () {
+test('getList', 7, function () {
 	equal(json(fruits.getList()), '[1,2,3,4,5,6,7,8,9,10]', '.getList()');
 	equal(json(fruits.getList('color')), '["red","green","yellow"]', '.getList(fieldName)');
 	equal(json(fruits.getList({type: 'pear'}, 'color')), '["green","red"]', '.getList(query, fieldName)');
 	equal(json(messages.getList('user.name')), '["Bob","Kate","Stan","James"]', 'deep fields');
 	equal(json(users.getList('friends.$length')), '[2,1,3,0]', 'functions usage');
+
+	equal(json(fruits.getList(function (fruit) { return fruit.color + ' ' + fruit.type})),
+		'["red apple","green pear","red pear","yellow apple","yellow pineapple","yellow banana","yellow melon","green watermelon","green apple","red strawberries"]',
+		'function as argument'
+	);
+	equal(json(fruits.getList({type: 'apple'}, function (fruit) { return fruit.color + ' ' + fruit.type})),
+		'["red apple","yellow apple","green apple"]',
+		'filter and function as arguments'
+	)
 });
 
 
