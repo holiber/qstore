@@ -859,6 +859,7 @@ Result of groups.rows:
 ```
 
 
+
 Group first 4 items by country and city:
 
 ```js
