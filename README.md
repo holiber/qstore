@@ -837,7 +837,8 @@ Returns Qstore.
 Group by country:
 
 ```js
-	var groups = shops.search({country: ['Germany', 'France']}).groupBy('country');
+	var items =  shops.search({country: ['Germany', 'France']});
+	var groups = items.groupBy('country');
 ```
 
 Result of groups.rows:
@@ -861,7 +862,8 @@ Result of groups.rows:
 Group first 4 items by country and city:
 
 ```js
-	var groups = shops.search(true, true, {limit: 4}).groupBy(['country', 'city'])
+	var items = shops.search(true, true, {limit: 4});
+	var groups = items.groupBy(['country', 'city']);
 ```
 
 Result of groups.rows:
@@ -887,6 +889,48 @@ Result of groups.rows:
 			idx: 3
 		}
 	]
+```
+
+Group by country and when by city:
+
+```js
+	var items = shops.search({country: ['Germany', 'France']});
+	var groups = items.groupBy('country', 'city').rows
+```
+
+Result of items.rows:
+
+```js
+[
+	{
+		_g: [
+			{
+				_g: Array[2],
+				city: "Paris"
+			}
+		],
+		country: "France",
+		idx: 1
+	},
+	{
+		_g: [
+			{
+				_g: Array[1],
+				city: "Dresden"
+			},
+			{
+				_g: Array[1],
+				city: "Berlin"
+			},
+			{
+				_g: Array[1],
+				city: "Munchen"
+			}
+		],
+		country: "Germany",
+		idx: 2
+	}
+]
 ```
 
 ---
