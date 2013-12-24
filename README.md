@@ -841,7 +841,7 @@ Group by country:
 	var groups = items.groupBy('country');
 ```
 
-Result of groups.rows:
+Result of `groups.rows`:
 
 ```js
 	[
@@ -865,7 +865,7 @@ Group first 4 items by country and city:
 	var groups = items.groupBy(['country', 'city']);
 ```
 
-Result of groups.rows:
+Result of `groups.rows`:
 
 ```js
 	[
@@ -890,7 +890,7 @@ Result of groups.rows:
 	]
 ```
 
-You can also use long syntax `items.groupBy({country: true, city: true})` instead 'items.groupBy(['country', 'city'])'.
+You can also use long syntax `items.groupBy({country: true, city: true})` instead `items.groupBy(['country', 'city'])`.
 You can use different ways of describing the same action:
 
 ```js
@@ -908,7 +908,7 @@ Group by country and when by city:
 	var groups = items.groupBy('country', 'city').rows
 ```
 
-Result of groups.rows:
+Result of `groups.rows`:
 
 ```js
 [
@@ -941,9 +941,49 @@ Result of groups.rows:
 		idx: 2
 	}
 ]
+
 ```
 
-Sometimes you need to add additional field which must be linked with group. For this case you can use special directive `$add`
+You also can use function instead field name:
+
+```js
+	// group contacts by first letter
+	var groups = contacts.sort('name').groupBy({
+		letter: function (contact) {
+			var firstLetter = contact.name.charAt(0);
+			if (firstLetter <= 'H') return 'A - H';
+			if (firstLetter >= 'R') return 'R - Z';
+			return 'I - Q';
+			}
+	});
+
+```
+
+Result of `groups.rows`:
+
+```js
+	[
+		{
+			_g: Array[5],
+			idx: 1,
+			letter: "A - H"
+		},
+		{
+			_g: Array[4],
+			idx: 2,
+			letter: "I - Q"
+		},
+		{
+			_g: Array[2],
+			idx: 3,
+			letter: "R - Z"
+		}
+	]
+```
+
+
+
+Sometimes you may need to add additional field which must be linked with group. For this case you can use special directive `$add`:
 
 ```js
 
@@ -956,7 +996,7 @@ Sometimes you need to add additional field which must be linked with group. For 
 
 ```
 
-Result of groups.rows
+Result of `groups.rows`:
 
 ```js
 	{
@@ -988,6 +1028,67 @@ Result of groups.rows
 
 Additional fields processed when operation of grouping was done, therefore in previous example we can got count of items
 in group with help of `$length` [function](#functions).
+
+You can use function as argument for `$add` directive:
+
+```js
+	// group by country and add cities list for each group
+	var groups = shops.groupBy({
+		country: true,
+		$add: function (item) {
+			var cities = Qstore.getList(item._g, 'city');
+			return {cities: cities.join(', ')};
+		}
+	});
+```
+
+Result of `groups.rows`:
+
+```js
+
+[
+	{
+		_g: Array[2],
+		cities: "London, York",
+		country: "UK",
+		idx: 1
+	},
+	{
+		_g: Array[2],
+		cities: "Paris",
+		country: "France",
+		idx: 2
+	},
+	{
+		_g: Array[3],
+		cities: "Dresden, Berlin, Munchen",
+		country: "Germany",
+		idx: 3
+	},
+	{
+		_g: Array[1],
+		cities: "Vladivostok",
+		country: "Russia",
+		idx: 4
+	}
+]
+
+```
+
+Also you can use function as value for additional field, and write previous in that manner:
+
+```js
+	var groups = shops.groupBy({
+		country: true,
+		$add: {
+			cities: function (item) {
+				var cities = Qstore.getList(item._g, 'city');
+				return cities.join(', ');
+			}
+		}
+	});
+```
+
 
 ---
 
