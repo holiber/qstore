@@ -858,9 +858,6 @@ Result of groups.rows:
 	]
 ```
 
-
-  
-
 Group first 4 items by country and city:
 
 ```js
@@ -893,6 +890,17 @@ Result of groups.rows:
 	]
 ```
 
+You can also use long syntax `items.groupBy({country: true, city: true})` instead 'items.groupBy(['country', 'city'])'.
+You can use different ways of describing the same action:
+
+```js
+	// group by field 'country' and set alias 'countryName' for this field
+	shops.groupBy('country:countryName');
+	shops.groupBy({'country:countryName': true});
+	shops.groupBy({countryName: 'country'});
+```
+
+
 Group by country and when by city:
 
 ```js
@@ -900,7 +908,7 @@ Group by country and when by city:
 	var groups = items.groupBy('country', 'city').rows
 ```
 
-Result of items.rows:
+Result of groups.rows:
 
 ```js
 [
@@ -934,6 +942,52 @@ Result of items.rows:
 	}
 ]
 ```
+
+Sometimes you need to add additional field which must be linked with group. For this case you can use special directive `$add`
+
+```js
+
+	var groups = shops.groupBy({
+		country: true,
+		$add: {
+			shopsCount: '_g.$length'
+		}
+	});
+
+```
+
+Result of groups.rows
+
+```js
+	{
+		_g: Array[2],
+		country: "UK",
+		idx: 1,
+		shopsCount: 2
+	},
+	{
+		_g: Array[2],
+		country: "France",
+		idx: 2,
+		shopsCount: 2
+	},
+	{
+		_g: Array[3]
+		country: "Germany"
+		idx: 3
+		shopsCount: 3
+	},
+	{
+		_g: Array[1]
+		country: "Russia"
+		idx: 4
+		shopsCount: 1
+	}
+
+```
+
+Additional fields processed when operation of grouping was done, therefore in previous example we can got count of items
+in group with help of `$length` [function](#functions).
 
 ---
 
