@@ -1446,12 +1446,13 @@ fruits.update({color: 'blue'}); // it will write to log:
 ```
  ---
 
-###Examples of collections
 <a name="exampleCollections"></a>
+###Examples of collections
+
 In many examples of the API docs using various collections. You can explore their in this section.
 
-####fruits
 <a name="fruits"></a>
+####fruits
 
 ```js
 
@@ -1475,8 +1476,8 @@ In many examples of the API docs using various collections. You can explore thei
 
 ---
 
-####usersMessages
 <a name="usersMessages"></a>
+####usersMessages
 
 ```js
 
@@ -1494,8 +1495,8 @@ In many examples of the API docs using various collections. You can explore thei
 
 ---
 
-####messages
 <a name="messages"></a>
+####messages
 
 ```js
 
@@ -1514,8 +1515,8 @@ In many examples of the API docs using various collections. You can explore thei
 
 ---
 
-####diet
 <a name="diet"></a>
+####diet
 
 ```js
 
@@ -1532,8 +1533,8 @@ In many examples of the API docs using various collections. You can explore thei
 
 ---
 
-####users
 <a name="users"></a>
+####users
 
 ```js
 
@@ -1549,8 +1550,8 @@ In many examples of the API docs using various collections. You can explore thei
 
 ---
 
-####costumes
 <a name="costumes"></a>
+####costumes
 
 ```js
 
@@ -1565,8 +1566,8 @@ In many examples of the API docs using various collections. You can explore thei
 
 ---
 
-####clothes
 <a name="clothes"></a>
+####clothes
 
 ```js
 
@@ -1580,8 +1581,8 @@ In many examples of the API docs using various collections. You can explore thei
 
 ---
 
-####usersChanges
 <a name="usersChanges"></a>
+####usersChanges
 
 ```js
 
@@ -1598,8 +1599,8 @@ In many examples of the API docs using various collections. You can explore thei
 
 ---
 
-####shops
 <a name="shops"></a>
+####shops
 
 ```js
 	var shops = new Qstore ({
@@ -1620,8 +1621,8 @@ In many examples of the API docs using various collections. You can explore thei
 
 ---
 
-####contacts
 <a name="contacts"></a>
+####contacts
 
 ```js
 
@@ -1648,8 +1649,8 @@ In many examples of the API docs using various collections. You can explore thei
 ---
 
 
-####meetings
 <a name="meetings"></a>
+####meetings
 
 ```js
 
