@@ -87,6 +87,18 @@ in development
 - [Events](#events)
   - [Events list](#eventsList)
   - [setListener](#setListener)
+- [Examples of collections](#exampleCollections)
+  - [fruits](#fruits)
+  - [usersMessages](#usersMessages)
+  - [messages](#messages)
+  - [diet](#diet)
+  - [users](#users)
+  - [costumes](#costumes)
+  - [clothes](#clothes)
+  - [usersChanges](#usersChanges)
+  - [shops](#shops)
+  - [contacts](#contacts)
+  - [meetings](#meetings)
 
 <a name="initialisation"></a>
 ###Initialisation
@@ -858,6 +870,8 @@ Result of `groups.rows`:
 	]
 ```
 
+All items of group stored in special field `_g`.
+
 Group first 4 items by country and city:
 
 ```js
@@ -954,7 +968,7 @@ You also can use function instead field name:
 			if (firstLetter <= 'H') return 'A - H';
 			if (firstLetter >= 'R') return 'R - Z';
 			return 'I - Q';
-			}
+		}
 	});
 
 ```
@@ -1026,7 +1040,7 @@ Result of `groups.rows`:
 
 ```
 
-Additional fields processed when operation of grouping was done, therefore in previous example we can got count of items
+Additional fields processing when operation of grouping was done, therefore in previous example we can got count of items
 in group with help of `$length` [function](#functions).
 
 You can use function as argument for `$add` directive:
@@ -1075,7 +1089,7 @@ Result of `groups.rows`:
 
 ```
 
-Also you can use function as value for additional field, and write previous in that manner:
+Also you can use function as value for additional field, and write previous example at another manner:
 
 ```js
 	var groups = shops.groupBy({
@@ -1431,5 +1445,231 @@ fruits.update({color: 'blue'}); // it will write to log:
 
 ```
  ---
+
+###Examples of collections
+<a name="exampleCollections"></a>
+In many examples of the API docs using various collections. You can explore their in this section.
+
+####fruits
+<a name="fruits"></a>
+
+```js
+
+	var fruits = new Qstore({
+		columns: ['type', 'color', 'weight', 'price'],
+		rows: [
+			['apple', 'red', 0.25, 1.5],
+			['pear', 'green', 0.4, 2],
+			['pear', 'red', 0.3, 1.8],
+			['apple', 'yellow', 0.26, 1.2],
+			['pineapple', 'yellow', 1, 4],
+			['banana', 'yellow', 0.3, 1.5],
+			['melon', 'yellow', 3, 3],
+			['watermelon', 'green', 10, 5],
+			['apple', 'green', 0.24, 1],
+			['strawberries', 'red', 0.1, 0.2]
+		]
+	});
+
+```
+
+---
+
+####usersMessages
+<a name="usersMessages"></a>
+
+```js
+
+	var usersMessages = new Qstore ({
+		columns: ['text', 'subject', 'user'],
+		rows: [
+			['Hi', 'new year', {id: 1, name: 'Bob', company: {name: 'IBM', phone: '+9999'} }],
+			['Happy new year!', 'new year', {id: 2, name: 'Kate', company: {name: 'Microsoft', phone: '+8888'}}],
+			['How to learn javascript?', 'programming', {id: 2, name: 'Stan'}],
+			['Anyone want to dance?', 'new year', {id: 2, name: 'James'}]
+		]
+	});
+
+```
+
+---
+
+####messages
+<a name="messages"></a>
+
+```js
+
+	var messages = new Qstore ({
+		columns: ['text', 'subject', 'user'],
+		rows: [
+			['Hello world!', 'programming', {id: 1, name: 'Bob'}],
+			['Happy new year!', 'new year', {id: 2, name: 'Kate'}],
+			['How to learn javascript?', 'programming', {id: 2, name: 'Stan'}],
+			['Anyone want to dance?', 'new year', {id: 2, name: 'James'}]
+		]
+	});
+
+
+```
+
+---
+
+####diet
+<a name="diet"></a>
+
+```js
+
+	var diet = new Qstore ({
+		columns: ['month', 'breakfast', 'dinner'],
+		rows: [
+			['april', {calories: 400, food: 'egg'}, {calories: 300, food: 'soup'}],
+			['may', {calories: 300, food: 'bacon'}, {calories: 500, food: 'soup'}],
+			['june', {calories: 350, food: 'porridge'}, {calories: 300, food: 'chicken'}]
+		]
+	});
+
+```
+
+---
+
+####users
+<a name="users"></a>
+
+```js
+
+	var users = new Qstore ([
+		{id: 12, name: 'Bob', friends: ['Mike', 'Sam']},
+		{id: 4, name: 'Martin', friends: ['Bob']},
+		{id: 5, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']},
+		{id: 10, name: 'Sam', friends: []},
+		{id: 15, name: 'Sam', friends: ['Mike']}
+	]);
+
+```
+
+---
+
+####costumes
+<a name="costumes"></a>
+
+```js
+
+	var costumes = new Qstore([
+		{name: 'policeman', items: [ {name: 'tie', color: 'black'}, {name: 'cap', color: 'blue'}]},
+		{name: 'fireman', items: [{name: 'helmet', color: 'yellow'}]},
+		{name: 'solder', items: [{name: 'helmet', color: 'green'}]},
+		{name: 'zombie', items: [{name: 'skin', color: 'green'}, {name: 'brain', color: 'pink'}]}
+	]);
+
+```
+
+---
+
+####clothes
+<a name="clothes"></a>
+
+```js
+
+	var clothes =  new Qstore([
+		{name: 'skirt', sizes: [42, 48, 50]},
+		{name: 'jeans', sizes: [48, 54]},
+		{name: 'skirt', sizes: [42, 45, 48]}
+	]);
+
+```
+
+---
+
+####usersChanges
+<a name="usersChanges"></a>
+
+```js
+
+	var usersChanges = new Qstore ({
+		columns: ['source', 'patch'],
+		rows: [
+			[{id: 2, name: 'Bob', age: 23}, {name: 'Mike'}],
+			[{id: 4, name: 'Stan', age: 30}, {age: 31}]
+		]
+	});
+
+
+```
+
+---
+
+####shops
+<a name="shops"></a>
+
+```js
+	var shops = new Qstore ({
+		columns: ['country', 'city', 'address'],
+		rows: [
+			['UK', 'London', 'mace st. 5'],
+			['UK', 'York', 'temple ave. 10'],
+			['France', 'Paris', 'de rivoli st. 20'],
+			['France', 'Paris', 'pelleport st. 3'],
+			['Germany', 'Dresden', 'haydn st. 2'],
+			['Germany', 'Berlin', 'bornitz st. 50'],
+			['Germany', 'Munchen', 'eva st. 12'],
+			['Russia', 'Vladivostok', 'stroiteley st. 9']
+		]
+	});
+
+```
+
+---
+
+####contacts
+<a name="contacts"></a>
+
+```js
+
+	var contacts = new Qstore({
+		columns: ['name', 'phone'],
+		rows: [
+			['Leonardo Da Vinci', '23090533'],
+			['Elvis Presley', '247543'],
+			['Christopher Columbus', '85321443'],
+			['Pablo Piccaso', '2512567'],
+			['Walt Disney', '123456464'],
+			['Albert Einstein', '0865443'],
+			['Aristotle', '23090533'],
+			['William Shakespeare', '235667'],
+			['Ludwig van Beethoven', '245433'],
+			['Cleopatra', '346422'],
+			['Paul McCartney', '5532173'],
+		]
+	});
+
+
+```
+
+---
+
+
+####meetings
+<a name="meetings"></a>
+
+```js
+
+	var meetings = new Qstore({
+		columns: ['day','month', 'year', 'details'],
+		rows: [
+			[2, 'feb', 2012, 'Meeting with Albert Einstein'],
+			[14, 'feb', 2012,'Meeting with Elvis Presley'],
+			[20, 'feb', 2013, 'Meeting with Christopher Columbus'],
+			[3, 'mar', 2013, 'Meeting with Pablo Piccaso'],
+			[2, 'apr', 2013, 'Meeting with Walt Disney'],
+			[10, 'apr', 2013,'Meeting with Aristotle'],
+			[11, 'may', 2013, 'Meeting with William Shakespeare'],
+			[13, 'may', 2013, 'Meeting with Cleopatra']
+		]
+	});
+
+```
+
+---
+
 
 

@@ -134,7 +134,7 @@ window.contacts = new Qstore({
 	]
 });
 
-window.mittings = new Qstore({
+window.meetings = new Qstore({
 	columns: ['day','month', 'year', 'details'],
 	rows: [
 		[2, 'feb', 2012, 'Meeting with Albert Einstein'],
