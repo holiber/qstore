@@ -9,14 +9,14 @@ Work with collections in javascript
 - Extend your query language.
 
 ###Simple examples
-  We need find all green apples from fruits collection:
+  Find all green apples from fruits collection:
 
 ```js
 fruits.find({type: 'apple', color: 'green'});
 ```
 
  ---
-  We need find all apples and pears from fruits collection:
+  Find all apples and pears from fruits collection:
 
 ```js
 fruits.find({type: ['apple', 'pear']});
