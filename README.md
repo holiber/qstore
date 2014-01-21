@@ -58,6 +58,7 @@ in development
   - [Build-in functions](#availFunctions)
   - [addFunction](#addFunction)
   - [removeFunction](#removeFunction)
+- [Extending](#extending)
 - [Fields selection](#fieldsSelecion)
 - [Grouping](#grouping)
   - [indexBy](#indexBy)
