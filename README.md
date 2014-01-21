@@ -406,7 +406,7 @@ Checks that the object match the query.
 ---
 
 <a name="getList"></a>
-####.getList ([query,] [fieldName='idx']);
+####.getList ([query] [,fieldName='idx']);
 Returns list of values for **fieldName**.  
 Elements of the list are not repeated.
 
