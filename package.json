@@ -1,6 +1,6 @@
 {
 	"name": "qstore",
-	"version": "0.7.8",
+	"version": "0.7.9",
 	"description": "work with collections in js",
 	"author": {
 		"name": "Alexander Nazarov",
@@ -28,11 +28,9 @@
 		"url": "git://github.com/holiber/qstore.git"
 	},
 	"main": "qstore.js",
-	"bin": {
-		"express": "./bin/express"
-	},
 	"engines": {
 		"node": ">= 0.8.0"
 	},
-	"license": "MIT"
+	"license": "MIT",
+	"readmeFilename": "Readme.md"
 }

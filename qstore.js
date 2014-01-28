@@ -1,12 +1,12 @@
 /*!
 * Qstore
-* v0.7.8
+* v0.7.9
 *
 * smart tool for work with collections
 * @license Licensed under the MIT license.
 * @see http://github.com/holiber/qstore
 *
-* build at 2014-01-28 17:03
+* build at 2014-01-28 18:27
 */
 
 ;var context = (typeof window !== 'undefined') ? window : {};
