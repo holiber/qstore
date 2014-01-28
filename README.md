@@ -9,14 +9,14 @@ Work with collections in javascript
 - Extend your query language.
 
 ###Simple examples
-  We need find all green apples from fruits collection:
+  Find all green apples from fruits collection:
 
 ```js
 fruits.find({type: 'apple', color: 'green'});
 ```
 
  ---
-  We need find all apples and pears from fruits collection:
+  Find all apples and pears from fruits collection:
 
 ```js
 fruits.find({type: ['apple', 'pear']});
@@ -58,6 +58,7 @@ in development
   - [Build-in functions](#availFunctions)
   - [addFunction](#addFunction)
   - [removeFunction](#removeFunction)
+- [Extending](#extending)
 - [Fields selection](#fieldsSelecion)
 - [Grouping](#grouping)
   - [indexBy](#indexBy)
@@ -405,7 +406,7 @@ Checks that the object match the query.
 ---
 
 <a name="getList"></a>
-####.getList ([query,] [fieldName='idx']);
+####.getList ([query] [,fieldName='idx']);
 Returns list of values for **fieldName**.  
 Elements of the list are not repeated.
 
