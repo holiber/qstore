@@ -1,12 +1,12 @@
 /*!
 * Qstore
-* v0.7.7
+* v0.7.8
 *
 * smart tool for work with collections
 * @license Licensed under the MIT license.
 * @see http://github.com/holiber/qstore
 *
-* build at 2013-12-13 19:03
+* build at 2014-01-28 17:03
 */
 
 ;var context = (typeof window !== 'undefined') ? window : {};
@@ -950,6 +950,10 @@
 			return result;
 		},
 
+		/**
+		 * groupBy (data, group1 [,group2, ... , groupN])
+		 * @returns {Array}
+		 */
 		groupBy: function () {
 			var args = Array.prototype.slice.call(arguments);
 			var data = args[0];

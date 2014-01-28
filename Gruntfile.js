@@ -16,18 +16,18 @@ module.exports = function(grunt) {
 			},
 			all: {
 				files: {
-					'data.js': ['src/data.js']
+					'qstore.js': ['src/data.js']
 				}
 			}
 		},
 
 		uglify: {
 			options: {
-				preserveComments: 'some',
+				preserveComments: 'some'
 			},
 			all: {
 				files: {
-					'data.min.js': 'data.js'
+					'qstore.min.js': 'qstore.js'
 				}
 			}
 		}
