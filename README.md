@@ -35,7 +35,27 @@ fruits.find({type: ['apple', 'pear']});
 See more [examples](http://holiber.github.io/activedata/examples/)
 
 ##Instalation
-in development
+
+###Front-end
+
+vanila-js style:
+```
+<script type="text/javascript" src="qstore/qstore.js"><script>
+```
+
+via bower package manager:
+```
+bower install qstore
+```
+
+###Back-end
+
+nodejs:
+```
+npm install qstore
+```
+
+
 
 ##API
 - [Initialisation](#initialisation)
