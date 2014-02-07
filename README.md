@@ -40,7 +40,7 @@ See more [examples](http://holiber.github.io/activedata/examples/)
 
 vanila-js style:
 ```
-<script type="text/javascript" src="qstore/qstore.js"><script>
+<script type="text/javascript" src="qstore/qstore.js"></script>
 ```
 
 via bower package manager:
