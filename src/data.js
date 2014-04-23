@@ -152,6 +152,19 @@
 		return new F;
 	};
 
+	var parseActionOptions = function (options) {
+		var result = {
+			silent: false,
+			soft: false
+		}
+		if (Qstore.softMode == true && typeof options == 'object' && result.soft !== false) {
+			result.soft = true;
+		}
+		if (options === true) result.soft = true;
+		else extend(result, options);
+		return result;
+	}
+
 	/*Qstore*/
 	var Qstore = context.Qstore = Class.extend({
 
@@ -425,8 +438,8 @@
 		update: function (opt1, opt2, opt3) {
 			var expr = opt2 ? opt1 : null;
 			var values = opt2 ? opt2 : opt1;
-			var soft = typeof(opt2) == "boolean" ? opt2 : (typeof(opt3) == "boolean") ? opt3 : false;
-			soft = soft || this.softMode;
+			var options = typeof(opt2) == "boolean" ? opt2 : opt3
+			var ao = parseActionOptions(options);
 			var cnt = 0;
 			var operationChanges = [];
 			for (var key = 0; key < this.rows.length; key++) {
@@ -441,7 +454,7 @@
 						row[fieldName] = rowValues[fieldName];
 					}
 					change.current = row;
-					if (!soft) {
+					if (!ao.soft) {
 						operationChanges.push(extend({}, change, {patch: rowValues}));
 						this.changes[row.idx] = change;
 					}
@@ -449,7 +462,7 @@
 			}
 			this.compute();
 			operationChanges = new Qstore(operationChanges);
-			if (!soft) this.fire('change', {action: 'update', changes: operationChanges});
+			if (!ao.silent) this.fire('change', {action: 'update', changes: operationChanges});
 			return cnt;
 		},
 
@@ -460,9 +473,8 @@
 		 * @param {Boolean} [soft=false]
 		 * @return {Number} patchedCount
 		 */
-		patch: function (items, key, soft) {
+		patch: function (items, key, options) {
 			key = key || 'idx';
-			soft = soft || this.softMode;
 			if (!items) return 0;
 			var patchMap = {};
 			for (var i = 0; i < items.length; i++) {
@@ -473,16 +485,17 @@
 				var patch = extend({}, patchMap[row[key]]);
 				delete patch[key];
 				return patch;
-			}, soft);
+			}, options);
 		},
 
 		/**
 		 * add row to data
 		 * @param {Array|Object} rows
+		 * @param {object} options
 		 */
-		add: function (rows, soft) {
+		add: function (rows, options) {
 			rows = isArray(rows) ? rows : [rows];
-			soft = soft || this.softMode;
+			var ao = parseActionOptions(options);
 			var rowsToAdd = [];
 			var operationChanges = [];
 			for (var key = 0; key < rows.length; key++) {
@@ -495,14 +508,14 @@
 
 				row.idx = ++this.lastIdx;
 				var change = {action: 'add', values: row};
-				if (!soft) this.changes[row.idx] = change;
+				if (!ao.soft) this.changes[row.idx] = change;
 				operationChanges.push(change);
 				rowsToAdd.push(row);
 			}
 			this.rows = rowsToAdd.concat(this.rows);
 			this.compute();
 			this.sortFields = null;
-			this.fire('change', operationChanges);
+			if (!ao.silent) this.fire('change', operationChanges);
 			return true;
 		},
 
@@ -514,16 +527,16 @@
 		 *  //remove red and green apples
 		 *  data.remove({type: 'apple', color: ['red', 'green']});
 		 */
-		remove: function (expr, soft) {
-			soft = soft || this.softMode;
+		remove: function (expr, options) {
+			var ao = parseActionOptions(options);
 			var operationChanges = [];
 			var cnt = 0;
 
-			for (i = 0; i < this.rows.length; i++) {
+			for (var i = 0; i < this.rows.length; i++) {
 				var row = this.rows[i];
 				if (Qstore.test(row, expr)) {
 					cnt++;
-					if (!soft) {
+					if (!ao.soft) {
 						if (this.changes[row.idx]) {
 							this.changes[row.idx].action = 'remove';
 						} else {
@@ -537,8 +550,7 @@
 					i--;
 				}
 			}
-			operationChanges = new Qstore(operationChanges);
-			if (!soft) this.fire('change', {action: 'remove', changes: operationChanges});
+			if (!ao.silent) this.fire('change', {action: 'remove', changes: operationChanges});
 			return cnt;
 		},
 
@@ -705,6 +717,7 @@
 
 	}, {
 		Class: Class,
+		extend: extend,
 		operators: {},
 		functions: {},
 		softMode: false,
