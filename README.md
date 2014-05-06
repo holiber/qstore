@@ -1,4 +1,4 @@
-![Qstore](qstore.png)
+![Qstore](https://raw.githubusercontent.com/holiber/qstore/master/qstore.png)
 
 ##Overview
 Work with collections in javascript
