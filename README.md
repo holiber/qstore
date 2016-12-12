@@ -32,7 +32,7 @@ fruits.find({type: ['apple', 'pear']});
  
  ---
  
-See more [examples](http://holiber.github.io/activedata/examples/)
+[SEE MORE EXAMPLES](http://holiber.github.io/activedata/examples/)
 
 ##Instalation
 
