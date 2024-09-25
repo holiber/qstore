@@ -13,8 +13,6 @@ Qstore is a lightweight JavaScript library designed to simplify working with col
 
 I created this project many years ago for my working tasks and as my diploma project. I needed some alternative to SQL but on the client javascript. The alternative nowdays could be https://github.com/jmespath/jmespath.js
 
-![Qstore Logo](https://raw.githubusercontent.com/holiber/qstore/master/qstore.png)
-
 **Key Features:**
 
 - **Easy Collection Creation:** Initialize collections from arrays or custom data formats.
