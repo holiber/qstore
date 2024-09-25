@@ -24,6 +24,9 @@ I created this project many years ago for my working tasks and as my diploma pro
 
 ---
 
+## DEMO
+https://holiber.github.io/activedata/examples/
+
 ## Installation
 
 ### Front-End
