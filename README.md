@@ -11,7 +11,7 @@
 Qstore is a lightweight JavaScript library designed to simplify working with collections. Whether you're dealing with arrays of objects or complex nested data structures, Qstore provides tools to search, manipulate, and manage your data with ease.
 
 
-I created this project many years ago for my working tasks and as my diploma project. I needed some alternative to SQL but on the client javascript. The alternative nowdays could be https://github.com/jmespath/jmespath.js
+I created this project many years ago for my working tasks and as my diploma project. I needed some alternative to SQL but on the client javascript. The syntax was inspired by MongoDB. The alternative nowdays could be https://github.com/jmespath/jmespath.js
 
 **Key Features:**
 
