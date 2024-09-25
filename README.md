@@ -9,7 +9,11 @@
 ## Overview
 
 Qstore is a lightweight JavaScript library designed to simplify working with collections. Whether you're dealing with arrays of objects or complex nested data structures, Qstore provides tools to search, manipulate, and manage your data with ease.
+
+
 I created this project many years ago for my working tasks and as my diploma project. I needed some alternative to SQL but on the client javascript. The alternative nowdays could be https://github.com/jmespath/jmespath.js
+
+![Qstore Logo](https://raw.githubusercontent.com/holiber/qstore/master/qstore.png)
 
 **Key Features:**
 
@@ -68,12 +72,6 @@ var fruits = new Qstore([
   { type: 'pear', color: 'green', weight: 0.4, price: 2 },
   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 },
-  { type: 'pineapple', color: 'yellow', weight: 1, price: 4 },
-  { type: 'banana', color: 'yellow', weight: 0.3, price: 1.5 },
-  { type: 'melon', color: 'yellow', weight: 3, price: 3 },
-  { type: 'watermelon', color: 'green', weight: 10, price: 5 },
-  { type: 'apple', color: 'green', weight: 0.24, price: 1 },
-  { type: 'strawberries', color: 'red', weight: 0.1, price: 0.2 },
 ]);
 ```
 
@@ -87,12 +85,6 @@ var fruits = new Qstore({
     ['pear', 'green', 0.4, 2],
     ['pear', 'red', 0.3, 1.8],
     ['apple', 'yellow', 0.26, 1.2],
-    ['pineapple', 'yellow', 1, 4],
-    ['banana', 'yellow', 0.3, 1.5],
-    ['melon', 'yellow', 3, 3],
-    ['watermelon', 'green', 10, 5],
-    ['apple', 'green', 0.24, 1],
-    ['strawberries', 'red', 0.1, 0.2],
   ],
 });
 ```
@@ -102,63 +94,33 @@ var fruits = new Qstore({
 **Find all green apples:**
 
 ```js
-var greenApples = fruits.find({ type: 'apple', color: 'green' });
-// Returns:
-// [
-//   { type: 'apple', color: 'green', weight: 0.24, price: 1 }
-// ]
+fruits.find({ type: 'apple', color: 'green' });
 ```
 
 **Find all apples and pears:**
 
 ```js
-var applesAndPears = fruits.find({ type: ['apple', 'pear'] });
-// Returns:
-// [
-//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
-//   { type: 'pear', color: 'green', weight: 0.4, price: 2 },
-//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
-//   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 },
-//   { type: 'apple', color: 'green', weight: 0.24, price: 1 }
-// ]
+fruits.find({ type: ['apple', 'pear'] });
 ```
 
 **Which fruits can be red?**
 
 ```js
-var redFruitTypes = fruits.getList({ color: 'red' }, 'type');
-// Returns:
-// ['apple', 'pear', 'strawberries']
+fruits.getList({ color: 'red' }, 'type'); // ['apple', 'pear', 'strawberries']
 ```
 
 **Find all fruits with price between $1 and $2:**
 
 ```js
-var affordableFruits = fruits.find({ price: { $gte: 1, $lte: 2 } });
-// Returns:
-// [
-//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
-//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
-//   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 },
-//   { type: 'banana', color: 'yellow', weight: 0.3, price: 1.5 },
-//   { type: 'apple', color: 'green', weight: 0.24, price: 1 }
-// ]
+fruits.find({ price: { $gte: 1, $lte: 2 } });
 ```
 
 **Find fruits where the price per kg is greater than $5:**
 
 ```js
-var expensivePerKgFruits = fruits.find(function (item) {
+fruits.find(function (item) {
   return item.price / item.weight > 5;
 });
-// Returns:
-// [
-//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
-//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
-//   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 },
-//   { type: 'apple', color: 'green', weight: 0.24, price: 1 },
-//   { type: 'strawberries', color: 'red', weight: 0.1, price: 0.2 }
-// ]
 ```
 
 **Add a computed field for price per kilogram:**
@@ -170,15 +132,14 @@ fruits.addFields({
     return (fruit.price / fruit.weight).toFixed(2);
   },
 });
-
-// Now each item in the collection has a 'pricePerKg' field.
 ```
+
+Now each item in the collection has a `pricePerKg` field.
 
 **Group fruits by color:**
 
 ```js
 var groupedFruits = fruits.groupBy('color');
-// groupedFruits.rows will contain groups of fruits by color.
 ```
 
 ---
@@ -195,45 +156,16 @@ Searches the collection and returns an array of items that match the query.
 
 ```js
 // Find all red fruits
-var redFruits = fruits.find({ color: 'red' });
-// Returns:
-// [
-//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
-//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
-//   { type: 'strawberries', color: 'red', weight: 0.1, price: 0.2 }
-// ]
+fruits.find({ color: 'red' });
 
 // Find all apples or pears
-var applesOrPears = fruits.find({ type: ['apple', 'pear'] });
-// Returns:
-// [
-//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
-//   { type: 'pear', color: 'green', weight: 0.4, price: 2 },
-//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
-//   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 },
-//   { type: 'apple', color: 'green', weight: 0.24, price: 1 }
-// ]
+fruits.find({ type: ['apple', 'pear'] });
 
 // Find all fruits with price less than $2
-var cheapFruits = fruits.find({ price: { $lt: 2 } });
-// Returns:
-// [
-//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
-//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
-//   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 },
-//   { type: 'banana', color: 'yellow', weight: 0.3, price: 1.5 },
-//   { type: 'apple', color: 'green', weight: 0.24, price: 1 },
-//   { type: 'strawberries', color: 'red', weight: 0.1, price: 0.2 }
-// ]
+fruits.find({ price: { $lt: 2 } });
 
 // Using regular expressions to find fruits starting with 'p'
-var pFruits = fruits.find({ type: /^p/ }); // Matches 'pear' and 'pineapple'
-// Returns:
-// [
-//   { type: 'pear', color: 'green', weight: 0.4, price: 2 },
-//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
-//   { type: 'pineapple', color: 'yellow', weight: 1, price: 4 }
-// ]
+fruits.find({ type: /^p/ }); // Matches 'pear' and 'pineapple'
 ```
 
 #### Deep Search in Objects
@@ -258,15 +190,7 @@ var usersMessages = new Qstore({
 });
 
 // Find messages from users working at IBM
-var ibmMessages = usersMessages.find({ 'user.company.name': 'IBM' });
-// Returns:
-// [
-//   {
-//     text: 'Hi',
-//     subject: 'new year',
-//     user: { id: 1, name: 'Bob', company: { name: 'IBM', phone: '+9999' } }
-//   }
-// ]
+usersMessages.find({ 'user.company.name': 'IBM' });
 ```
 
 #### Deep Search in Arrays
@@ -283,16 +207,10 @@ var costumes = new Qstore([
     ],
   },
   { name: 'fireman', items: [{ name: 'helmet', color: 'yellow' }] },
-  { name: 'soldier', items: [{ name: 'helmet', color: 'green' }] },
 ]);
 
 // Find costumes that include a 'helmet'
-var costumesWithHelmet = costumes.find({ items: { name: 'helmet' } });
-// Returns:
-// [
-//   { name: 'fireman', items: [{ name: 'helmet', color: 'yellow' }] },
-//   { name: 'soldier', items: [{ name: 'helmet', color: 'green' }] }
-// ]
+costumes.find({ items: { name: 'helmet' } });
 ```
 
 ### Aliases in Field Selection
@@ -300,33 +218,20 @@ var costumesWithHelmet = costumes.find({ items: { name: 'helmet' } });
 You can create aliases for fields when selecting data:
 
 ```js
-var messages = new Qstore({
-  columns: ['text', 'subject', 'user'],
-  rows: [
-    ['Hello world!', 'programming', { id: 1, name: 'Bob' }],
-    ['Happy new year!', 'new year', { id: 2, name: 'Kate' }],
-    ['How to learn JavaScript?', 'programming', { id: 3, name: 'Stan' }],
-    ['Anyone want to dance?', 'new year', { id: 4, name: 'James' }],
-  ],
-});
-
 // Select 'text' and 'user.name' as 'userName'
-var newYearMessages = messages.find({ subject: 'new year' }, ['text', 'user.name:userName']);
-// Returns:
-// [
-//   { text: 'Happy new year!', userName: 'Kate' },
-//   { text: 'Anyone want to dance?', userName: 'James' }
-// ]
+messages.find({ subject: 'new year' }, ['text', 'user.name:userName']);
+
+// Using alias map
+messages.find({ subject: 'new year' }, { text: true, userName: 'user.name' });
 ```
 
-**Using an alias map:**
+**Result:**
 
 ```js
-var newYearMessages = messages.find(
-  { subject: 'new year' },
-  { text: true, userName: 'user.name' }
-);
-// Returns same as above
+[
+  { text: 'Happy new year!', userName: 'Kate' },
+  { text: 'Anyone want to dance?', userName: 'James' },
+];
 ```
 
 ### Comparison of Fields
@@ -351,15 +256,7 @@ var diet = new Qstore({
 });
 
 // Find days where dinner calories are less than breakfast calories
-var lighterDinners = diet.find({ 'dinner.calories': { $lt: '$.breakfast.calories' } });
-// Returns:
-// [
-//   {
-//     month: 'April',
-//     breakfast: { calories: 400, food: 'egg' },
-//     dinner: { calories: 300, food: 'soup' }
-//   }
-// ]
+diet.find({ 'dinner.calories': { $lt: '$.breakfast.calories' } });
 ```
 
 ### Queries Concatenation
@@ -372,16 +269,9 @@ var filter2 = { color: 'red' };
 
 // Find items that are apples OR red
 var orFilter = [filter1, filter2];
-var resultOr = fruits.find(orFilter);
-// Returns all apples and all red fruits
 
 // Find items that are apples AND red
 var andFilter = { $and: [filter1, filter2] };
-var resultAnd = fruits.find(andFilter);
-// Returns:
-// [
-//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 }
-// ]
 ```
 
 ### Operators
@@ -406,18 +296,7 @@ var clothes = new Qstore([
 ]);
 
 // Find clothes that have size 'XS'
-var clothesWithXS = clothes.find({ sizes: { $has: 'XS' } });
-// Returns:
-// [
-//   { name: 'skirt', sizes: ['XS', 'S', 'XL'] }
-// ]
-
-// Find clothes that have both 'XS' and 'S' sizes
-var clothesWithXSandS = clothes.find({ sizes: { $has: ['XS', 'S'] } });
-// Returns:
-// [
-//   { name: 'skirt', sizes: ['XS', 'S', 'XL'] }
-// ]
+clothes.find({ sizes: { $has: 'XS' } });
 ```
 
 ### Adding Custom Operators
@@ -432,20 +311,14 @@ Qstore.addOperator('isInt', function (left, right) {
 });
 
 // Find fruits with integer prices
-var fruitsWithIntPrice = fruits.find({ price: { $isInt: true } });
-// Returns:
-// [
-//   { type: 'melon', color: 'yellow', weight: 3, price: 3 },
-//   { type: 'watermelon', color: 'green', weight: 10, price: 5 },
-//   { type: 'apple', color: 'green', weight: 0.24, price: 1 }
-// ]
+fruits.find({ price: { $isInt: true } });
 ```
 
 ### Functions
 
 Use functions in queries for dynamic computations.
 
-#### Built-in Functions
+**Built-in Functions:**
 
 - `$length`: Length of an array or string
 - `$first`: First item of an array or string
@@ -457,48 +330,11 @@ Use functions in queries for dynamic computations.
 **Example:**
 
 ```js
-var users = new Qstore([
-  { id: 1, name: 'Bob', friends: ['Mike', 'Sam'] },
-  { id: 2, name: 'Martin', friends: ['Bob'] },
-  { id: 3, name: 'Mike', friends: ['Bob', 'Martin', 'Sam'] },
-  { id: 4, name: 'Sam', friends: [] },
-]);
-
-// Find users with no friends
-var usersWithNoFriends = users.find({ 'friends.$length': 0 });
-// Returns:
-// [
-//   { id: 4, name: 'Sam', friends: [] }
-// ]
-
 // Find users with more than 2 friends
-var popularUsers = users.find({ 'friends.$length': { $gt: 2 } });
-// Returns:
-// [
-//   { id: 3, name: 'Mike', friends: ['Bob', 'Martin', 'Sam'] }
-// ]
-```
+users.find({ 'friends.$length': { $gt: 2 } });
 
-**Select user name and number of friends:**
-
-```js
-var userFriendCounts = users.find(true, ['name', 'friends.$length:friendsCount']);
-// Returns:
-// [
-//   { name: 'Bob', friendsCount: 2 },
-//   { name: 'Martin', friendsCount: 1 },
-//   { name: 'Mike', friendsCount: 3 },
-//   { name: 'Sam', friendsCount: 0 }
-// ]
-```
-
-**Using Functions in `getList`:**
-
-```js
-// Get list of first friends' names
-var firstFriends = users.getList('friends.$first');
-// Returns:
-// ['Mike', 'Bob', 'Bob']
+// Select user name and number of friends
+users.find(true, ['name', 'friends.$length:friendsCount']);
 ```
 
 ### Grouping Data
@@ -510,32 +346,13 @@ Group your data based on one or more fields.
 **Example:**
 
 ```js
-// Group fruits by color
-var groupedFruits = fruits.groupBy('color');
-// groupedFruits.rows will contain groups of fruits by color
+// Group fruits by type
+var groupedFruits = fruits.groupBy('type');
 ```
 
-**Group shops by country and city:**
+**Result:**
 
-```js
-var shops = new Qstore({
-  columns: ['country', 'city', 'address'],
-  rows: [
-    ['UK', 'London', 'Mace St. 5'],
-    ['UK', 'York', 'Temple Ave. 10'],
-    ['France', 'Paris', 'De Rivoli St. 20'],
-    ['France', 'Paris', 'Pelleport St. 3'],
-    ['Germany', 'Dresden', 'Haydn St. 2'],
-    ['Germany', 'Berlin', 'Bornitz St. 50'],
-    ['Germany', 'Munich', 'Eva St. 12'],
-    ['Russia', 'Vladivostok', 'Stroiteley St. 9'],
-  ],
-});
-
-// Group shops by country and then by city
-var groupedShops = shops.groupBy('country', 'city');
-// groupedShops.rows will contain nested groups by country and city
-```
+Each group contains an `_g` property with the grouped items.
 
 ### Data Manipulation
 
@@ -543,13 +360,7 @@ var groupedShops = shops.groupBy('country', 'city');
 
 ```js
 // Add a new fruit
-fruits.add({ type: 'orange', color: 'orange', weight: 0.3, price: 1.2 });
-
-// Add multiple fruits
-fruits.add([
-  { type: 'grape', color: 'purple', weight: 0.05, price: 0.4 },
-  { type: 'kiwi', color: 'brown', weight: 0.1, price: 0.8 },
-]);
+fruits.add({ type: 'banana', color: 'yellow', weight: 0.2, price: 1.0 });
 ```
 
 #### Updating Items
@@ -559,9 +370,6 @@ fruits.add([
 fruits.update({ type: 'apple' }, function (item) {
   return { price: item.price + 0.5 };
 });
-
-// Make all green fruits red
-fruits.update({ color: 'green' }, { color: 'red' });
 ```
 
 #### Removing Items
@@ -569,9 +377,6 @@ fruits.update({ color: 'green' }, { color: 'red' });
 ```js
 // Remove all fruits that are red
 fruits.remove({ color: 'red' });
-
-// Remove messages without an author
-messages.remove({ author: undefined });
 ```
 
 ### Working with Changes
@@ -582,26 +387,18 @@ Track changes in your collection to sync with a database or for undo functionali
 
 Returns a collection of changes made since the last commit.
 
+```js
+var changes = fruits.getChanges();
+```
+
 **Example:**
 
 ```js
-// Make some changes
-fruits.update({ type: 'pear' }, { color: 'blue', price: 0.5 });
-fruits.add({ type: 'apple', color: 'green' });
-fruits.remove({ type: 'pineapple' });
-
-// Get the changes
-var changes = fruits.getChanges();
-
-// To get a list of removed items' indices
-var removedIndices = changes.search({ action: 'remove' }).getList('source.idx');
-// Returns: [5] // Assuming 'pineapple' had idx 5
-
-// Prepare a patch for database
-var patch = {};
-patch.add = changes.find({ action: 'add' }, ['values:']);
-patch.remove = changes.search({ action: 'remove' }).getList('source.idx');
-patch.update = changes.find({ action: 'update' }, ['source.idx:id', 'values:']);
+// Get a list of indices of removed items
+var removedIndices = fruits
+  .getChanges()
+  .search({ action: 'remove' })
+  .getList('source.idx');
 ```
 
 #### `.commit()`
@@ -636,28 +433,20 @@ Returns the number of items in the collection.
 
 ```js
 var totalFruits = fruits.size();
-// Returns: 12
 ```
 
 #### `.pack([query], [fields])`
 
 Compresses the collection data for efficient storage or transmission.
 
+```js
+var packedFruits = fruits.pack();
+```
+
 **Example:**
 
 ```js
-// Get a packed version of all apples with selected fields
-var packedApples = fruits.pack({ type: 'apple' }, ['idx', 'weight', 'price']);
-// Returns:
-// {
-//   columns: ['idx', 'weight', 'price'],
-//   rows: [
-//     [1, 0.25, 1.5],
-//     [4, 0.26, 1.2],
-//     [9, 0.24, 1],
-//     [11, 0.3, 1.5] // Assuming the new apple added earlier has idx 11
-//   ]
-// }
+var apples = fruits.pack({ type: 'apple' }, ['idx', 'weight', 'price']);
 ```
 
 #### `.getCopy()`
@@ -676,15 +465,10 @@ Listen to collection events for reactive programming.
 
 Sets a listener function that reacts to collection events like 'change', 'commit', or 'sort'.
 
-**Example:**
-
 ```js
 fruits.setListener(function (eventName, data, collection) {
   if (eventName === 'change' && data.action === 'update') {
-    var changes = data.changes.find({
-      'source.type': 'apple',
-      'patch.color': { $ne: undefined },
-    });
+    var changes = data.changes.find({ 'source.type': 'apple', 'patch.color': { $ne: undefined } });
     changes.forEach(function (change) {
       console.log(
         'An apple changed color from ' + change.source.color + ' to ' + change.patch.color
@@ -692,14 +476,6 @@ fruits.setListener(function (eventName, data, collection) {
     });
   }
 });
-
-// Now, when you update apples' colors, the listener will log the changes
-fruits.update({ type: 'apple' }, { color: 'blue' });
-// Console output:
-// An apple changed color from red to blue
-// An apple changed color from yellow to blue
-// An apple changed color from green to blue
-// An apple changed color from green to blue // For the new apple added earlier
 ```
 
 ---
@@ -742,36 +518,15 @@ Returns all objects matching the query.
 
 ```js
 // Find all red fruits
-var redFruits = fruits.find({ color: 'red' });
-// Returns the same as earlier examples
+fruits.find({ color: 'red' });
 
 // Find first two apples
-var firstTwoApples = fruits.find({ type: 'apple' }, true, { limit: 2 });
-// Returns:
-// [
-//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
-//   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 }
-// ]
-
-// Find two yellow fruits starting from the third one
-var yellowFruits = fruits.find({ color: 'yellow' }, true, { limit: [3, 2] });
-// Returns:
-// [
-//   { type: 'melon', color: 'yellow', weight: 3, price: 3 },
-//   { type: 'banana', color: 'yellow', weight: 0.3, price: 1.5 }
-// ]
+fruits.find({ type: 'apple' }, true, { limit: 2 });
 ```
 
 #### `.search(query, [fields], [options])`
 
 Same as `.find` but returns a new Qstore collection.
-
-```js
-// Get a collection of red fruits sorted by type
-var redFruitsCollection = fruits.search({ color: 'red' });
-redFruitsCollection.sort({ fieldName: 'type', order: 'asc' });
-// Now redFruitsCollection contains red fruits sorted by type
-```
 
 #### `.findOne(query, [fields], [options])`
 
@@ -779,8 +534,6 @@ Returns the first object that matches the query.
 
 ```js
 var firstApple = fruits.findOne({ type: 'apple' });
-// Returns:
-// { type: 'apple', color: 'red', weight: 0.25, price: 1.5 }
 ```
 
 #### `.findIn(array, query, [fields], [options])`
@@ -788,15 +541,7 @@ var firstApple = fruits.findOne({ type: 'apple' });
 Static method to search within an array.
 
 ```js
-var usersArray = [
-  { id: 1, name: 'Alice', email: 'alice@example.com' },
-  { id: 2, name: 'Bob', email: 'bob@example.com' },
-];
-
-// Find user with id = 2
-var user = Qstore.findIn(usersArray, { id: 2 });
-// Returns:
-// [{ id: 2, name: 'Bob', email: 'bob@example.com' }]
+Qstore.findIn(arrayOfObjects, { key: 'value' });
 ```
 
 #### `.test(object, query)`
@@ -804,21 +549,7 @@ var user = Qstore.findIn(usersArray, { id: 2 });
 Checks if an object matches the query.
 
 ```js
-var fruit = { type: 'pineapple', color: 'yellow', weight: 1, price: 4 };
-
-// Is the fruit yellow?
-Qstore.test(fruit, { color: 'yellow' }); // true
-
-// Is the fruit a pineapple or pear?
-Qstore.test(fruit, { type: ['pear', 'pineapple'] }); // true
-
-// Does the fruit type contain "apple"?
-Qstore.test(fruit, { type: { $like: 'apple' } }); // true
-
-// Is the price per kg less than $1?
-Qstore.test(fruit, function (fruit) {
-  return fruit.price / fruit.weight < 1;
-}); // false
+Qstore.test({ type: 'apple', color: 'red' }, { color: 'red' }); // true
 ```
 
 #### `.getList([query], [fieldName='idx'])`
@@ -827,16 +558,10 @@ Returns a list of unique values for a specified field.
 
 ```js
 // List of all fruit colors
-var colors = fruits.getList('color');
-// Returns: ['red', 'green', 'yellow', 'orange', 'purple', 'brown']
+fruits.getList('color'); // ['red', 'green', 'yellow']
 
 // List of types for red fruits
-var redFruitTypes = fruits.getList({ color: 'red' }, 'type');
-// Returns: ['apple', 'pear', 'strawberries']
-
-// Get list of indices
-var indices = fruits.getList();
-// Returns: [1, 2, 3, ..., n] where n is the total number of items
+fruits.getList({ color: 'red' }, 'type'); // ['apple', 'strawberries']
 ```
 
 #### `.each([query], fn)`
@@ -844,7 +569,6 @@ var indices = fruits.getList();
 Applies a function to each item in the collection.
 
 ```js
-// Log each fruit's type
 fruits.each(function (item, index) {
   console.log('Fruit #' + index + ' is a ' + item.type);
 });
@@ -894,10 +618,10 @@ Qstore.addOperator('operatorName', function (left, right) {
 
 ```js
 // Find users with no friends
-var usersWithNoFriends = users.find({ 'friends.$length': 0 });
+users.find({ 'friends.$length': 0 });
 
 // Get list of first friends' names
-var firstFriends = users.getList('friends.$first');
+users.getList('friends.$first');
 ```
 
 #### Custom Functions
@@ -918,21 +642,56 @@ Qstore.addFunction('functionName', function (value) {
 
 Adds new items to the collection.
 
+```js
+fruits.add({ type: 'orange', color: 'orange', weight: 0.3, price: 1.2 });
+```
+
 #### `.update([searchQuery], updateQuery, [soft=false])`
 
 Updates items in the collection.
+
+```js
+// Make all green fruits red
+fruits.update({ color: 'green' }, { color: 'red' });
+```
 
 #### `.patch(values, [key='idx'], [soft=false])`
 
 Updates the collection using an array of patches.
 
+```js
+var patches = [
+  { id: 1, connected: true },
+  { id: 2, connected: false },
+];
+
+users.patch(patches, 'id');
+```
+
 #### `.remove(query, [soft=false])`
 
 Removes items from the collection.
 
+```js
+// Remove messages without an author
+messages.remove({ author: undefined });
+```
+
 #### `.addFields(fields)`
 
 Adds new fields to the collection.
+
+```js
+fruits.addFields([
+  { name: 'season', default: 'summer' },
+  {
+    name: 'pricePerKg',
+    compute: function (item) {
+      return item.price / item.weight;
+    },
+  },
+]);
+```
 
 #### `.compute()`
 
@@ -942,9 +701,25 @@ Forces recomputation of computed fields.
 
 Removes fields from the collection.
 
+```js
+// Remove the 'weight' field
+fruits.removeFields('weight');
+```
+
 #### `.sort(fields, [zeroIsLast=false])`
 
 Sorts the collection.
+
+```js
+// Sort by price ascending
+fruits.sort({ fieldName: 'price', order: 'asc' });
+
+// Sort by type ascending, then price descending
+fruits.sort([
+  { fieldName: 'type', order: 'asc' },
+  { fieldName: 'price', order: 'desc' },
+]);
+```
 
 ---
 
@@ -954,9 +729,19 @@ Sorts the collection.
 
 Groups the collection based on specified fields.
 
+```js
+// Group shops by country and city
+var shopsGrouped = shops.groupBy(['country', 'city']);
+```
+
 #### `.indexBy(indexes)`
 
 Creates a map of the collection indexed by specified fields.
+
+```js
+// Index users by 'id'
+var usersById = users.indexBy('id');
+```
 
 #### `.mapOf(indexes)`
 
@@ -1021,6 +806,131 @@ Sets a listener for collection events.
 - `sort`
 
 ---
+
+## Examples of Collections
+
+### Fruits
+
+```js
+var fruits = new Qstore({
+  columns: ['type', 'color', 'weight', 'price'],
+  rows: [
+    ['apple', 'red', 0.25, 1.5],
+    ['pear', 'green', 0.4, 2],
+    ['pear', 'red', 0.3, 1.8],
+    ['apple', 'yellow', 0.26, 1.2],
+    ['pineapple', 'yellow', 1, 4],
+    ['banana', 'yellow', 0.3, 1.5],
+    ['melon', 'yellow', 3, 3],
+    ['watermelon', 'green', 10, 5],
+    ['apple', 'green', 0.24, 1],
+    ['strawberries', 'red', 0.1, 0.2],
+  ],
+});
+```
+
+### Users Messages
+
+```js
+var usersMessages = new Qstore({
+  columns: ['text', 'subject', 'user'],
+  rows: [
+    [
+      'Hi',
+      'new year',
+      { id: 1, name: 'Bob', company: { name: 'IBM', phone: '+9999' } },
+    ],
+    [
+      'Happy new year!',
+      'new year',
+      { id: 2, name: 'Kate', company: { name: 'Microsoft', phone: '+8888' } },
+    ],
+    ['How to learn JavaScript?', 'programming', { id: 3, name: 'Stan' }],
+    ['Anyone want to dance?', 'new year', { id: 4, name: 'James' }],
+  ],
+});
+```
+
+### Diet
+
+```js
+var diet = new Qstore({
+  columns: ['month', 'breakfast', 'dinner'],
+  rows: [
+    [
+      'April',
+      { calories: 400, food: 'egg' },
+      { calories: 300, food: 'soup' },
+    ],
+    [
+      'May',
+      { calories: 300, food: 'bacon' },
+      { calories: 500, food: 'steak' },
+    ],
+    [
+      'June',
+      { calories: 350, food: 'porridge' },
+      { calories: 300, food: 'chicken' },
+    ],
+  ],
+});
+```
+
+### Users
+
+```js
+var users = new Qstore([
+  { id: 12, name: 'Bob', friends: ['Mike', 'Sam'] },
+  { id: 4, name: 'Martin', friends: ['Bob'] },
+  { id: 5, name: 'Mike', friends: ['Bob', 'Martin', 'Sam'] },
+  { id: 10, name: 'Sam', friends: [] },
+  { id: 15, name: 'Sam', friends: ['Mike'] },
+]);
+```
+
+### Costumes
+
+```js
+var costumes = new Qstore([
+  {
+    name: 'policeman',
+    items: [
+      { name: 'tie', color: 'black' },
+      { name: 'cap', color: 'blue' },
+    ],
+  },
+  { name: 'fireman', items: [{ name: 'helmet', color: 'yellow' }] },
+  { name: 'soldier', items: [{ name: 'helmet', color: 'green' }] },
+  {
+    name: 'zombie',
+    items: [
+      { name: 'skin', color: 'green' },
+      { name: 'brain', color: 'pink' },
+    ],
+  },
+]);
+```
+
+### Shops
+
+```js
+var shops = new Qstore({
+  columns: ['country', 'city', 'address'],
+  rows: [
+    ['UK', 'London', 'Mace St. 5'],
+    ['UK', 'York', 'Temple Ave. 10'],
+    ['France', 'Paris', 'De Rivoli St. 20'],
+    ['France', 'Paris', 'Pelleport St. 3'],
+    ['Germany', 'Dresden', 'Haydn St. 2'],
+    ['Germany', 'Berlin', 'Bornitz St. 50'],
+    ['Germany', 'Munich', 'Eva St. 12'],
+    ['Russia', 'Vladivostok', 'Stroiteley St. 9'],
+  ],
+});
+```
+
+---
+
 
 
 ## License
