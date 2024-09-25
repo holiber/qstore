@@ -36,14 +36,6 @@ Include the `qstore.js` file in your HTML:
 <script src="path/to/qstore.js"></script>
 ```
 
-**Using Bower:**
-
-If you're using Bower as your package manager:
-
-```bash
-bower install qstore
-```
-
 ### Back-End
 
 **Using NPM:**
