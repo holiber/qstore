@@ -1,1697 +1,1028 @@
-![Qstore](https://raw.githubusercontent.com/holiber/qstore/master/qstore.png)
+![Qstore Logo](https://raw.githubusercontent.com/holiber/qstore/master/qstore.png)
 
-##Overview
-Work with collections in javascript
-- Create your collections.
-- Search and update data using queries.
-- Use computed fields.
-- Get collections changes.
-- Extend your query language.
+# Qstore
 
-###Simple examples
-  Find all green apples from fruits collection:
+**Effortless JavaScript Collections and Queries**
 
-```js
-fruits.find({type: 'apple', color: 'green'});
+---
+
+## Overview
+
+Qstore is a lightweight JavaScript library designed to simplify working with collections. Whether you're dealing with arrays of objects or complex nested data structures, Qstore provides tools to search, manipulate, and manage your data with ease.
+I created this project many years ago for my working tasks and as my diploma project. I needed some alternative to SQL but on the client javascript. The alternative nowdays could be https://github.com/jmespath/jmespath.js
+
+**Key Features:**
+
+- **Easy Collection Creation:** Initialize collections from arrays or custom data formats.
+- **Flexible Data Queries:** Search and update data using intuitive query syntax.
+- **Deep Searching:** Perform deep searches within nested objects and arrays.
+- **Computed Fields:** Define fields that automatically compute values based on other fields.
+- **Change Tracking:** Keep track of changes in your collections for debugging or syncing.
+- **Extendable Query Language:** Customize operators and functions to suit your needs.
+
+---
+
+## Installation
+
+### Front-End
+
+**Using a Script Tag:**
+
+Include the `qstore.js` file in your HTML:
+
+```html
+<script src="path/to/qstore.js"></script>
 ```
 
- ---
-  Find all apples and pears from fruits collection:
+**Using Bower:**
 
-```js
-fruits.find({type: ['apple', 'pear']});
-```
+If you're using Bower as your package manager:
 
- ---
- 
- Which fruits can be red?
- 
- ```js
-	fruits.getList({color: 'red'}, 'type');// ['apple', 'pear', 'strawberries']
- ```
- 
- ---
- 
-[SEE MORE EXAMPLES](http://holiber.github.io/activedata/examples/)
-
-##Instalation
-
-###Front-end
-
-vanila-js style:
-```
-<script type="text/javascript" src="qstore/qstore.js"></script>
-```
-
-via bower package manager:
-```
+```bash
 bower install qstore
 ```
 
-###Back-end
+### Back-End
 
-nodejs:
-```
+**Using NPM:**
+
+For Node.js environments:
+
+```bash
 npm install qstore
 ```
 
+---
 
+## Quick Start Guide
 
-##API
-- [Initialisation](#initialisation)
-- [Data search](#dataSearch)
-  - [find](#find)
-	- [deepSearch](#deepSearch)
-	- [aliases](#aliases)
-	- [comparison of fields](#comparisonOfFields)
-  - [search](#search)
-  - [findOne](#findOne)
-  - [findIn](#findIn)
-  - [test](#test)
-  - [getList](#getList)
-  - [each](#each)
-- [Operators](#operators)
-  - [Build-in operators](#availOperators)
-  - [addOperator](#addOperator)
-  - [removeOperator](#removeOperator)
-- [Functions](#functions)
-  - [Build-in functions](#availFunctions)
-  - [addFunction](#addFunction)
-  - [removeFunction](#removeFunction)
-- [Extending](#extending)
-- [Fields selection](#fieldsSelecion)
-- [Grouping](#grouping)
-  - [indexBy](#indexBy)
-  - [mapOf](#mapOf)
-  - [groupBy](#groupBy)
-- [Data manipulation](#dataManipulation)
-  - [add](#add)
-  - [update](#update)
-  - [patch](#patch)
-  - [remove](#remove)
-  - [addFields](#addFields)
-  - [compute](#compute)
-  - [removeFields](#removeFields)
-  - [sort](#sort)
-- [Work with changes](#changes)
-  - [getChanges](#getChanges)
-  - [commit](#commit)
-  - [revert](#revert)
-  - [softMode](#softMode)
-- [Utilites](#utilites)
-  - [size](#size)
-  - [pack](#pack)
-  - [unpack](#unpack)
-  - [getCopy](#getCopy)
-  - [getVal](#getVal)
-  - [parseArgs](#parsArgs)
-- [Events](#events)
-  - [Events list](#eventsList)
-  - [setListener](#setListener)
-- [Examples of collections](#exampleCollections)
-  - [fruits](#fruits)
-  - [usersMessages](#usersMessages)
-  - [messages](#messages)
-  - [diet](#diet)
-  - [users](#users)
-  - [costumes](#costumes)
-  - [clothes](#clothes)
-  - [usersChanges](#usersChanges)
-  - [shops](#shops)
-  - [contacts](#contacts)
-  - [meetings](#meetings)
+Let's dive right in and see how Qstore can simplify your data handling.
 
-<a name="initialisation"></a>
-###Initialisation
+### Creating a Collection
 
-Using array of objects:
+You can initialize a collection using an array of objects:
 
 ```js
 var fruits = new Qstore([
-	{type: 'apple', color: 'red', weight: 0.25, price: 1.5},
-	{type: 'pear', color: 'green', weight: 0.4, price: 2},
-	{type: 'pear', color: 'red', weight: 0.3, price: 1.8},
-	{type: 'apple', color: 'yellow', weight: 0.26, price: 1.2},
+  { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
+  { type: 'pear', color: 'green', weight: 0.4, price: 2 },
+  { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
+  { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 },
+  { type: 'pineapple', color: 'yellow', weight: 1, price: 4 },
+  { type: 'banana', color: 'yellow', weight: 0.3, price: 1.5 },
+  { type: 'melon', color: 'yellow', weight: 3, price: 3 },
+  { type: 'watermelon', color: 'green', weight: 10, price: 5 },
+  { type: 'apple', color: 'green', weight: 0.24, price: 1 },
+  { type: 'strawberries', color: 'red', weight: 0.1, price: 0.2 },
 ]);
 ```
 
-Using reduced format:
+Or using a reduced format with columns and rows:
 
 ```js
 var fruits = new Qstore({
-	columns: ['type', 'color', 'weight', 'price'],
-	rows: [
-		['apple', 'red', 0.25, 1.5],
-		['pear', 'green', 0.4, 2],
-		['pear', 'red', 0.3, 1.8],
-		['apple', 'yellow', 0.26, 1.2]
-	]
+  columns: ['type', 'color', 'weight', 'price'],
+  rows: [
+    ['apple', 'red', 0.25, 1.5],
+    ['pear', 'green', 0.4, 2],
+    ['pear', 'red', 0.3, 1.8],
+    ['apple', 'yellow', 0.26, 1.2],
+    ['pineapple', 'yellow', 1, 4],
+    ['banana', 'yellow', 0.3, 1.5],
+    ['melon', 'yellow', 3, 3],
+    ['watermelon', 'green', 10, 5],
+    ['apple', 'green', 0.24, 1],
+    ['strawberries', 'red', 0.1, 0.2],
+  ],
 });
 ```
 
- ---
+### Simple Examples
 
-<a name="dataSearch"></a>
-###Data search
-<a name="find"></a>
-####.find (query, [fields], [options])
-
-Returns all objects which are valid for query. 
-See [examples of usage](http://holiber.github.io/activedata/examples/)
- 
-
-- **query {Object|Array|Function|Bolean}**  
- If query is **true** then all rows will be returned.  
- If query is **Object** or **Array**:  
- { } - contains conditions separeted with **and**  
- [ ] - contains conditions separeted with **or**  
- Operators describe as **$&lt;operator name&gt;**, see [Operators](#operators).  
-  Example:
-  
-  ```js
-// find all red or green fruits with price between 0.5 and 1.5  
-fruits.find({color: ['red', 'green'], price: {$gt: 0.5, $lt: 1.5}});
-  ```
-
-  ```js
-  // using regular expressions
-  fruits.find({type: /apple/});//returns all apples and pineapples
-  ```
-
-  If query is **Function**:  
-  Example:
-  
-  ```js
-  // find all red fruits
-  fruits.find(function (row) {
-      return row.color == 'red';
-  });
-  ```
-  If query is **Object** that contains functions:  
-  
-  Function with field-context:
-  
-  ```js
-  // find all fruits with integer price or with 0.5$ price
-  fruits.find({price: [0.5, function (price) { return price % 1 == 0}]);
-  ```
-  
-  Function with row-context:
-  
-  ```js
-  // find all fruits with integer price or with 0.5$ price
-  fruits.find([price: 0.5, function (row) { return row.price % 1 == 0});
-  ```
-- **[fields=true] {Array|Boolean}**  
- Array of field names which will be added to result.  
- Example:
- 
-  ```js
- 	fruits.find({type: 'apple'}, ['type', 'color', 'price']);
-  ```
-  
-Also you can use fields [aliases](#aliases)
- 
-- **[options] {Object}**  
-  - limit: rowsCount
-  - limit: [fromRow]
-  - limit: [fromRow, RowsCount]  
-  
-  Example:
-  
-  ```js
-  	// find first two apples
-  	fruits.find({type: 'apple'}, true, {limit: 2});
-  	
-  	// find two yellow fruits beginning with third yellow fruit
-  	fruits.find ({color: 'yellow'}, true, {limit: [3,2]});
-  	
-  ```
-
-<a name="deepSearch"></a>
-#####Deep search:
-
-Deep search in object:
+**Find all green apples:**
 
 ```js
-
-	var usersMessages = new Qstore ({
-		columns: ['text', 'subject', 'user'],
-		rows: [
-			['Hi', 'new year', {id: 1, name: 'Bob', company: {name: 'IBM', phone: '+9999'} }],
-			['Happy new year!', 'new year', {id: 2, name: 'Kate', company: {name: 'Microsoft', phone: '+8888'}}],
-			['How to learn javascript?', 'programming', {id: 2, name: 'Stan'}],
-			['Anyone want to dance?', 'new year', {id: 2, name: 'James'}]
-		]
-	});
-
-	// find all messages with subject 'New year' from user with name 'Bob' who works in 'IBM' company
-	
-	messages.find({subject: 'new year', 'user.name': 'Bob', 'user.company.name': 'IBM'});
-
-	// or
-	messages.find({subject: 'new year', user: {name: 'Bob', company: {name: 'IBM'} }});
-	
+var greenApples = fruits.find({ type: 'apple', color: 'green' });
+// Returns:
+// [
+//   { type: 'apple', color: 'green', weight: 0.24, price: 1 }
+// ]
 ```
 
-Deep search in collection:
+**Find all apples and pears:**
 
 ```js
-	
-	// create collection of costumes
-	var costumes = new Qstore([
-		{name: 'policeman', items: [ {name: 'tie', color: 'black'}, {name: 'cap', color: 'blue'}]},
-		{name: 'fireman', items: [{name: 'hemlet', color: 'yellow'}]},
-		{name: 'solder', items: [{name: 'hemlet', color: 'green'}]}
-	]);
-	
-	// find costumes which have hemlet in items
-	costumes.find({items: {name: 'hemlet'} });
+var applesAndPears = fruits.find({ type: ['apple', 'pear'] });
+// Returns:
+// [
+//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
+//   { type: 'pear', color: 'green', weight: 0.4, price: 2 },
+//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
+//   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 },
+//   { type: 'apple', color: 'green', weight: 0.24, price: 1 }
+// ]
 ```
 
-<a name="aliases"></a>
-#####Aliases:
-
-You can create aliases for fields by using the syntax *"fieldName:aliasName"* or by alias map
+**Which fruits can be red?**
 
 ```js
-	// create collection of messages
-	var messages = new Qstore ({
-		columns: ['text', 'subject', 'user'],
-		rows: [
-			['Hello world!', 'programming', {id: 1, name: 'Bob'}],
-			['Happy new year!', 'new year', {id: 2, name: 'Kate'}],
-			['How to learn javascript?', 'programming', {id: 2, name: 'Stan'}],
-			['Anyone want to dance?', 'new year', {id: 2, name: 'James'}]
-		]
-	});
-
-	// we need to select "text" and "user.name" from messages collection
-
-	// first way
-	messages.find({subject: 'new year'}, ['text', 'user.name:userName']);
-
-	// second way
-	messages.find({subject: 'new year'}, {text: true, userName: 'user.name'});
-
-	// [ {text: 'Happy new year!', userName: 'Kate'}, {text: 'Anyone want to dance?', userName: 'James'}]
+var redFruitTypes = fruits.getList({ color: 'red' }, 'type');
+// Returns:
+// ['apple', 'pear', 'strawberries']
 ```
 
-result of example:
+**Find all fruits with price between $1 and $2:**
 
 ```js
-	[
-		{text: 'Happy new year!', userName: 'Kate'},
-		{text: 'Anyone want to dance?', userName: 'James'}
-	]
+var affordableFruits = fruits.find({ price: { $gte: 1, $lte: 2 } });
+// Returns:
+// [
+//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
+//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
+//   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 },
+//   { type: 'banana', color: 'yellow', weight: 0.3, price: 1.5 },
+//   { type: 'apple', color: 'green', weight: 0.24, price: 1 }
+// ]
 ```
 
-Use *"fieldname:"* syntax to extract field values on one level up.
+**Find fruits where the price per kg is greater than $5:**
 
 ```js
-	// create collection of changes
-	var usersChanges = new Qstore ({
-		columns: ['source', 'patch'],
-		rows: [
-			[{id: 2, name: 'Bob', age: 23}, {name: 'Mike'}],
-			[{id: 4, name: 'Stan', age: 30}, {age: 31}]
-		]
-	});
-	
-	var patchForDataBase = usersChanges.find(true, ['source.id:id', 'patch:']);
-	// now patchForDataBase contains:
-	// [{id: 2, name: 'Mike'}, {id: 4, age: 31}];
-	
+var expensivePerKgFruits = fruits.find(function (item) {
+  return item.price / item.weight > 5;
+});
+// Returns:
+// [
+//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
+//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
+//   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 },
+//   { type: 'apple', color: 'green', weight: 0.24, price: 1 },
+//   { type: 'strawberries', color: 'red', weight: 0.1, price: 0.2 }
+// ]
 ```
 
-
-<a name="comparisonOfFields"></a>
-#####Comparison of fields.
-
-Use *'$.fieldName'* syntax to get the value of field
-```js
-	// create collection of diet
-	var diet = new Qstore ({
-		columns: ['month', 'breakfast', 'dinner'],
-		rows: [
-			['april', {calories: 400, food: 'egg'}, {calories: 300, food: 'soup'}],
-			['may', {calories: 300, food: 'bacon'}, {calories: 500, food: 'soup'}],
-			['june', {calories: 350, food: 'porridge'}, {calories: 300, food: 'chicken'}]
-		]
-	});
-	
-	// find diet where dinner calories less when breackfast calories
-	diet.find({'dinner.calories': {$lt: '$.breakfast.calories'} });
-```
-
-#####Queries concatenation:
-```js
-	// create two filters
-	var filter1 = {type: 'apple'};
-	var filter2 = {color: 'red'};
-	
-	// search rows valid for filter1 or filter2
-	var commonFilter1 = [filter1, filter2]
-	
-	// search rows valid for filter1 and filter2
-	var commonFilter2 = {$and: [filter1, filter2]};
-	
-```
- ---
-
-<a name="search"></a>
-####.search (query [,fields=true] [,options])
-Same as [.find](#find) but returns Qstore collection
+**Add a computed field for price per kilogram:**
 
 ```js
-	// get collection of red fruits sorted by type
-	fruits.search({color: 'red'}).sort({fieldName: 'type', order: 'asc');
+fruits.addFields({
+  name: 'pricePerKg',
+  compute: function (fruit) {
+    return (fruit.price / fruit.weight).toFixed(2);
+  },
+});
+
+// Now each item in the collection has a 'pricePerKg' field.
 ```
 
-**search** with extending
+**Group fruits by color:**
 
 ```js
-	clients.search({status: 'online'}).sendMessage('hello!');
+var groupedFruits = fruits.groupBy('color');
+// groupedFruits.rows will contain groups of fruits by color.
 ```
 
- ---
-
-<a name="findOne"></a>
-####.findOne (query, [,fields=true] [,options])
-
-find first row valid for query.
-It same as:
-
-```js
-	.find(query, fields, {limit: 1})[0]
-```
 ---
 
-<a name="findIn"></a>
-####Qstore.findIn (rows, query [,fields=true] [,options])
-same as [.find](#find) but work as static method with array.
+## Features and Examples
+
+### Data Search
+
+#### `.find(query, [fields], [options])`
+
+Searches the collection and returns an array of items that match the query.
+
+**Examples:**
 
 ```js
-	var users = [
-		{name: 'user1', id: 1, email: 'user1@anymail.com'},
-		{name: 'user2', id: 2, email: 'user2@anymail.com'},
-		{name: 'user3', id: 3, email: 'user3@anymail.com'},
-		{name: 'user4', id: 4, email: 'user4@anymail.com'}
-	];
-	
-	// find user with id = 3
-	Qstore.findIn(users, {id: 3});
-```
----
+// Find all red fruits
+var redFruits = fruits.find({ color: 'red' });
+// Returns:
+// [
+//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
+//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
+//   { type: 'strawberries', color: 'red', weight: 0.1, price: 0.2 }
+// ]
 
-<a name="test"></a>
-####Qstore.test (object, query)
-Checks that the object match the query.
+// Find all apples or pears
+var applesOrPears = fruits.find({ type: ['apple', 'pear'] });
+// Returns:
+// [
+//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
+//   { type: 'pear', color: 'green', weight: 0.4, price: 2 },
+//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
+//   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 },
+//   { type: 'apple', color: 'green', weight: 0.24, price: 1 }
+// ]
 
-```js
-	var fruit = {type: 'pineapple', color: 'yellow', weight: 1, price: 4};
-	
-	// The fruit is yellow?
-	Qstore.test(fruit, {color: 'yellow'}); //true
-	
-	// The fruit is pineapple or pear?
-	Qstore.test(fruit, {type: ['pear', 'pineapple']}); //true
-	
-	// The fruit has "apple" in type?
-	Qstore.test(fruit, {type: {$like: 'apple'}}); //true
-	
-	// Fruit price less when 1$ per kg
-	Qstore.test(fruit, function (fruit) { return fruit.price/fruit.weight < 1});//false
-```
----
+// Find all fruits with price less than $2
+var cheapFruits = fruits.find({ price: { $lt: 2 } });
+// Returns:
+// [
+//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
+//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
+//   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 },
+//   { type: 'banana', color: 'yellow', weight: 0.3, price: 1.5 },
+//   { type: 'apple', color: 'green', weight: 0.24, price: 1 },
+//   { type: 'strawberries', color: 'red', weight: 0.1, price: 0.2 }
+// ]
 
-<a name="getList"></a>
-####.getList ([query] [,fieldName='idx']);
-Returns list of values for **fieldName**.  
-Elements of the list are not repeated.
-
-Examples:
-
-```js
-	// list of all fruits colors
-	fruits.getList('color'); // ['red', 'green', 'yellow']
-	
-	// list of all pears colors
-	fruits.getList({type: 'pear'}, 'color');// ['green', 'red']
-	
-	// What fruits can be red?
-	fruits.getList({color: 'red'}, 'type');// ['apple', 'pear', 'strawberries']
-	
-	// get fruits types with idx in [3, 5, 6]
-	fruits.getList({idx: [3, 5, 6]}); //['pear', 'apple', 'banana']
-	
-	//get list of idx
-	fruits.getList();
-	
-	// list of deep fields
-	messages.getList('user.name'); // ['Bob', 'Kate', 'Stan', 'James']
-
-	// you can also use function instead field name
-	fruits.getList({type: 'apple'}, function (fruit) {
-		return fruit.color + ' ' + fruit.type}
-	} // ['red apple', 'yellow apple', 'green apple']
-
+// Using regular expressions to find fruits starting with 'p'
+var pFruits = fruits.find({ type: /^p/ }); // Matches 'pear' and 'pineapple'
+// Returns:
+// [
+//   { type: 'pear', color: 'green', weight: 0.4, price: 2 },
+//   { type: 'pear', color: 'red', weight: 0.3, price: 1.8 },
+//   { type: 'pineapple', color: 'yellow', weight: 1, price: 4 }
+// ]
 ```
 
+#### Deep Search in Objects
 
- ---
- 
-<a name="each"></a>
-####.each ([query=true,] fn)
-apply function for each row
-
-- **[query=true] {Object|Function|Boolean}** filter query
-- **fn {Function}** function to apply
+You can perform deep searches within nested objects:
 
 ```js
+var usersMessages = new Qstore({
+  columns: ['text', 'subject', 'user'],
+  rows: [
+    [
+      'Hi',
+      'new year',
+      { id: 1, name: 'Bob', company: { name: 'IBM', phone: '+9999' } },
+    ],
+    [
+      'Happy new year!',
+      'new year',
+      { id: 2, name: 'Kate', company: { name: 'Microsoft', phone: '+8888' } },
+    ],
+  ],
+});
 
-	// add message to log for each fruit
-	fruits.each(function (row, i, query) {
-		conslole.log('fruit №' + i + ' is ' + row.type);
-	});
-	
-	// it will write:
-	//
-	// fruit №1 is apple
-	// fruit №2 is pear
-	// etc... 
-	//
-	
-``` 
-
- ---
-
-<a name="operators"></a>
-###Operators
-Оperators are used to extending the query language of search operations.
-Each operator is function which returs *true* if item valid for query or *false* if not.
-
-
-<a name="buildinOperators"></a>
-####Build-in operators
- name  | description
- ----- | -----------
- $eq   | equals
- $ne   | not equals
- $gt   | more then
- $lt   | less then
- $gte  | more or equals then
- $lte  | less or equals then
- $and  | change condition of [ ] operator from **or** to **and**
- $like | "like" search
- $has  | check exsisting of value in array or in object or in string see [$has operator](#hasOperator)
- 
- you can also add your operators - see [addOperator](#addOperator) method
- 
- <a name="hasOperator"></a>
- **$has operator:**
- 
- ```
- 	var clothes = new Qstore([
- 		{name: 'skirt', sizes: ['xs', 's', 'xl']},
- 		{name: 'jeans', sizes: ['m', 'xxl']},
- 		{name: 'skirt', sizes: ['xs', 's', 'xl']}
- 	]);
- 	
- 	clothes.find({name: 'skirt', sizes: {$has: 'xs'}});
- 	
- 	clothes.find({name: 'skirt', sizes: {$has: ['xs', 's'] }});
- 	
- 	
- ```
- 
- 
----
-
-<a name="addOperator"></a>
-####Qstore.addOperator (operatorName, function [isSimple=true])
-
-Example:
-
-```js
-	/* we need find fruits with integer price */
-	
-	// add "isInt" operator
-	Qstore.addOperator('isInt', function (left, right) {
-		var isInt = (left % 1 == 0);
-		return right ? isInt : !isInt
-	});
-	
-	// find them
-	fruits.find({price: {$isInt: true}});
-	
-	// find other
-	fruits.find({price: {$isInt: false}});
-	
+// Find messages from users working at IBM
+var ibmMessages = usersMessages.find({ 'user.company.name': 'IBM' });
+// Returns:
+// [
+//   {
+//     text: 'Hi',
+//     subject: 'new year',
+//     user: { id: 1, name: 'Bob', company: { name: 'IBM', phone: '+9999' } }
+//   }
+// ]
 ```
 
+#### Deep Search in Arrays
 
- ---
+Search within arrays inside your data:
 
-<a name="removeOperator"></a>
-####Qstore.removeOperator (operatorName)
+```js
+var costumes = new Qstore([
+  {
+    name: 'policeman',
+    items: [
+      { name: 'tie', color: 'black' },
+      { name: 'cap', color: 'blue' },
+    ],
+  },
+  { name: 'fireman', items: [{ name: 'helmet', color: 'yellow' }] },
+  { name: 'soldier', items: [{ name: 'helmet', color: 'green' }] },
+]);
 
-Remove operator by operatorName.
+// Find costumes that include a 'helmet'
+var costumesWithHelmet = costumes.find({ items: { name: 'helmet' } });
+// Returns:
+// [
+//   { name: 'fireman', items: [{ name: 'helmet', color: 'yellow' }] },
+//   { name: 'soldier', items: [{ name: 'helmet', color: 'green' }] }
+// ]
+```
 
- ---
+### Aliases in Field Selection
 
-<a name="functions""></a>
+You can create aliases for fields when selecting data:
+
+```js
+var messages = new Qstore({
+  columns: ['text', 'subject', 'user'],
+  rows: [
+    ['Hello world!', 'programming', { id: 1, name: 'Bob' }],
+    ['Happy new year!', 'new year', { id: 2, name: 'Kate' }],
+    ['How to learn JavaScript?', 'programming', { id: 3, name: 'Stan' }],
+    ['Anyone want to dance?', 'new year', { id: 4, name: 'James' }],
+  ],
+});
+
+// Select 'text' and 'user.name' as 'userName'
+var newYearMessages = messages.find({ subject: 'new year' }, ['text', 'user.name:userName']);
+// Returns:
+// [
+//   { text: 'Happy new year!', userName: 'Kate' },
+//   { text: 'Anyone want to dance?', userName: 'James' }
+// ]
+```
+
+**Using an alias map:**
+
+```js
+var newYearMessages = messages.find(
+  { subject: 'new year' },
+  { text: true, userName: 'user.name' }
+);
+// Returns same as above
+```
+
+### Comparison of Fields
+
+You can compare fields within the same item:
+
+```js
+var diet = new Qstore({
+  columns: ['month', 'breakfast', 'dinner'],
+  rows: [
+    [
+      'April',
+      { calories: 400, food: 'egg' },
+      { calories: 300, food: 'soup' },
+    ],
+    [
+      'May',
+      { calories: 300, food: 'bacon' },
+      { calories: 500, food: 'steak' },
+    ],
+  ],
+});
+
+// Find days where dinner calories are less than breakfast calories
+var lighterDinners = diet.find({ 'dinner.calories': { $lt: '$.breakfast.calories' } });
+// Returns:
+// [
+//   {
+//     month: 'April',
+//     breakfast: { calories: 400, food: 'egg' },
+//     dinner: { calories: 300, food: 'soup' }
+//   }
+// ]
+```
+
+### Queries Concatenation
+
+Combine queries using logical operators:
+
+```js
+var filter1 = { type: 'apple' };
+var filter2 = { color: 'red' };
+
+// Find items that are apples OR red
+var orFilter = [filter1, filter2];
+var resultOr = fruits.find(orFilter);
+// Returns all apples and all red fruits
+
+// Find items that are apples AND red
+var andFilter = { $and: [filter1, filter2] };
+var resultAnd = fruits.find(andFilter);
+// Returns:
+// [
+//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 }
+// ]
+```
+
+### Operators
+
+Qstore provides several built-in operators for advanced querying:
+
+- `$eq`: Equal to
+- `$ne`: Not equal to
+- `$gt`: Greater than
+- `$lt`: Less than
+- `$gte`: Greater than or equal to
+- `$lte`: Less than or equal to
+- `$like`: String contains
+- `$has`: Checks if a value exists in an array, object, or string
+
+**Example of `$has` Operator:**
+
+```js
+var clothes = new Qstore([
+  { name: 'skirt', sizes: ['XS', 'S', 'XL'] },
+  { name: 'jeans', sizes: ['M', 'XXL'] },
+]);
+
+// Find clothes that have size 'XS'
+var clothesWithXS = clothes.find({ sizes: { $has: 'XS' } });
+// Returns:
+// [
+//   { name: 'skirt', sizes: ['XS', 'S', 'XL'] }
+// ]
+
+// Find clothes that have both 'XS' and 'S' sizes
+var clothesWithXSandS = clothes.find({ sizes: { $has: ['XS', 'S'] } });
+// Returns:
+// [
+//   { name: 'skirt', sizes: ['XS', 'S', 'XL'] }
+// ]
+```
+
+### Adding Custom Operators
+
+You can add your own operators to extend the query language:
+
+```js
+// Add "isInt" operator to check for integer values
+Qstore.addOperator('isInt', function (left, right) {
+  var isInt = left % 1 === 0;
+  return right ? isInt : !isInt;
+});
+
+// Find fruits with integer prices
+var fruitsWithIntPrice = fruits.find({ price: { $isInt: true } });
+// Returns:
+// [
+//   { type: 'melon', color: 'yellow', weight: 3, price: 3 },
+//   { type: 'watermelon', color: 'green', weight: 10, price: 5 },
+//   { type: 'apple', color: 'green', weight: 0.24, price: 1 }
+// ]
+```
+
 ### Functions
-Functions used for runtime calculations in query.
-You may use [build-in functions](#buildinFunctions) or you [own functions](#addFunction)
 
+Use functions in queries for dynamic computations.
 
-Example of usage "length" function
+#### Built-in Functions
 
-```js 
+- `$length`: Length of an array or string
+- `$first`: First item of an array or string
+- `$min`: Minimum value in an array
+- `$max`: Maximum value in an array
+- `$upper`: Converts a string to uppercase
+- `$lower`: Converts a string to lowercase
 
-	// create collection of users
-	users = new Qstore ([
-		{id: 1, name: 'Bob', friends: ['Mike', 'Sam']},
-		{id: 2, name: 'Martin', friends: ['Bob']},
-		{id: 3, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']},
-		{id: 4, name: 'Sam', friends: []}
-	]);
-
-	// find users who have not any friend
-	users.find({'friends.$length': 0});
-	
-	// find users who have more than 2 friends
-	users.find({'friends.$length': {$gt: 2} });
-	 
-```
-
-Example of usage "max" and "min" function:
-
+**Example:**
 
 ```js
+var users = new Qstore([
+  { id: 1, name: 'Bob', friends: ['Mike', 'Sam'] },
+  { id: 2, name: 'Martin', friends: ['Bob'] },
+  { id: 3, name: 'Mike', friends: ['Bob', 'Martin', 'Sam'] },
+  { id: 4, name: 'Sam', friends: [] },
+]);
 
-	// create collection of clothes
-	var clothes =  new Qstore([
-		{name: 'skirt', sizes: [42, 48, 50]},
-		{name: 'jeans', sizes: [48, 54]},
-		{name: 'skirt', sizes: [42, 45, 48]}
-	]);
-	
-	// select name and maxSize of each item
-	clothes.find(true, ['name', 'sizes.$max:maxSize']);
-	
-	// find clothes with min size = 42
-	clothes.find({'size.$min': 42});
-	
+// Find users with no friends
+var usersWithNoFriends = users.find({ 'friends.$length': 0 });
+// Returns:
+// [
+//   { id: 4, name: 'Sam', friends: [] }
+// ]
+
+// Find users with more than 2 friends
+var popularUsers = users.find({ 'friends.$length': { $gt: 2 } });
+// Returns:
+// [
+//   { id: 3, name: 'Mike', friends: ['Bob', 'Martin', 'Sam'] }
+// ]
 ```
 
-Functions also can be used in fields selection
-
+**Select user name and number of friends:**
 
 ```js
-
-	// select user name and count of friends
-	users.find(true, ['name', 'friends.$length:friendsCount']);
-	
+var userFriendCounts = users.find(true, ['name', 'friends.$length:friendsCount']);
+// Returns:
+// [
+//   { name: 'Bob', friendsCount: 2 },
+//   { name: 'Martin', friendsCount: 1 },
+//   { name: 'Mike', friendsCount: 3 },
+//   { name: 'Sam', friendsCount: 0 }
+// ]
 ```
 
-The [grouping](#grouping) methods and [getList](#getList) method also supports the functions syntax:
+**Using Functions in `getList`:**
 
 ```js
-
-	// get list of all first friends
-	users.getList('friends.$first')
+// Get list of first friends' names
+var firstFriends = users.getList('friends.$first');
+// Returns:
+// ['Mike', 'Bob', 'Bob']
 ```
 
-You can use result of one function as arguments for another function:
+### Grouping Data
+
+#### `.groupBy(fields)`
+
+Group your data based on one or more fields.
+
+**Example:**
 
 ```js
-	
-	// get first letter in lower case of first friends
-	
-	users.getList({'friends.$length': {$gt: 0}}, 'friends.$first.$first.$lower')
-	
+// Group fruits by color
+var groupedFruits = fruits.groupBy('color');
+// groupedFruits.rows will contain groups of fruits by color
 ```
-You can pass additional arguments to functions:
+
+**Group shops by country and city:**
 
 ```js
+var shops = new Qstore({
+  columns: ['country', 'city', 'address'],
+  rows: [
+    ['UK', 'London', 'Mace St. 5'],
+    ['UK', 'York', 'Temple Ave. 10'],
+    ['France', 'Paris', 'De Rivoli St. 20'],
+    ['France', 'Paris', 'Pelleport St. 3'],
+    ['Germany', 'Dresden', 'Haydn St. 2'],
+    ['Germany', 'Berlin', 'Bornitz St. 50'],
+    ['Germany', 'Munich', 'Eva St. 12'],
+    ['Russia', 'Vladivostok', 'Stroiteley St. 9'],
+  ],
+});
 
-// create collection of сostumes for Halloween
-costumes = new Qstore([
-		{name: 'policeman', items: [ {name: 'tie', color: 'black'}, {name: 'cap', color: 'blue'}]},
-		{name: 'fireman', items: [{name: 'helmet', color: 'yellow'}]},
-		{name: 'solder', items: [{name: 'helmet', color: 'green'}]},
-		{name: 'zombie', items: [{name: 'skin', color: 'green'}, {name: 'brain', color: 'pink'}]}
-	]);
-	
-// get list of colors for each costume
-costumes.find(true, ['name', 'items.$getList("color"):colors']);
-
-
+// Group shops by country and then by city
+var groupedShops = shops.groupBy('country', 'city');
+// groupedShops.rows will contain nested groups by country and city
 ```
 
-When you use functions, avoid redundant expressions. For example we need to find all costumes wich have yellow color. We may use **find** and **lenght** function: 
+### Data Manipulation
+
+#### Adding Items
 
 ```js
-	costumes.find({'items.$find({"color": "yellow"}).$length': {$gt: 0} });
+// Add a new fruit
+fruits.add({ type: 'orange', color: 'orange', weight: 0.3, price: 1.2 });
+
+// Add multiple fruits
+fruits.add([
+  { type: 'grape', color: 'purple', weight: 0.05, price: 0.4 },
+  { type: 'kiwi', color: 'brown', weight: 0.1, price: 0.8 },
+]);
 ```
-But in this case the right way - using a [deep search](#deepSearch).
+
+#### Updating Items
 
 ```js
-	costumes.find({'items': {color: 'yellow'}});
+// Increase the price of all apples by $0.5
+fruits.update({ type: 'apple' }, function (item) {
+  return { price: item.price + 0.5 };
+});
+
+// Make all green fruits red
+fruits.update({ color: 'green' }, { color: 'red' });
 ```
 
-<a name="buildinFunctions"></a>
-#### Build-in functions
-
- name  		| description
- ----- 		| -----------
- $length	| length of array, string or count of keys in object
- $first		| first item of array or first letter of string or first property of object
- $min		| retunrs max of array
- $max		| returns min of array
- $abs		| absolute value
- $find		| use **Qstore.findIn** method
- $mapOf		| use **Qstore.mapOf** method
- $indexBy 	| use **Qstore.indexBy** method
- $test		| use **Qstore.test** method
- $getList 	| use **Qstore.getList** method
- $upper		| translate string to upper case
- $lower		| translate string to lower case
- $toNumber 	| cast to Number
- $toString	| cast to String
-
-
-You can also add your functions - see [addFunction](#addFunction) method
-
----
-
-<a name="addFunction"></a>
-#### Add function
-
-in development
-
----
-
-<a href="removeFunction"></a>
-#### Remove function
-
-in develomnent
-
----
-
-<a name="fieldsSelection"></a>
-###Fields selection
-
----
-
-<a name="grouping"></a>
-###Grouping
-
-<a name="indexby"></a>
-#### .indexBy (indexes)
-
-returns map of keys for collection
-
-**indexes {String|Array}** key or array of keys
-
+#### Removing Items
 
 ```js
-	// create collection of users
-	var users = new Qstore ([
-		{id: 12, name: 'Bob', friends: ['Mike', 'Sam']},
-		{id: 4, name: 'Martin', friends: ['Bob']},
-		{id: 5, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']},
-		{id: 10, name: 'Sam', friends: []},
-		{id: 15, name: 'Sam', friends: ['Mike']}
-	]);
+// Remove all fruits that are red
+fruits.remove({ color: 'red' });
 
-	// index by user's name
-	users.indexBy('name');
-	
+// Remove messages without an author
+messages.remove({ author: undefined });
 ```
 
-Result of previous example:
+### Working with Changes
+
+Track changes in your collection to sync with a database or for undo functionality.
+
+#### `.getChanges()`
+
+Returns a collection of changes made since the last commit.
+
+**Example:**
 
 ```js
-{
-	Bob: {id: 12, name: 'Bob', friends: ['Mike', 'Sam']},
-	Martin: {id: 4, name: 'Martin', friends: ['Bob']}
-	Mike: {id: 5, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']},
-	Sam: [{id: 10, name: 'Sam', friends: []}, {id: 15, name: 'Sam', friends: ['Mike']}]
-}
+// Make some changes
+fruits.update({ type: 'pear' }, { color: 'blue', price: 0.5 });
+fruits.add({ type: 'apple', color: 'green' });
+fruits.remove({ type: 'pineapple' });
+
+// Get the changes
+var changes = fruits.getChanges();
+
+// To get a list of removed items' indices
+var removedIndices = changes.search({ action: 'remove' }).getList('source.idx');
+// Returns: [5] // Assuming 'pineapple' had idx 5
+
+// Prepare a patch for database
+var patch = {};
+patch.add = changes.find({ action: 'add' }, ['values:']);
+patch.remove = changes.search({ action: 'remove' }).getList('source.idx');
+patch.update = changes.find({ action: 'update' }, ['source.idx:id', 'values:']);
 ```
 
-If for one key exixting more then one item then values will be wrapped in array.
+#### `.commit()`
 
-You can also use more then one key:
+Commits the changes, clearing the change history.
 
 ```js
-
-	// first indexed by name, and then by id
-	users.indexBy(['name', 'id']);
+fruits.commit();
 ```
 
-Result of previous example:
+#### `.rollback()`
+
+Reverts the collection to the state at the last commit.
 
 ```js
-
-{
-	Bob: {
-		12: {id: 12, name: 'Bob', friends: ['Mike', 'Sam']}
-	Martin: {
-		4: {id: 4, name: 'Martin', friends: ['Bob']}
-	},
-	Mike: {
-		5: {id: 5, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']}
-	},
-	Sam: {
-		10: {id: 10, name: 'Sam', friends: []},
-		15: {id: 15, name: 'Sam', friends: ['Mike']}
-	}
-}
-
+fruits.rollback();
 ```
 
-You can also use static implementation of *.indexBy* :
-**Qstore.indexBy (items, indexes)**
+#### Soft Mode
 
----
-
-<a name="mapOf"></a>
-#### .mapOf (indexes)
-
-same as *.indexBy*, but it always wrap values in array
-
-**indexes {String|Array}** key or array of keys
-
-example:
+If you don't need change tracking, you can enable soft mode:
 
 ```js
-
-	// create collection of shop's locations
-	window.shops = new Qstore ({
-		columns: ['country', 'city', 'address'],
-		rows: [
-			['UK', 'London', 'mace st. 5'],
-			['UK', 'York', 'temple ave. 10'],
-			['France', 'Paris', 'de rivoli st. 20'],
-			['France', 'Paris', 'pelleport st. 3'],
-			['Germany', 'Dresden', 'haydn st. 2'],
-			['Germany', 'Berlin', 'bornitz st. 50'],
-			['Germany', 'Munchen', 'eva st. 12'],
-			['Russia', 'Vladivostok', 'stroiteley st. 9']
-		]
-	});
-	
-	// first group by country, and then by city
-	shops.mapOf(['country', 'city']);
-	
+fruits.setSoftMode(true);
 ```
-in previous example *.mapOf* returns object like this:
+
+### Utilities
+
+#### `.size()`
+
+Returns the number of items in the collection.
 
 ```js
-
-{
-	France: {
-		Paris: Array[2],
-	Germany: {
-		Berlin: Array[1],
-		Dresden: Array[1],
-		Munchen: Array[1]
-	},
-	Russia: {
-		Vladivostok: Array[1]
-	},
-	UK: {
-		London: Array[1]
-		York: Array[1]
-	}
-}
-
+var totalFruits = fruits.size();
+// Returns: 12
 ```
 
-You can use function which returns index:
+#### `.pack([query], [fields])`
+
+Compresses the collection data for efficient storage or transmission.
+
+**Example:**
 
 ```js
-
-	shops.mapOf(function (shop) {
-		return shop.country + ' - ' + shop.city
-	});
-
+// Get a packed version of all apples with selected fields
+var packedApples = fruits.pack({ type: 'apple' }, ['idx', 'weight', 'price']);
+// Returns:
+// {
+//   columns: ['idx', 'weight', 'price'],
+//   rows: [
+//     [1, 0.25, 1.5],
+//     [4, 0.26, 1.2],
+//     [9, 0.24, 1],
+//     [11, 0.3, 1.5] // Assuming the new apple added earlier has idx 11
+//   ]
+// }
 ```
 
-Reslut:
+#### `.getCopy()`
+
+Returns a deep copy of the collection.
 
 ```js
-	'France - Paris': Array[2]
-	'Germany - Berlin': Array[1]
-	'Germany - Dresden': Array[1]
-	'Germany - Munchen': Array[1]
-	'Russia - Vladivostok': Array[1]
-	'UK - London': Array[1]
-	'UK - York': Array[1]
+var fruitsCopy = fruits.getCopy();
 ```
 
+### Events
 
+Listen to collection events for reactive programming.
 
-You can also use static implementation of *.mapOf* :
-**Qstore.mapOf (items, indexes)**
+#### `.setListener(fn)`
 
----
+Sets a listener function that reacts to collection events like 'change', 'commit', or 'sort'.
 
-<a name="groupBy"></a>
-#### .groupBy (group1 [, group2, ..., groupN])
-
-Powerful method for creating grouped collections.
-Returns Qstore.
-
-Group by country:
+**Example:**
 
 ```js
-	var items =  shops.search({country: ['Germany', 'France']});
-	var groups = items.groupBy('country');
-```
-
-Result of `groups.rows`:
-
-```js
-	[
-		{
-			_g: Array[2],
-			country: "France",
-			idx: 1
-		},
-		{
-			_g: Array[3],
-			country: "Germany",
-			idx: 2
-		}
-	]
-```
-
-All items of group stored in special field `_g`.
-
-Group first 4 items by country and city:
-
-```js
-	var items = shops.search(true, true, {limit: 4});
-	var groups = items.groupBy(['country', 'city']);
-```
-
-Result of `groups.rows`:
-
-```js
-	[
-		{
-			_g: Array[1],
-			city: "London",
-			country: "UK",
-			idx: 1
-		},
-		{
-			_g: Array[1],
-			city: "York",
-			country: "UK",
-			idx: 2
-		},
-		{
-			_g: Array[2]
-			city: "Paris"
-			country: "France"
-			idx: 3
-		}
-	]
-```
-
-You can also use long syntax `items.groupBy({country: true, city: true})` instead `items.groupBy(['country', 'city'])`.
-You can use different ways of describing the same action:
-
-```js
-	// group by field 'country' and set alias 'countryName' for this field
-	shops.groupBy('country:countryName');
-	shops.groupBy({'country:countryName': true});
-	shops.groupBy({countryName: 'country'});
-```
-
-
-Group by country and when by city:
-
-```js
-	var items = shops.search({country: ['Germany', 'France']});
-	var groups = items.groupBy('country', 'city').rows
-```
-
-Result of `groups.rows`:
-
-```js
-[
-	{
-		_g: [
-			{
-				_g: Array[2],
-				city: "Paris"
-			}
-		],
-		country: "France",
-		idx: 1
-	},
-	{
-		_g: [
-			{
-				_g: Array[1],
-				city: "Dresden"
-			},
-			{
-				_g: Array[1],
-				city: "Berlin"
-			},
-			{
-				_g: Array[1],
-				city: "Munchen"
-			}
-		],
-		country: "Germany",
-		idx: 2
-	}
-]
-
-```
-
-You also can use function instead field name:
-
-```js
-	// group contacts by first letter
-	var groups = contacts.sort('name').groupBy({
-		letter: function (contact) {
-			var firstLetter = contact.name.charAt(0);
-			if (firstLetter <= 'H') return 'A - H';
-			if (firstLetter >= 'R') return 'R - Z';
-			return 'I - Q';
-		}
-	});
-
-```
-
-Result of `groups.rows`:
-
-```js
-	[
-		{
-			_g: Array[5],
-			idx: 1,
-			letter: "A - H"
-		},
-		{
-			_g: Array[4],
-			idx: 2,
-			letter: "I - Q"
-		},
-		{
-			_g: Array[2],
-			idx: 3,
-			letter: "R - Z"
-		}
-	]
-```
-
-
-
-Sometimes you may need to add additional field which must be linked with group. For this case you can use special directive `$add`:
-
-```js
-
-	var groups = shops.groupBy({
-		country: true,
-		$add: {
-			shopsCount: '_g.$length'
-		}
-	});
-
-```
-
-Result of `groups.rows`:
-
-```js
-	{
-		_g: Array[2],
-		country: "UK",
-		idx: 1,
-		shopsCount: 2
-	},
-	{
-		_g: Array[2],
-		country: "France",
-		idx: 2,
-		shopsCount: 2
-	},
-	{
-		_g: Array[3]
-		country: "Germany"
-		idx: 3
-		shopsCount: 3
-	},
-	{
-		_g: Array[1]
-		country: "Russia"
-		idx: 4
-		shopsCount: 1
-	}
-
-```
-
-Additional fields processing when operation of grouping was done, therefore in previous example we can got count of items
-in group with help of `$length` [function](#functions).
-
-You can use function as argument for `$add` directive:
-
-```js
-	// group by country and add cities list for each group
-	var groups = shops.groupBy({
-		country: true,
-		$add: function (item) {
-			var cities = Qstore.getList(item._g, 'city');
-			return {cities: cities.join(', ')};
-		}
-	});
-```
-
-Result of `groups.rows`:
-
-```js
-
-[
-	{
-		_g: Array[2],
-		cities: "London, York",
-		country: "UK",
-		idx: 1
-	},
-	{
-		_g: Array[2],
-		cities: "Paris",
-		country: "France",
-		idx: 2
-	},
-	{
-		_g: Array[3],
-		cities: "Dresden, Berlin, Munchen",
-		country: "Germany",
-		idx: 3
-	},
-	{
-		_g: Array[1],
-		cities: "Vladivostok",
-		country: "Russia",
-		idx: 4
-	}
-]
-
-```
-
-Also you can use function as value for additional field, and write previous example at another manner:
-
-```js
-	var groups = shops.groupBy({
-		country: true,
-		$add: {
-			cities: function (item) {
-				var cities = Qstore.getList(item._g, 'city');
-				return cities.join(', ');
-			}
-		}
-	});
-```
-
-
----
-
-
-<a name="dataManipulation"></a>
-###Data manipulation
-
-<a name="add"></a>
-####.add (rows [,soft=false])
-
-add new items to collection
-
- - **row {Object|Array}**
- - **soft** soft add. See [soft mode](#softMode).  
-
-
-Examples:
- 
- ```js
- 	//add one new fruit
- 	fruits.add({type: 'carrot', color: 'red', weight: 0.3, price: 0.3});
- 	
- 	//add few new fruits
- 	fruits.add([
- 		{type: 'carrot', color: 'red', weight: 0.3, price: 0.3},
- 		{type: 'orange', color: 'orange', weight: 0.4, price: 0.5}
- 	]);
- ```
-
- ---
-
-
-<a name="update"></a>
-####.update ([searchQuery,] updateQuery [,soft=false])
-Update items in collection.
-
- - **[searchQuery] {Object|Function}** if option is set then will be updated only finded items
- - **updateQuery {Object|Function}** patch or function returned patch
- - **[soft=false]** soft update. See [soft mode](#softMode)  
-
-Examples:
-
-```js
-	//all fruits will be apples
-	fruits.update({type: 'apple'});
-	
-	//make all green fruits red
-	fruits.update({color: 'green'}, {color: 'red'});
-	
-	//The price of all pears will increase by 1 $
-	fruits.update(function (item) {
-		if (item.type == 'pear') {
-			return {price: item.price + 1}
-		}
-	});
-```
-
- ---
-
-<a name="patch"></a>
-####.patch (values [,key='idx'] [,soft=false])
-Update current collection by using update-collection.
-
- - **values** array of patches
- - **[key='idx']** key field
- - **[soft=false]** soft patch. See [soft mode](#softMode). 
-
-
-```js
-	var patch = [
-		{id: 21, connected: true},
-		{id: 22, connected: false},
-		{id: 33, name: 'unknown'}
-	];
-	
-	users.patch(patch, 'id');
-```
- ---
-
-<a name="remove"></a>
-####.remove (expr [,soft=false])
-
-Delete items from collection and returns count of deleted items.
-
-```js
-	// delete messages that do not have author
-	messages.remove({author: undefined});
-```
-
- ---
- 
-<a name="addFields"></a>
-####.addFields (fields)
-Add new fields in collection.
-
- - fields {Array|Object} array of new fields settings
-
-Fields with default values:
-
-```js
-	messages.addFields([
-		{name: 'author', default: 'unknown'},
-		{name: 'rating', default: 0}
-	]);
-	
-	messages.add({text: 'hello world'});
-	messages.findOne({text: 'hello world'}); // {text: 'hello world', author: 'unknown', rating: 0}
-```
-
-Computed fields: 
-
-```js
-	fruits.addFields({name: 'pricePerKg', compute: function (fruit) {
-		return fruit.price / fruit.weight;
-	});
-```
-
- ---
- 
-<a name="compute"></a>
-#### .compute ()
-Forced recalculate computed fields.  
-Computed fields automatically recalculeted whan collection was changed.
-Use this method if you need recalculate computed fields manualy.
-
- ---
- 
-<a name="removeFields"></a>
-####.removeFields (fields)
-remove fields from collection
- - **fields {String|Array}** field name or array of field names to delete
-
-```js
-	// delete one field
-	fruits.removeFields('weight');
-	
-	// delete few fields
-	fruits.removeFields(['price', 'color']);
-```
-
- ---
-
-<a name="sort"></a>
-####.sort (fields [,zeroIsLast=false])
-another variant:
-**sort (fn)**  where **fn** is sort function
-
-Sort collection.
-
-Examples:
-```js
-	// sort by idx
-	fruits.sort();
-	
-	// sort by type (asc)
-	fruits.sort({fieldName: 'type', order: 'asc'});
-	
-	// sort by type (asc) when by price (desc)
-	fruits.sort([
-		{fieldName: 'type', order: 'asc'},
-		{fieldName: 'price', order: 'desc'},
-	]);
-	
-	// sort by price, zero values will be in the end of collection
-	fruits.sort({fieldName: 'price', zeroIsLast: true});
-	
-	// use sort function
-	fruits.sort(function (fruit1, fruit2) {
-		return fruit1.price - fruit2.price;
-	});
-	
-```
- ---
-
-<a name="changes"></a>
-###Work with changes
-By default, your collections keep changes until you call the method **commit** or **rollback**.
-If you do not need this functionality, see [soft mode](#softMode).
-
-<a name="getChanges"></a>
-####.getChanges ()
-returns collection of changes
-
-Examples:
-```js
-	// we need get the list of idx of removed items
-	fruits.remove({type: 'apple'});
-	fruits.getChanges().search({action: 'remove'}).getList('source.idx');// [1, 4, 9]
-```
-
-```js
-	
-	// do some changes
-	fruits.update({type: 'pear'}, {color: 'blue', price: 0.5});
-	fruits.add({type: 'apple', color: 'green'});
-	fruits.remove({type: 'pineapple'});
-	
-	// we need to create patch for database
-	var changes = fruits.getChanges();
-	var patch = {};
-	patch.add = changes.find({action: 'add'}, ['values:']);
-	patch.remove = changes.search({action: 'remove'}).getList('source.idx');
-	patch.update = changes.find(true, ['source.idx:id', 'values:']);
-	
-```
-
-An easier way to get the map of changes - use [getChangesMap](#getChnagesMap) method. 
-
- ---
-
-<a name="getChangesMap"></a>
-####.getChangesMap ([keyField='idx'])
-
-Use this method to get map of changes group by action like:  
-
-```
-{
-	add: [array of added items]
-	remove: [array of removed keys]
-	update: [array of updated values]
-}	
-```
-
-
-<a name="commit"></a>
-####.commit ()
-Commit changes.
-
- ---
- 
-<a name="rollback"></a>
-####.rollback ()
-Revert all changes.
-
- ---
- 
- 
-<a name="softMode"></a>
-####softMode
-Some actions may be called with soft mode. This means that they do not add information about the change in the list of changes.
-
-If you want that your collection always work in soft mode use **.setSoftMode** method.
-
-```js
-	fruits.setSoftMode(true)
-```
-
-If you want that anyone new collection will be work in soft mode use **Qstore.setSoftMode** method
-
- ---
-
-<a name="utilites"></a>
-###Utilites
-
-<a name="size"></a>
-####.size ()
-Returns rows count.
-
- ---
- 
-<a name="pack"></a>
-####.pack ([query] [,fields])
-Returs reduced collection.
-
-```js
-	// create fruits collection
-	var fruits = new Qstore([
-		{type: 'apple', color: 'red', weight: 0.25, price: 1.5},
-		{type: 'pear', color: 'green', weight: 0.4, price: 2},
-		{type: 'pear', color: 'red', weight: 0.3, price: 1.8},
-		{type: 'apple', color: 'yellow', weight: 0.26, price: 1.2}
-	]);
-	
-	var apples =  fruits.pack({type: 'apple'}, ['idx', 'weight', 'price']);
-	
-	//now apples contains:
-	{
-		columns: ['idx', 'weight', 'price'],
-		rows: [
-			[1, 0.25, 1.5],
-			[4, 0.26, 1.2]
-		]
-	}
-	
-```
-You can use this method if you whant to send collection or part of collection by network,
-because it will reduce the outgoing traffic.
-
- ---
- 
-<a name="getCopy"></a>
-####.getCopy ()
-Returns a new independent collection, which will be copy of current collection.
-
- ---
-
-<a name="events"></a>
-###Events
-
-<a name="eventsList"></a>
-#### Events list
- - change
- - commit
- - sort
-
-Use [setListener](#setListener) method to react on changes.
-
- ---
-
-#### .setListener (fn)
- - fn {Function} listener function
-
-Example: 
-```js
-// We want to add messages to the log, if any apple will change its color.
-var listener = function (name, data, collection) {
-
-	// We are interested only in the event "change" with the action "update"
-	if (name != 'change' || data.action != 'update') return;
-	
-	// get operations changes
-	var changes = data.changes;
-	
-	// find apples with changed color
-	var applePainting = changes.find({'source.type': 'apple', 'patch.color': {$ne: undefined} });
-	
-	// write to log
-	for (var i = 0; i < applePainting.length; i++) {
-		var change = applePainting[i];
-		console.log('Some apple change color from ' + change.source.color + ' to ' + change.patch.color);
-	}
-};
-
-fruits.setListener(listener);
-
-fruits.update({color: 'blue'}); // it will write to log:
-// Some apple change color from red to blue
-// Some apple change color from yellow to blue
-// Some apple change color from green to blue
-
-```
- ---
-
-<a name="exampleCollections"></a>
-###Examples of collections
-
-In many examples of the API docs using various collections. You can explore their in this section.
-
-<a name="fruits"></a>
-####fruits
-
-```js
-
-	var fruits = new Qstore({
-		columns: ['type', 'color', 'weight', 'price'],
-		rows: [
-			['apple', 'red', 0.25, 1.5],
-			['pear', 'green', 0.4, 2],
-			['pear', 'red', 0.3, 1.8],
-			['apple', 'yellow', 0.26, 1.2],
-			['pineapple', 'yellow', 1, 4],
-			['banana', 'yellow', 0.3, 1.5],
-			['melon', 'yellow', 3, 3],
-			['watermelon', 'green', 10, 5],
-			['apple', 'green', 0.24, 1],
-			['strawberries', 'red', 0.1, 0.2]
-		]
-	});
-
+fruits.setListener(function (eventName, data, collection) {
+  if (eventName === 'change' && data.action === 'update') {
+    var changes = data.changes.find({
+      'source.type': 'apple',
+      'patch.color': { $ne: undefined },
+    });
+    changes.forEach(function (change) {
+      console.log(
+        'An apple changed color from ' + change.source.color + ' to ' + change.patch.color
+      );
+    });
+  }
+});
+
+// Now, when you update apples' colors, the listener will log the changes
+fruits.update({ type: 'apple' }, { color: 'blue' });
+// Console output:
+// An apple changed color from red to blue
+// An apple changed color from yellow to blue
+// An apple changed color from green to blue
+// An apple changed color from green to blue // For the new apple added earlier
 ```
 
 ---
 
-<a name="usersMessages"></a>
-####usersMessages
+## API Reference
+
+### Initialization
+
+#### Using an Array of Objects
 
 ```js
+var collection = new Qstore(arrayOfObjects);
+```
 
-	var usersMessages = new Qstore ({
-		columns: ['text', 'subject', 'user'],
-		rows: [
-			['Hi', 'new year', {id: 1, name: 'Bob', company: {name: 'IBM', phone: '+9999'} }],
-			['Happy new year!', 'new year', {id: 2, name: 'Kate', company: {name: 'Microsoft', phone: '+8888'}}],
-			['How to learn javascript?', 'programming', {id: 2, name: 'Stan'}],
-			['Anyone want to dance?', 'new year', {id: 2, name: 'James'}]
-		]
-	});
+#### Using Reduced Format
 
+```js
+var collection = new Qstore({
+  columns: ['column1', 'column2'],
+  rows: [
+    ['value1', 'value2'],
+    ['value3', 'value4'],
+  ],
+});
 ```
 
 ---
 
-<a name="messages"></a>
-####messages
+### Data Search Methods
+
+#### `.find(query, [fields], [options])`
+
+Returns all objects matching the query.
+
+- **`query`**: The search criteria.
+- **`fields`**: (Optional) Array of field names to include in the result.
+- **`options`**: (Optional) Additional options like `limit`.
+
+**Examples:**
 
 ```js
+// Find all red fruits
+var redFruits = fruits.find({ color: 'red' });
+// Returns the same as earlier examples
 
-	var messages = new Qstore ({
-		columns: ['text', 'subject', 'user'],
-		rows: [
-			['Hello world!', 'programming', {id: 1, name: 'Bob'}],
-			['Happy new year!', 'new year', {id: 2, name: 'Kate'}],
-			['How to learn javascript?', 'programming', {id: 2, name: 'Stan'}],
-			['Anyone want to dance?', 'new year', {id: 2, name: 'James'}]
-		]
-	});
+// Find first two apples
+var firstTwoApples = fruits.find({ type: 'apple' }, true, { limit: 2 });
+// Returns:
+// [
+//   { type: 'apple', color: 'red', weight: 0.25, price: 1.5 },
+//   { type: 'apple', color: 'yellow', weight: 0.26, price: 1.2 }
+// ]
 
+// Find two yellow fruits starting from the third one
+var yellowFruits = fruits.find({ color: 'yellow' }, true, { limit: [3, 2] });
+// Returns:
+// [
+//   { type: 'melon', color: 'yellow', weight: 3, price: 3 },
+//   { type: 'banana', color: 'yellow', weight: 0.3, price: 1.5 }
+// ]
+```
 
+#### `.search(query, [fields], [options])`
+
+Same as `.find` but returns a new Qstore collection.
+
+```js
+// Get a collection of red fruits sorted by type
+var redFruitsCollection = fruits.search({ color: 'red' });
+redFruitsCollection.sort({ fieldName: 'type', order: 'asc' });
+// Now redFruitsCollection contains red fruits sorted by type
+```
+
+#### `.findOne(query, [fields], [options])`
+
+Returns the first object that matches the query.
+
+```js
+var firstApple = fruits.findOne({ type: 'apple' });
+// Returns:
+// { type: 'apple', color: 'red', weight: 0.25, price: 1.5 }
+```
+
+#### `.findIn(array, query, [fields], [options])`
+
+Static method to search within an array.
+
+```js
+var usersArray = [
+  { id: 1, name: 'Alice', email: 'alice@example.com' },
+  { id: 2, name: 'Bob', email: 'bob@example.com' },
+];
+
+// Find user with id = 2
+var user = Qstore.findIn(usersArray, { id: 2 });
+// Returns:
+// [{ id: 2, name: 'Bob', email: 'bob@example.com' }]
+```
+
+#### `.test(object, query)`
+
+Checks if an object matches the query.
+
+```js
+var fruit = { type: 'pineapple', color: 'yellow', weight: 1, price: 4 };
+
+// Is the fruit yellow?
+Qstore.test(fruit, { color: 'yellow' }); // true
+
+// Is the fruit a pineapple or pear?
+Qstore.test(fruit, { type: ['pear', 'pineapple'] }); // true
+
+// Does the fruit type contain "apple"?
+Qstore.test(fruit, { type: { $like: 'apple' } }); // true
+
+// Is the price per kg less than $1?
+Qstore.test(fruit, function (fruit) {
+  return fruit.price / fruit.weight < 1;
+}); // false
+```
+
+#### `.getList([query], [fieldName='idx'])`
+
+Returns a list of unique values for a specified field.
+
+```js
+// List of all fruit colors
+var colors = fruits.getList('color');
+// Returns: ['red', 'green', 'yellow', 'orange', 'purple', 'brown']
+
+// List of types for red fruits
+var redFruitTypes = fruits.getList({ color: 'red' }, 'type');
+// Returns: ['apple', 'pear', 'strawberries']
+
+// Get list of indices
+var indices = fruits.getList();
+// Returns: [1, 2, 3, ..., n] where n is the total number of items
+```
+
+#### `.each([query], fn)`
+
+Applies a function to each item in the collection.
+
+```js
+// Log each fruit's type
+fruits.each(function (item, index) {
+  console.log('Fruit #' + index + ' is a ' + item.type);
+});
 ```
 
 ---
 
-<a name="diet"></a>
-####diet
+### Operators
+
+#### Built-in Operators
+
+- **`$eq`**: Equal to
+- **`$ne`**: Not equal to
+- **`$gt`**: Greater than
+- **`$lt`**: Less than
+- **`$gte`**: Greater than or equal to
+- **`$lte`**: Less than or equal to
+- **`$like`**: Contains substring
+- **`$has`**: Contains value in array, object, or string
+
+#### Custom Operators
+
+Add custom operators using:
 
 ```js
-
-	var diet = new Qstore ({
-		columns: ['month', 'breakfast', 'dinner'],
-		rows: [
-			['april', {calories: 400, food: 'egg'}, {calories: 300, food: 'soup'}],
-			['may', {calories: 300, food: 'bacon'}, {calories: 500, food: 'soup'}],
-			['june', {calories: 350, food: 'porridge'}, {calories: 300, food: 'chicken'}]
-		]
-	});
-
+Qstore.addOperator('operatorName', function (left, right) {
+  // Your logic here
+});
 ```
 
 ---
 
-<a name="users"></a>
-####users
+### Functions
+
+#### Built-in Functions
+
+- **`$length`**: Length of an array or string
+- **`$first`**: First item in an array or string
+- **`$min`**: Minimum value in an array
+- **`$max`**: Maximum value in an array
+- **`$upper`**: Convert string to uppercase
+- **`$lower`**: Convert string to lowercase
+- **`$toNumber`**: Convert to number
+- **`$toString`**: Convert to string
+
+#### Using Functions in Queries
 
 ```js
+// Find users with no friends
+var usersWithNoFriends = users.find({ 'friends.$length': 0 });
 
-	var users = new Qstore ([
-		{id: 12, name: 'Bob', friends: ['Mike', 'Sam']},
-		{id: 4, name: 'Martin', friends: ['Bob']},
-		{id: 5, name: 'Mike', friends: ['Bob', 'Martin', 'Sam']},
-		{id: 10, name: 'Sam', friends: []},
-		{id: 15, name: 'Sam', friends: ['Mike']}
-	]);
+// Get list of first friends' names
+var firstFriends = users.getList('friends.$first');
+```
 
+#### Custom Functions
+
+Add custom functions using:
+
+```js
+Qstore.addFunction('functionName', function (value) {
+  // Your logic here
+});
 ```
 
 ---
 
-<a name="costumes"></a>
-####costumes
+### Data Manipulation Methods
 
-```js
+#### `.add(items, [soft=false])`
 
-	var costumes = new Qstore([
-		{name: 'policeman', items: [ {name: 'tie', color: 'black'}, {name: 'cap', color: 'blue'}]},
-		{name: 'fireman', items: [{name: 'helmet', color: 'yellow'}]},
-		{name: 'solder', items: [{name: 'helmet', color: 'green'}]},
-		{name: 'zombie', items: [{name: 'skin', color: 'green'}, {name: 'brain', color: 'pink'}]}
-	]);
+Adds new items to the collection.
 
-```
+#### `.update([searchQuery], updateQuery, [soft=false])`
 
----
+Updates items in the collection.
 
-<a name="clothes"></a>
-####clothes
+#### `.patch(values, [key='idx'], [soft=false])`
 
-```js
+Updates the collection using an array of patches.
 
-	var clothes =  new Qstore([
-		{name: 'skirt', sizes: [42, 48, 50]},
-		{name: 'jeans', sizes: [48, 54]},
-		{name: 'skirt', sizes: [42, 45, 48]}
-	]);
+#### `.remove(query, [soft=false])`
 
-```
+Removes items from the collection.
 
----
+#### `.addFields(fields)`
 
-<a name="usersChanges"></a>
-####usersChanges
+Adds new fields to the collection.
 
-```js
+#### `.compute()`
 
-	var usersChanges = new Qstore ({
-		columns: ['source', 'patch'],
-		rows: [
-			[{id: 2, name: 'Bob', age: 23}, {name: 'Mike'}],
-			[{id: 4, name: 'Stan', age: 30}, {age: 31}]
-		]
-	});
+Forces recomputation of computed fields.
 
+#### `.removeFields(fields)`
 
-```
+Removes fields from the collection.
+
+#### `.sort(fields, [zeroIsLast=false])`
+
+Sorts the collection.
 
 ---
 
-<a name="shops"></a>
-####shops
+### Grouping Methods
 
-```js
-	var shops = new Qstore ({
-		columns: ['country', 'city', 'address'],
-		rows: [
-			['UK', 'London', 'mace st. 5'],
-			['UK', 'York', 'temple ave. 10'],
-			['France', 'Paris', 'de rivoli st. 20'],
-			['France', 'Paris', 'pelleport st. 3'],
-			['Germany', 'Dresden', 'haydn st. 2'],
-			['Germany', 'Berlin', 'bornitz st. 50'],
-			['Germany', 'Munchen', 'eva st. 12'],
-			['Russia', 'Vladivostok', 'stroiteley st. 9']
-		]
-	});
+#### `.groupBy(fields)`
 
-```
+Groups the collection based on specified fields.
+
+#### `.indexBy(indexes)`
+
+Creates a map of the collection indexed by specified fields.
+
+#### `.mapOf(indexes)`
+
+Similar to `.indexBy` but always wraps values in an array.
 
 ---
 
-<a name="contacts"></a>
-####contacts
+### Working with Changes
 
-```js
+#### `.getChanges()`
 
-	var contacts = new Qstore({
-		columns: ['name', 'phone'],
-		rows: [
-			['Leonardo Da Vinci', '23090533'],
-			['Elvis Presley', '247543'],
-			['Christopher Columbus', '85321443'],
-			['Pablo Piccaso', '2512567'],
-			['Walt Disney', '123456464'],
-			['Albert Einstein', '0865443'],
-			['Aristotle', '23090533'],
-			['William Shakespeare', '235667'],
-			['Ludwig van Beethoven', '245433'],
-			['Cleopatra', '346422'],
-			['Paul McCartney', '5532173'],
-		]
-	});
+Returns a collection of changes.
 
+#### `.getChangesMap([keyField='idx'])`
 
-```
+Returns a map of changes grouped by action.
+
+#### `.commit()`
+
+Commits the changes.
+
+#### `.rollback()`
+
+Reverts the changes.
+
+#### `.setSoftMode(flag)`
+
+Enables or disables soft mode.
 
 ---
 
+### Utilities
 
-<a name="meetings"></a>
-####meetings
+#### `.size()`
 
-```js
+Returns the number of items.
 
-	var meetings = new Qstore({
-		columns: ['day','month', 'year', 'details'],
-		rows: [
-			[2, 'feb', 2012, 'Meeting with Albert Einstein'],
-			[14, 'feb', 2012,'Meeting with Elvis Presley'],
-			[20, 'feb', 2013, 'Meeting with Christopher Columbus'],
-			[3, 'mar', 2013, 'Meeting with Pablo Piccaso'],
-			[2, 'apr', 2013, 'Meeting with Walt Disney'],
-			[10, 'apr', 2013,'Meeting with Aristotle'],
-			[11, 'may', 2013, 'Meeting with William Shakespeare'],
-			[13, 'may', 2013, 'Meeting with Cleopatra']
-		]
-	});
+#### `.pack([query], [fields])`
 
-```
+Compresses the collection data.
+
+#### `.unpack(data)`
+
+Unpacks compressed data into a collection.
+
+#### `.getCopy()`
+
+Returns a deep copy of the collection.
+
+---
+
+### Events
+
+#### `.setListener(fn)`
+
+Sets a listener for collection events.
+
+**Event Names:**
+
+- `change`
+- `commit`
+- `sort`
 
 ---
 
 
+## License
 
+Qstore is open-source and released under the MIT License.
